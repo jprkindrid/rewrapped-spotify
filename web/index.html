@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Wrapped</title>
+</head>
+<body>
+  <h1>Upload your Spotify data</h1>
+  <form id="uploadForm">
+    <input type="file" id="zipFile" accept=".zip">
+    <button type="submit">Upload</button>
+  </form>
+
+  <pre id="responseBox"></pre>
+
+  <script>
+    // shoutout ChatGPT idk javascript yet
+    const form = document.getElementById('uploadForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('zipFile');
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const json = await res.json();
+      document.getElementById('responseBox').innerText = JSON.stringify(json, null, 2);
+    });
+  </script>
+</body>
+</html>
