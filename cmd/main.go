@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
 	"github.com/kindiregg/spotify-data-analyzer/internal/spotify"
 )
 
@@ -42,11 +43,25 @@ func main() {
 		log.Fatal("Received empty access token")
 	}
 
-	artistID := "5ACAhZZPLo1ukYpA4jLO6u" //Kindrid
-	requestedArtist, err := spotify.GetArtistData(cachedToken.AccessToken, artistID)
+	// artistID := "5ACAhZZPLo1ukYpA4jLO6u" //Kindrid
+	// requestedArtist, err := spotify.GetArtistData(cachedToken.AccessToken, artistID)
+	// if err != nil {
+	// 	fmt.Printf("error getting requested artist: %v", err)
+	// }
+
+	// fmt.Printf("%+v\n", requestedArtist)
+	file, err := os.Open("tempZip.zip")
 	if err != nil {
-		fmt.Printf("error getting requested artist: %v", err)
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	paths, err := parser.UnzipAndExtractFiles(file, "./tmp")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	fmt.Printf("%+v\n", requestedArtist)
+	for _, path := range paths {
+		log.Println("Extracted:", path)
+	}
 }

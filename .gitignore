@@ -1,3 +1,5 @@
 .env
 temp.json
 token_cache.json
+*.zip
+/tmp
