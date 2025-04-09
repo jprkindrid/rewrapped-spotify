@@ -32,17 +32,26 @@ func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
 	var extracted []string
 
 	for _, f := range r.File {
+
+		if f.FileInfo().IsDir() {
+			continue
+		}
+
 		rc, err := f.Open()
 		if err != nil {
 			return nil, err
 		}
 
-		defer rc.Close()
-
 		outPath := filepath.Join(dest, f.Name)
+
+		if err := os.MkdirAll(filepath.Dir(outPath), os.ModePerm); err != nil {
+			rc.Close()
+			return nil, err
+		}
+
 		outFile, err := os.Create(outPath)
 		if err != nil {
-			r.Close()
+			rc.Close()
 			return nil, err
 		}
 
@@ -55,7 +64,6 @@ func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
 		}
 
 		extracted = append(extracted, outPath)
-
 	}
 
 	return extracted, nil

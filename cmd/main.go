@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/kindiregg/spotify-data-analyzer/internal/handlers"
 	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
-	"github.com/kindiregg/spotify-data-analyzer/internal/spotify"
 )
 
 func main() {
@@ -25,22 +25,23 @@ func main() {
 		log.Fatal("DEV_CLIENT_SECRET must be set")
 	}
 
-	var cachedToken *spotify.CachedToken
-	cachedToken, err := spotify.LoadCachedToken("token_cache.json")
-
-	if err != nil || time.Now().After(cachedToken.ExpiresAt.Add(-1*time.Minute)) {
-		fmt.Println("No valid access token found, fetching new token...")
-		cachedToken, err = spotify.GetAccessToken(devClientID, devClientSecret)
-		if err != nil {
-			log.Fatalf("Failed to get access token: %v", err)
-			return
-		}
-	} else {
-		fmt.Println("using cached token")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
+	addr := ":" + port
+	// const addr = ":8080"
 
-	if cachedToken.AccessToken == "" {
-		log.Fatal("Received empty access token")
+	mux := http.NewServeMux()
+
+	mux.Handle("/", http.FileServer(http.Dir("./static")))
+
+	mux.HandleFunc("/upload", handlers.UploadHandler)
+	srv := http.Server{
+		Handler:      mux,
+		Addr:         addr,
+		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  30 * time.Second,
 	}
 
 	// artistID := "5ACAhZZPLo1ukYpA4jLO6u" //Kindrid
@@ -50,7 +51,7 @@ func main() {
 	// }
 
 	// fmt.Printf("%+v\n", requestedArtist)
-	file, err := os.Open("tempZip.zip")
+	file, err := os.Open("spotifyData.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,4 +65,7 @@ func main() {
 	for _, path := range paths {
 		log.Println("Extracted:", path)
 	}
+
+	log.Printf("Server running at http://localhost%s\n", addr)
+	log.Fatal(srv.ListenAndServe())
 }

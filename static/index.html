@@ -2,34 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Wrapped</title>
+  <title>MyWrapped Upload</title>
 </head>
 <body>
-  <h1>Upload your Spotify data</h1>
+  <h1>Upload your Spotify ZIP</h1>
+
   <form id="uploadForm">
-    <input type="file" id="zipFile" accept=".zip">
+    <input type="file" id="zipFile" accept=".zip" required />
     <button type="submit">Upload</button>
   </form>
 
-  <pre id="responseBox"></pre>
+  <pre id="output"></pre>
 
   <script>
-    // shoutout ChatGPT idk javascript yet
     const form = document.getElementById('uploadForm');
+    const output = document.getElementById('output');
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fileInput = document.getElementById('zipFile');
       const file = fileInput.files[0];
+
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await fetch('/upload', {
-        method: 'POST',
-        body: formData
-      });
+      try {
+        const res = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
 
-      const json = await res.json();
-      document.getElementById('responseBox').innerText = JSON.stringify(json, null, 2);
+        const result = await res.json();
+        output.textContent = JSON.stringify(result, null, 2);
+      } catch (err) {
+        output.textContent = '❌ Upload failed: ' + err.message;
+      }
     });
   </script>
 </body>

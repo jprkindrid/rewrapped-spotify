@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -21,6 +22,34 @@ type TokenResponse struct {
 type CachedToken struct {
 	AccessToken string    `json:"access_token"`
 	ExpiresAt   time.Time `json:"expires_at"`
+}
+
+func GetValidToken() (string, error) {
+
+	devClientID := os.Getenv("DEV_CLIENT_ID")
+	devClientSecret := os.Getenv("DEV_CLIENT_SECRET")
+	if devClientID == "" || devClientSecret == "" {
+		return "", fmt.Errorf("missing client credentials")
+	}
+	var cachedToken *CachedToken
+	cachedToken, err := LoadCachedToken("token_cache.json")
+
+	if err != nil || time.Now().After(cachedToken.ExpiresAt.Add(-1*time.Minute)) {
+		fmt.Println("No valid access token found, fetching new token...")
+		cachedToken, err = GetAccessToken(devClientID, devClientSecret)
+		if err != nil {
+			log.Fatalf("Failed to get access token: %v", err)
+			return "", err
+		}
+	} else {
+		fmt.Println("using cached token")
+	}
+
+	if cachedToken.AccessToken == "" {
+		return "", fmt.Errorf("received empty access token")
+	}
+
+	return cachedToken.AccessToken, nil
 }
 
 func LoadCachedToken(path string) (*CachedToken, error) {
