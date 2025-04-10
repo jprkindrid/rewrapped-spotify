@@ -8,7 +8,6 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kindiregg/spotify-data-analyzer/internal/handlers"
-	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
 )
 
 func main() {
@@ -51,20 +50,6 @@ func main() {
 	// }
 
 	// fmt.Printf("%+v\n", requestedArtist)
-	file, err := os.Open("spotifyData.zip")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	paths, err := parser.UnzipAndExtractFiles(file, "./tmp")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, path := range paths {
-		log.Println("Extracted:", path)
-	}
 
 	log.Printf("Server running at http://localhost%s\n", addr)
 	log.Fatal(srv.ListenAndServe())
