@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
+	"github.com/kindiregg/spotify-data-analyzer/internal/session"
 	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
 )
 
@@ -46,10 +48,21 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		paths := make([]string, 1)
+		paths = append(paths, outPath)
+		parsedData, err := parser.ParseJsonFiles(paths)
+		if err != nil {
+			utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json file", err)
+		}
+
+		session.Store(parsedData)
+
 		log.Println("Extracted:", outPath)
 
+		os.Remove(outPath)
+
 		utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
-			"message": "JSON file uploaded successfully",
+			"message": "JSON filr processed succesfully",
 			"path":    outPath,
 		})
 
@@ -64,12 +77,30 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Extracted:", path)
 		}
 
+		parsedData, err := parser.ParseJsonFiles(paths)
+		if err != nil {
+			utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json files", err)
+		}
+
+		session.Store(parsedData)
+
+		for _, path := range paths {
+			os.Remove(path)
+		}
+
 		utils.RespondWithJSON(w, http.StatusAccepted, map[string]interface{}{
-			"message": "ZIP extracted successfully",
+			"message": "ZIP processed successfully",
 			"files":   paths,
 		})
 
 	default:
 		utils.RespondWithError(w, http.StatusBadRequest, "Only .json and .zip files are supported", nil)
 	}
+	sessionData := session.Get()
+	for i, song := range sessionData {
+		trackName := song.MasterMetadataTrackName
+		artistName := song.MasterMetadataAlbumArtistName
+		fmt.Printf("Song %d: %s - %s\n", i, artistName, trackName)
+	}
+
 }

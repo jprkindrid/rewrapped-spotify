@@ -6,24 +6,24 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 🧱 Phase 1: Setup (2h)
-- [ ] Create frontend + backend project structure
-- [ ] Set up basic web page with file upload UI
-- [ ] Set up backend API (FastAPI or Go)
-- [ ] Connect frontend to backend
+- [✅] Create frontend + backend project structure
+- [✅ ] Set up basic web page with file upload UI
+- [✅] Set up backend API (FastAPI or Go)
+- [✅] Connect frontend to backend
 
 ---
 
 ### 📂 Phase 2: File Handling (4–5h)
-- [ ] Accept `.zip` file upload from frontend
-- [ ] Unzip contents on server (use temp directory)
-- [ ] Locate relevant files (e.g. `StreamingHistory*.json`, `endsong*.json`)
-- [ ] Send to JSON parser
+- [✅] Accept `.zip` file upload from frontend
+- [✅] Unzip contents on server (use temp directory)
+- [✅] Locate relevant files (e.g. `StreamingHistory*.json`, `endsong*.json`)
+- [✅] Send to JSON parser
 
 ---
 
 ### 📄 Phase 3: JSON Parsing & Struct Conversion (6–8h)
-- [ ] Load and combine large `.json` files into one list
-- [ ] Map to Go structs (already prepared)
+- [✅]Load and combine large `.json` files into one list
+- [✅] Map to Go structs (already prepared)
 - [ ] Normalize timestamp, duration, artist, etc.
 - [ ] Filter bad/incomplete entries
 - [ ] Save parsed data to memory or temp file (optional: DB)
