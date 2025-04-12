@@ -7,7 +7,7 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 
 ### 🧱 Phase 1: Setup (2h)
 - [✅] Create frontend + backend project structure
-- [✅ ] Set up basic web page with file upload UI
+- [✅] Set up basic web page with file upload UI
 - [✅] Set up backend API (FastAPI or Go)
 - [✅] Connect frontend to backend
 
@@ -24,9 +24,9 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ### 📄 Phase 3: JSON Parsing & Struct Conversion (6–8h)
 - [✅]Load and combine large `.json` files into one list
 - [✅] Map to Go structs (already prepared)
-- [ ] Normalize timestamp, duration, artist, etc.
-- [ ] Filter bad/incomplete entries
-- [ ] Save parsed data to memory or temp file (optional: DB)
+- [✅] Normalize timestamp, duration, artist, etc.
+- [✅] Filter bad/incomplete entries
+- [✅] Save parsed data to memory or temp file (optional: DB)
 
 ---
 
@@ -42,7 +42,19 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 
 ---
 
-### 💻 Phase 5: Frontend Visualization (8–10h)
+### 🔐 Phase 5: Spotify Authentication (2–4h)
+- [ ] Set up Spotify Developer credentials (Client ID, Secret, Redirect URI)
+- [ ] Create `/login` route to redirect user to Spotify authorization URL
+- [ ] Handle `/callback` route to receive code and exchange it for access token
+- [ ] Fetch and display user profile (optional)
+- [ ] Store access token for later use (in session/memory)
+
+### Phase 5.5: Optional DB
+- [ ] Create a database to store/cache existing user data uploaded from zip/json
+- [ ] Offload database to Turso
+---
+
+### 💻 Phase 6: Frontend Visualization (8–10h)
 - [ ] Build dashboard UI in React (or Svelte/Vue)
 - [ ] Display:
   - [ ] Top artists (bar chart or cards)
@@ -54,7 +66,7 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 
 ---
 
-### 🧪 Phase 6: Polish & Extras (4–6h)
+### 🧪 Phase 7: Polish & Extras (4–6h)
 - [ ] Add error handling for bad ZIPs / no data
 - [ ] Improve mobile layout/responsiveness
 - [ ] Optional: export data as image or PDF

@@ -1,5 +1,4 @@
 .env
-temp.json
-token_cache.json
+*.json
 *.zip
 /tmp

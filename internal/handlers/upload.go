@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -96,11 +95,13 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		utils.RespondWithError(w, http.StatusBadRequest, "Only .json and .zip files are supported", nil)
 	}
-	sessionData := session.Get()
-	for i, song := range sessionData {
-		trackName := song.MasterMetadataTrackName
-		artistName := song.MasterMetadataAlbumArtistName
-		fmt.Printf("Song %d: %s - %s\n", i, artistName, trackName)
-	}
+
+	// testing session data and also grabbing data to check for normalization
+	// sessionData := session.Get()
+	// for i, song := range sessionData {
+	// 	trackName := song.MasterMetadataTrackName
+	// 	artistName := song.MasterMetadataAlbumArtistName
+	// 	fmt.Printf("Song %d: %s - %s\n", i, artistName, trackName)
+	// }
 
 }

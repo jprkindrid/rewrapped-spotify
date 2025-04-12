@@ -3,8 +3,10 @@ package parser
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -57,9 +59,44 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 			return nil, err
 		}
 
-		allSongs = append(allSongs, songs...)
+		for _, entry := range songs {
+			if normalizeEntry(&entry) {
+				allSongs = append(allSongs, entry)
+			}
+		}
 
 	}
 
 	return allSongs, nil
+}
+
+func normalizeEntry(song *UserSongData) bool {
+	if song.EpisodeName != "" || song.EpisodeShowName != "" {
+		log.Printf("⏩ Skipped podcast: %s — %s (%d ms)", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName, song.MsPlayed)
+		// we dont give a shit about podcasts lol
+		// 3 BAGILLION MORE DOLLARS TO JOE ROGAN
+		return false
+	}
+
+	if song.MasterMetadataTrackName == "" {
+		log.Printf("⏩ Skipped: %s — %s, missing track name", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName)
+		return false
+	}
+
+	if song.MasterMetadataAlbumArtistName == "" {
+		log.Printf("⏩ Skipped: %s — %s, missing artist name", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName)
+		return false
+	}
+
+	// Skip if under 30s (not considered a 'stream' by Spotify)
+	if song.MsPlayed < 30000 {
+		log.Printf("⏩ Skipped: %s — %s (%d ms), under 30s threshold", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName, song.MsPlayed)
+		return false
+	}
+
+	song.MasterMetadataTrackName = strings.TrimSpace(song.MasterMetadataTrackName)
+	song.MasterMetadataAlbumArtistName = strings.TrimSpace(song.MasterMetadataAlbumArtistName)
+	song.MasterMetadataAlbumAlbumName = strings.TrimSpace(song.MasterMetadataAlbumAlbumName)
+
+	return true
 }
