@@ -35,7 +35,9 @@ func main() {
 
 	mux.Handle("/", http.FileServer(http.Dir("./static")))
 
-	mux.HandleFunc("/upload", handlers.UploadHandler)
+	mux.HandleFunc("POST /api/upload", handlers.UploadHandler)
+	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)
+
 	srv := http.Server{
 		Handler:      mux,
 		Addr:         addr,
