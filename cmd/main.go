@@ -45,14 +45,6 @@ func main() {
 		ReadTimeout:  30 * time.Second,
 	}
 
-	// artistID := "5ACAhZZPLo1ukYpA4jLO6u" //Kindrid
-	// requestedArtist, err := spotify.GetArtistData(cachedToken.AccessToken, artistID)
-	// if err != nil {
-	// 	fmt.Printf("error getting requested artist: %v", err)
-	// }
-
-	// fmt.Printf("%+v\n", requestedArtist)
-
 	log.Printf("Server running at http://localhost%s\n", addr)
 	log.Fatal(srv.ListenAndServe())
 }

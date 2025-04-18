@@ -31,14 +31,12 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 📊 Phase 4: Data Analysis (6–8h)
-- [ ] Calculate:
-  - [ ] Top artists
-  - [ ] Top tracks
-  - [ ] Total minutes listened
-  - [ ] Most active time of day / day of week
-- [ ] Optional: generate audio feature-based summaries (if available)
-- [ ] Generate yearly/monthly summaries
-- [ ] Return results as JSON for frontend
+- [✅] Calculate:
+  - [✅] Top artists
+  - [✅] Top tracks
+  - [✅] Total minutes listened
+- [✅] Generate yearly/monthly summaries
+- [✅] Return results as JSON for frontend
 
 ---
 

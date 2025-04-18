@@ -80,15 +80,22 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		endTracks = trackLen
 	}
 
+	var totalTimeListenedMS int
+
+	for _, track := range topTracks {
+		totalTimeListenedMS += track.TotalMs
+	}
+
 	pagedArtists := topArtists[startArtists:endArtists]
 	pagedTracks := topTracks[startTracks:endTracks]
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
-		"offset":              offset,
-		"limit":               limit,
-		"total_artists_count": artistLen,
-		"total_tracks_count":  trackLen,
-		"top_artists":         pagedArtists,
-		"top_tracks":          pagedTracks,
+		"offset":               offset,
+		"limit":                limit,
+		"total_artists_count":  artistLen,
+		"total_tracks_count":   trackLen,
+		"top_artists":          pagedArtists,
+		"top_tracks":           pagedTracks,
+		"total_time_listening": totalTimeListenedMS,
 	})
 }
