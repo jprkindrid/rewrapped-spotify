@@ -13,15 +13,15 @@ import (
 func main() {
 
 	godotenv.Load()
-	devClientID := os.Getenv("DEV_CLIENT_ID")
-	if devClientID == "" {
-		log.Fatal("DEV_CLIENT_ID must be set")
+	spotifyClientID := os.Getenv("SPOTIFY_CLIENT_ID")
+	if spotifyClientID == "" {
+		log.Fatal("SPOTIFY_CLIENT_ID must be set")
 	}
 
 	godotenv.Load()
-	devClientSecret := os.Getenv("DEV_CLIENT_SECRET")
-	if devClientSecret == "" {
-		log.Fatal("DEV_CLIENT_SECRET must be set")
+	spotifyClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
+	if spotifyClientSecret == "" {
+		log.Fatal("SPOTIFY_CLIENT_SECRET must be set")
 	}
 
 	port := os.Getenv("PORT")
@@ -33,7 +33,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/", http.FileServer(http.Dir("./static")))
+	mux.Handle("/", http.FileServer(http.Dir("./web/public")))
 
 	mux.HandleFunc("POST /api/upload", handlers.UploadHandler)
 	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)

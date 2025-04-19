@@ -1,0 +1,20 @@
+/* ─── minimal utility styles ─────────────────────────────── */
+body            { font-family: system-ui, sans-serif; background:#f3f4f6; margin:0; }
+.container      { max-width: 800px; margin: 0 auto; padding: 2rem; }
+h1              { text-align: center; margin-bottom: 2rem; }
+
+.flex-center    { display:flex; align-items:center; justify-content:center; gap:1rem; }
+
+input[type=file]{ padding:.5rem; border:1px solid #ccc; border-radius:4px; }
+
+.btn            { cursor:pointer; padding:.5rem 1rem; border:none; border-radius:4px;
+                  background:#2563eb; color:#fff; font-weight:600; }
+.btn:hover      { background:#1e4fbe; }
+
+.results-grid   { margin-top:2rem; display:grid; gap:1rem; }
+.card           { background:#fff; padding:1rem; border-radius:6px;
+                  box-shadow:0 1px 4px rgba(0,0,0,.1); }
+
+.pagination     { display:flex; justify-content:center; gap:.5rem; margin-top:2rem; }
+.page-btn       { padding:.25rem .75rem; border:none; border-radius:4px; background:#e5e7eb; }
+.page-btn.active{ background:#2563eb; color:#fff; }

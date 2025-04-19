@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotify Wrapped App</title>
+
+  <!-- external stylesheet -->
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>Spotify&nbsp;Wrapped</h1>
+
+    <div class="flex-center">
+      <input type="file" id="zipFileInput" accept=".zip,.json" />
+      <button id="uploadBtn" class="btn">Upload</button>
+    </div>
+
+    <div id="results" class="results-grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
