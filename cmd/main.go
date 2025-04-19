@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/kindiregg/spotify-data-analyzer/internal/auth"
 	"github.com/kindiregg/spotify-data-analyzer/internal/handlers"
 )
 
@@ -18,7 +19,6 @@ func main() {
 		log.Fatal("SPOTIFY_CLIENT_ID must be set")
 	}
 
-	godotenv.Load()
 	spotifyClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
 	if spotifyClientSecret == "" {
 		log.Fatal("SPOTIFY_CLIENT_SECRET must be set")
@@ -31,12 +31,16 @@ func main() {
 	addr := ":" + port
 	// const addr = ":8080"
 
+	auth.NewAuth()
+
 	mux := http.NewServeMux()
 
-	mux.Handle("/", http.FileServer(http.Dir("./web/public")))
+	mux.Handle("/", http.FileServer(http.Dir("./web/static")))
 
 	mux.HandleFunc("POST /api/upload", handlers.UploadHandler)
 	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)
+	mux.HandleFunc("GET /auth/spotify", handlers.LoginHandler)
+	mux.HandleFunc("GET /auth/spotify/callback", handlers.CallbackHandler)
 
 	srv := http.Server{
 		Handler:      mux,

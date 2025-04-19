@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -24,6 +25,11 @@ type CachedToken struct {
 	ExpiresAt   time.Time `json:"expires_at"`
 }
 
+var (
+	appToken   *CachedToken
+	appTokenMU sync.RWMutex
+)
+
 func GetValidToken() (string, error) {
 
 	devClientID := os.Getenv("DEV_CLIENT_ID")
@@ -31,41 +37,33 @@ func GetValidToken() (string, error) {
 	if devClientID == "" || devClientSecret == "" {
 		return "", fmt.Errorf("missing client credentials")
 	}
-	var cachedToken *CachedToken
-	cachedToken, err := LoadCachedToken("token_cache.json")
+	appTokenMU.RLock()
+	token := appToken
+	appTokenMU.RUnlock()
 
-	if err != nil || time.Now().After(cachedToken.ExpiresAt.Add(-1*time.Minute)) {
-		fmt.Println("No valid access token found, fetching new token...")
-		cachedToken, err = GetAccessToken(devClientID, devClientSecret)
-		if err != nil {
-			log.Fatalf("Failed to get access token: %v", err)
-			return "", err
-		}
-	} else {
+	if token != nil && time.Now().After(token.ExpiresAt.Add(-1*time.Minute)) {
 		fmt.Println("using cached token")
+		return token.AccessToken, nil
 	}
 
-	if cachedToken.AccessToken == "" {
+	fmt.Println("No valid access token found, fetching new token...")
+	newToken, err := GetAccessToken(devClientID, devClientSecret)
+	if err != nil {
+		log.Fatalf("Failed to get access token: %v", err)
+		return "", err
+	}
+
+	if token.AccessToken == "" {
 		return "", fmt.Errorf("received empty access token")
 	}
 
-	return cachedToken.AccessToken, nil
+	appTokenMU.Lock()
+	appToken = newToken
+	appTokenMU.Unlock()
+
+	return newToken.AccessToken, nil
 }
 
-func LoadCachedToken(path string) (*CachedToken, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	var token CachedToken
-	err = json.Unmarshal(data, &token)
-	if err != nil {
-		return nil, err
-	}
-
-	return &token, nil
-}
 func GetAccessToken(clientID, clientSecret string) (*CachedToken, error) {
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
