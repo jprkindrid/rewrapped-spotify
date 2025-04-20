@@ -2,6 +2,7 @@ package auth
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gorilla/sessions"
@@ -14,7 +15,7 @@ import (
 const (
 	key    = "wowAKewlKey"
 	MaxAge = 84600 * 30
-	IsPod  = false
+	IsProd = false
 )
 
 func NewAuth() {
@@ -28,16 +29,20 @@ func NewAuth() {
 	store := sessions.NewCookieStore([]byte(key))
 	store.MaxAge(MaxAge)
 
-	store.Options.Path = "/"
-	store.Options.HttpOnly = true
-	store.Options.Secure = IsPod
+	store.Options = &sessions.Options{
+		Path:     "/",
+		Domain:   "127.0.0.1", // ← force it onto 127.0.0.1 only
+		HttpOnly: true,
+		Secure:   false, // plain‐HTTP local dev
+		SameSite: http.SameSiteLaxMode,
+	}
 
 	gothic.Store = store
 
-	callback := "https://localhost:8080/auth/spotify/callback"
+	callback := "http://127.0.0.1:8080/auth/spotify/callback"
 
 	goth.UseProviders(
-		spotify.New(spotifyClientID, spotifyClientSecret, callback),
+		spotify.New(spotifyClientID, spotifyClientSecret, callback, "user-read-email"),
 	)
 
 }

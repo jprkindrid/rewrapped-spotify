@@ -28,15 +28,21 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	addr := ":" + port
+	addr := "127.0.0.1:" + port
 	// const addr = ":8080"
 
 	auth.NewAuth()
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/", http.FileServer(http.Dir("./web/static")))
+	// pages
+	mux.HandleFunc("/", handlers.HomeHandler)
+	mux.HandleFunc("/upload", handlers.UploadPageHandler)
+	mux.Handle("/public/",
+		http.StripPrefix("/public/", http.FileServer(http.Dir("./web/public"))),
+	)
 
+	//api
 	mux.HandleFunc("POST /api/upload", handlers.UploadHandler)
 	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)
 	mux.HandleFunc("GET /auth/spotify", handlers.LoginHandler)
@@ -49,6 +55,6 @@ func main() {
 		ReadTimeout:  30 * time.Second,
 	}
 
-	log.Printf("Server running at http://localhost%s\n", addr)
+	log.Printf("Server running at http://%s\n", addr)
 	log.Fatal(srv.ListenAndServe())
 }

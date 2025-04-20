@@ -8,7 +8,18 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	q.Set("provider", "spotify")
+	r.URL.RawQuery = q.Encode()
+	gothic.BeginAuthHandler(w, r)
+}
+
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	q.Set("provider", "spotify")
+	r.URL.RawQuery = q.Encode()
+
 	user, err := gothic.CompleteUserAuth(w, r)
 
 	if err != nil {
@@ -17,7 +28,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := gothic.Store.Get(r, "auth-session")
+	session, _ := gothic.Store.Get(r, gothic.SessionName)
 	session.Values["user_id"] = user.UserID
 	session.Values["access_token"] = user.AccessToken
 	err = session.Save(r, w)
@@ -28,5 +39,5 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(user)
 
-	http.Redirect(w, r, "http://localhost:8080", http.StatusFound)
+	http.Redirect(w, r, "http://127.0.0.1:8080/upload", http.StatusFound)
 }

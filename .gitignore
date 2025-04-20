@@ -1,5 +1,4 @@
 .env
-*.json
 *.zip
 /tmp
 out

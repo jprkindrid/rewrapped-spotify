@@ -41,9 +41,9 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 🔐 Phase 5: Spotify Authentication (2–4h)
-- [ ] Set up Spotify Developer credentials (Client ID, Secret, Redirect URI)
-- [ ] Create `/login` route to redirect user to Spotify authorization URL
-- [ ] Handle `/callback` route to receive code and exchange it for access token
+- [✅] Set up Spotify Developer credentials (Client ID, Secret, Redirect URI)
+- [✅] Create `/login` route to redirect user to Spotify authorization URL
+- [✅] Handle `/callback` route to receive code and exchange it for access token
 - [ ] Fetch and display user profile (optional)
 - [ ] Store access token for later use (in session/memory)
 
