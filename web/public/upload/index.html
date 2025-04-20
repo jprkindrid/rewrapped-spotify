@@ -5,23 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spotify Wrapped App</title>
 
-  <!-- external stylesheet -->
-  <link rel="stylesheet" href="/public/styles.css" />
+  <link rel="stylesheet" href="/public/upload/styles.css" />
 </head>
-
 <body>
   <div class="container">
     <h1>Spotify&nbsp;Wrapped</h1>
-
-    <div class="flex-center">
-      <input type="file" id="zipFileInput" accept=".zip,.json" />
-      <button id="uploadBtn" class="btn">Upload</button>
-    </div>
-
+    <input type="file" id="zipFileInput" accept=".zip,.json" />
+    <button id="uploadBtn" class="btn">Upload</button>
     <div id="results" class="results-grid"></div>
     <div id="pagination" class="pagination"></div>
   </div>
 
-  <script src="/public/script.js"></script>
+  <script src="/public/upload/script.js"></script>
 </body>
 </html>

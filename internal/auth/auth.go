@@ -31,15 +31,15 @@ func NewAuth() {
 
 	store.Options = &sessions.Options{
 		Path:     "/",
-		Domain:   "127.0.0.1", // ← force it onto 127.0.0.1 only
 		HttpOnly: true,
-		Secure:   false, // plain‐HTTP local dev
+		Secure:   IsProd,
 		SameSite: http.SameSiteLaxMode,
 	}
 
 	gothic.Store = store
 
-	callback := "http://127.0.0.1:8080/auth/spotify/callback"
+	godotenv.Load()
+	callback := os.Getenv("SPOTIFY_REDIRECT_URI")
 
 	goth.UseProviders(
 		spotify.New(spotifyClientID, spotifyClientSecret, callback, "user-read-email"),

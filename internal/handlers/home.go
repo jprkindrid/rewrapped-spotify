@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"path/filepath"
 
@@ -9,15 +8,10 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	s, err := gothic.Store.Get(r, gothic.SessionName)
-	if err != nil {
-		log.Printf("homehandler session error: %v", err)
-		http.Redirect(w, r, "/auth/spotify", http.StatusFound)
-		return
-	}
+	sess, _ := gothic.Store.Get(r, gothic.SessionName)
 
-	if _, ok := s.Values["user_id"]; ok {
-		http.Redirect(w, r, "/auth/spotify", http.StatusFound)
+	if userID, ok := sess.Values["user_id"]; ok && userID != nil {
+		http.Redirect(w, r, "/upload", http.StatusFound)
 		return
 	}
 
@@ -25,10 +19,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UploadPageHandler(w http.ResponseWriter, r *http.Request) {
-	sess, _ := gothic.Store.Get(r, gothic.SessionName)
+	// 1) Load the session
+	sess, err := gothic.Store.Get(r, gothic.SessionName)
+	if err != nil {
+		http.Redirect(w, r, "/auth/spotify", http.StatusFound)
+		return
+	}
+
+	// 2) Check authentication
 	if _, ok := sess.Values["user_id"]; !ok {
 		http.Redirect(w, r, "/auth/spotify", http.StatusFound)
 		return
 	}
+
+	// 3) Serve the upload page
 	http.ServeFile(w, r, "./web/public/upload/index.html")
 }
