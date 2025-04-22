@@ -38,5 +38,5 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/upload", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/upload", http.StatusFound)
 }
