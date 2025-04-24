@@ -50,11 +50,11 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 🗄️ Phase 6: Persistence & Containerization (4–6h)  
-- [ ] Add SQLite driver (`github.com/mattn/go-sqlite3`) to `go.mod`  
-- [ ] Create `db/schema.sql` with a `user_data` table (`user_id TEXT PRIMARY KEY, data BLOB, updated_at DATETIME`)  
-- [ ] Write parameterized queries in `db/queries/*.sql` and configure `sqlc.yaml`  
-- [ ] Run `sqlc generate` to produce type‑safe Go bindings  
-- [ ] Wire up DB initialization in `main.go` (open `userdata.sqlite`, apply `CREATE TABLE IF NOT EXISTS …`)  
+- [✅] Add SQLite driver (`github.com/mattn/go-sqlite3`) to `go.mod`  
+- [✅ ] Create `db/schema.sql` with a `user_data` table (`user_id TEXT PRIMARY KEY, data BLOB, updated_at DATETIME`)  
+- [✅] Write parameterized queries in `db/queries/*.sql` and configure `sqlc.yaml`  
+- [✅ ] Run `sqlc generate` to produce type‑safe Go bindings  
+- [✅] Wire up DB initialization in `main.go` (open `userdata.sqlite`, apply `CREATE TABLE IF NOT EXISTS …`)  
 - [ ] In **UploadHandler**, serialize parsed data to JSON and call `queries.UpsertUserData(ctx, userID, blob)`  
 - [ ] In **SummaryHandler**, call `queries.GetUserData(ctx, userID)`, unmarshal and return analysis JSON  
 - [ ] Write a `Dockerfile` that:  
@@ -62,7 +62,7 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
   - Installs `sqlite3` CLI (for debugging)  
   - Copies in `web/`, `db/migrations/`, and your binary  
   - Uses an entrypoint script to run Goose migrations or `CREATE TABLE IF NOT EXISTS` before starting  
-- [ ] (Optional) Add `docker-compose.yml` mounting `./data:/app/data` so `userdata.sqlite` persists across restarts  
+- [ ] (Optional) Add `docker-compose.yml` mounting `./data:/data` so `userdata.sqlite` persists across restarts  
 - [ ] Test the Docker container end‑to‑end: upload, query summary, then restart and verify data still there  
 
 ---

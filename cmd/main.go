@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -8,7 +9,10 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kindiregg/spotify-data-analyzer/internal/auth"
+	"github.com/kindiregg/spotify-data-analyzer/internal/database"
 	"github.com/kindiregg/spotify-data-analyzer/internal/handlers"
+	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -24,10 +28,28 @@ func main() {
 		log.Fatal("SPOTIFY_CLIENT_SECRET must be set")
 	}
 
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		log.Fatal("DB_PATH must be set")
+	}
+
+	dbConn, err := sql.Open("sqlite3", dbPath)
+	if err != nil {
+		log.Fatalf("Error opening database: %s", err)
+	}
+
+	dbQueries := database.New(dbConn)
+
+	// initializing config in utils package so database can be passed without handlers being methods of config
+	utils.InitConfig(&utils.Config{
+		DB: dbQueries,
+	})
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+
 	addr := "127.0.0.1:" + port
 	// const addr = ":8080"
 

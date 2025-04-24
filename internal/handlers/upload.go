@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"database/sql"
+	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -8,9 +11,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/uuid"
+	"github.com/kindiregg/spotify-data-analyzer/internal/database"
 	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
 	"github.com/kindiregg/spotify-data-analyzer/internal/session"
 	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
+	"github.com/markbates/goth/gothic"
 )
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,14 +61,20 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		session.Store(parsedData)
+		dbUser, err := storeDataInDB(r, parsedData)
+		if err != nil {
+			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
+		}
 
 		log.Println("Extracted:", outPath)
 
 		os.Remove(outPath)
 
 		utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
-			"message": "JSON filr processed succesfully",
+			"message": "JSON file processed succesfully",
 			"path":    outPath,
+			"user":    dbUser.SpotifyID,
+			"data":    dbUser.Data,
 		})
 
 	case ".zip":
@@ -82,26 +94,66 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		session.Store(parsedData)
+		dbUser, err := storeDataInDB(r, parsedData)
+		if err != nil {
+			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
+		}
 
 		for _, path := range paths {
 			os.Remove(path)
 		}
 
-		utils.RespondWithJSON(w, http.StatusAccepted, map[string]interface{}{
+		utils.RespondWithJSON(w, http.StatusAccepted, map[string]any{
 			"message": "ZIP processed successfully",
 			"files":   paths,
+			"user":    dbUser.SpotifyID,
+			"data":    dbUser.Data,
 		})
 
 	default:
 		utils.RespondWithError(w, http.StatusBadRequest, "Only .json and .zip files are supported", nil)
 	}
 
-	// testing session data and also grabbing data to check for normalization
-	// sessionData := session.Get()
-	// for i, song := range sessionData {
-	// 	trackName := song.MasterMetadataTrackName
-	// 	artistName := song.MasterMetadataAlbumArtistName
-	// 	fmt.Printf("Song %d: %s - %s\n", i, artistName, trackName)
-	// }
+}
 
+func storeDataInDB(r *http.Request, data []parser.UserSongData) (database.User, error) {
+	ctx := r.Context()
+
+	sess, err := gothic.Store.Get(r, gothic.SessionName)
+	if err != nil {
+		log.Printf("Session error: %v", err)
+		return database.User{}, err
+	}
+
+	spotifyID, _ := sess.Values["user_id"].(string)
+	if spotifyID == "" {
+		return database.User{}, errors.New("no user ID in session")
+	}
+
+	blob, err := json.Marshal(data)
+	if err != nil {
+		return database.User{}, err
+	}
+	blobText := string(blob)
+
+	existing, err := utils.Cfg.DB.GetUserData(ctx, spotifyID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// no existing user → create new
+			newID := uuid.New().String()
+			return utils.Cfg.DB.CreateUser(ctx, database.CreateUserParams{
+				ID:        newID,
+				SpotifyID: spotifyID,
+				Data:      blobText,
+			})
+		}
+		// any other error is fatal
+		return database.User{}, err
+	}
+
+	// existing found → update
+	return utils.Cfg.DB.UpdateUser(ctx, database.UpdateUserParams{
+		ID:   existing.ID,
+		Data: blobText,
+	})
 }

@@ -2,3 +2,4 @@
 *.zip
 /tmp
 out
+data/userdata.sqlite
