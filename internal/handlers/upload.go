@@ -14,7 +14,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/kindiregg/spotify-data-analyzer/internal/database"
 	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
-	"github.com/kindiregg/spotify-data-analyzer/internal/session"
 	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
@@ -60,7 +59,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 			utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json file", err)
 		}
 
-		session.Store(parsedData)
 		dbUser, err := storeDataInDB(r, parsedData)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
@@ -93,7 +91,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 			utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json files", err)
 		}
 
-		session.Store(parsedData)
 		dbUser, err := storeDataInDB(r, parsedData)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)

@@ -51,12 +51,12 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 
 ### 🗄️ Phase 6: Persistence & Containerization (4–6h)  
 - [✅] Add SQLite driver (`github.com/mattn/go-sqlite3`) to `go.mod`  
-- [✅ ] Create `db/schema.sql` with a `user_data` table (`user_id TEXT PRIMARY KEY, data BLOB, updated_at DATETIME`)  
+- [✅] Create `db/schema.sql` with a `user_data` table (`user_id TEXT PRIMARY KEY, data BLOB, updated_at DATETIME`)  
 - [✅] Write parameterized queries in `db/queries/*.sql` and configure `sqlc.yaml`  
-- [✅ ] Run `sqlc generate` to produce type‑safe Go bindings  
+- [✅] Run `sqlc generate` to produce type‑safe Go bindings  
 - [✅] Wire up DB initialization in `main.go` (open `userdata.sqlite`, apply `CREATE TABLE IF NOT EXISTS …`)  
-- [ ] In **UploadHandler**, serialize parsed data to JSON and call `queries.UpsertUserData(ctx, userID, blob)`  
-- [ ] In **SummaryHandler**, call `queries.GetUserData(ctx, userID)`, unmarshal and return analysis JSON  
+- [✅] In **UploadHandler**, serialize parsed data to JSON and call `queries.UpdateUserData(ctx, userID, blob)`  
+- [✅] In **SummaryHandler**, call `queries.GetUserData(ctx, userID)`, unmarshal and return analysis JSON  
 - [ ] Write a `Dockerfile` that:  
   - Builds the Go binary (incl. running `sqlc generate` if desired)  
   - Installs `sqlite3` CLI (for debugging)  

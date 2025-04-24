@@ -1,20 +1,41 @@
 package handlers
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/kindiregg/spotify-data-analyzer/internal/session"
+	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
 	"github.com/kindiregg/spotify-data-analyzer/internal/summary"
 	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
+	"github.com/markbates/goth/gothic"
 )
 
 func SummaryHandler(w http.ResponseWriter, r *http.Request) {
-	data := session.Get()
-	if len(data) == 0 {
-		utils.RespondWithError(w, http.StatusBadRequest, "no data to summarize", nil)
+	ctx := r.Context()
+
+	sess, err := gothic.Store.Get(r, gothic.SessionName)
+	if err != nil {
+		log.Printf("Session error: %v", err)
 		return
+	}
+
+	spotifyID, _ := sess.Values["user_id"].(string)
+	if spotifyID == "" {
+		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", err)
+		return
+	}
+
+	dbUser, err := utils.Cfg.DB.GetUserData(ctx, spotifyID)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusNotFound, "user data not found", err)
+		return
+	}
+	var data []parser.UserSongData
+	if err := json.Unmarshal([]byte(dbUser.Data), &data); err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "failed to parse user data from database", err)
 	}
 
 	startStr := r.URL.Query().Get("start")
@@ -22,7 +43,6 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 
 	var timeStart time.Time
 	var timeEnd time.Time
-	var err error
 	if startStr == "" {
 		timeStart = time.Time{}
 	} else {
