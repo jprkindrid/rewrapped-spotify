@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080"  # Map to localhost only for Spotify OAuth
+    volumes:
+      - ./data:/data  # Mount at /data instead of /app/data to match cmd/main.go
+    env_file:
+      - .env
+    environment:
+      - DOCKER=1
+    restart: unless-stopped

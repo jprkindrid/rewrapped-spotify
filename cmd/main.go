@@ -17,7 +17,10 @@ import (
 
 func main() {
 
-	godotenv.Load()
+	if os.Getenv("DOCKER") == "" {
+		_ = godotenv.Load()
+	}
+
 	spotifyClientID := os.Getenv("SPOTIFY_CLIENT_ID")
 	if spotifyClientID == "" {
 		log.Fatal("SPOTIFY_CLIENT_ID must be set")
@@ -33,7 +36,7 @@ func main() {
 		log.Fatal("DB_PATH must be set")
 	}
 
-	dbConn, err := sql.Open("sqlite3", dbPath)
+	dbConn, err := sql.Open("sqlite3", "/data/userdata.sqlite")
 	if err != nil {
 		log.Fatalf("Error opening database: %s", err)
 	}
@@ -53,6 +56,9 @@ func main() {
 	addr := "127.0.0.1:" + port
 	// const addr = ":8080"
 
+	if os.Getenv("DOCKER") != "" {
+		addr = "0.0.0.0:8080"
+	}
 	auth.NewAuth()
 
 	mux := http.NewServeMux()
@@ -78,5 +84,6 @@ func main() {
 	}
 
 	log.Printf("Server running at http://%s\n", addr)
+
 	log.Fatal(srv.ListenAndServe())
 }
