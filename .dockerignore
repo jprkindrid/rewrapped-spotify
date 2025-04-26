@@ -1,0 +1,35 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+out
+
+# Go build artifacts
+/app/app
+/app/cmd/app
+/app/cmd/*.exe
+/app/cmd/*.out
+sqlc.yaml
+
+# Git
+.git
+.gitignore
+
+# Environment files (if you don't want them in the image)
+.env
+.env.*
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# SQLite database (if you don't want to copy a local dev DB)
+*.db
+*.sqlite
+*.sqlite3
+data/
