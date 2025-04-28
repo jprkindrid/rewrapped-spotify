@@ -37,11 +37,11 @@ type UserSongData struct {
 func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 	var allSongs []UserSongData
 
-	for _, path := range filePaths {
+	for i, path := range filePaths {
 		if filepath.Ext(path) != ".json" {
 			continue
 		}
-		log.Println("Processing uploaded json...")
+		log.Printf("Processing uploaded json %d...", i+1)
 
 		jsonFile, err := os.Open(path)
 		if err != nil {
@@ -59,18 +59,15 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 		if err != nil {
 			return nil, err
 		}
-		var skippedEntries []string
+
 		for _, entry := range songs {
 			if normalizeEntry(&entry) {
 				allSongs = append(allSongs, entry)
-			} else {
-				skipped := entry.MasterMetadataAlbumArtistName + " - " + entry.MasterMetadataTrackName
-				skippedEntries = append(skippedEntries, skipped)
 			}
 		}
-		log.Printf("Skipped entries: %v, %v, %v, ...", skippedEntries[0], skippedEntries[1], skippedEntries[2])
-
 	}
+
+	log.Println("All json processed")
 
 	return allSongs, nil
 }
@@ -84,18 +81,15 @@ func normalizeEntry(song *UserSongData) bool {
 	}
 
 	if song.MasterMetadataTrackName == "" {
-		// log.Printf("⏩ Skipped: %s — %s, missing track name", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName)
 		return false
 	}
 
 	if song.MasterMetadataAlbumArtistName == "" {
-		// log.Printf("⏩ Skipped: %s — %s, missing artist name", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName)
 		return false
 	}
 
 	// Skip if under 30s (not considered a 'stream' by Spotify)
 	if song.MsPlayed < 30000 {
-		// log.Printf("⏩ Skipped: %s — %s (%d ms), under 30s threshold", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName, song.MsPlayed)
 		return false
 	}
 

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Data - Spotify Data Analyzer</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -28,7 +27,7 @@
                         <label for="file-upload" class="file-input-label">
                             <span>Choose Files</span>
                         </label>
-                        <input type="file" id="file-upload" name="files" multiple accept=".json">
+                        <input type="file" id="file-upload" name="file" multiple accept=".json,.zip">
                         <div id="file-names">No files selected</div>
                     </div>
                     <button type="submit" id="upload-button" class="button">Analyze Data</button>
@@ -84,12 +83,12 @@
                 
                 <div class="card">
                     <h2>Top Artists</h2>
-                    <canvas id="artists-chart"></canvas>
+                    <div id="artists-chart"></div>
                 </div>
                 
                 <div class="card">
                     <h2>Top Tracks</h2>
-                    <canvas id="tracks-chart"></canvas>
+                    <div id="tracks-chart"></div>
                 </div>
             </section>
         </main>

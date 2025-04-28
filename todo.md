@@ -68,13 +68,10 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 💻 Phase 7: Frontend Visualization (8–10h)  
-- [ ] Build dashboard UI in vanilla JS  
+- [✅ ] Build dashboard UI in vanilla JS  
 - [ ] Display:  
   - [ ] Top artists (bar chart or cards)  
-  - [ ] Listening patterns over time (line/heatmap)  
-  - [ ] Total minutes / most active periods (donut/pie)  
-  - [ ] Searchable table of tracks (filter by artist/date)  
-- [ ] Add animation or scroll transitions ("Wrapped" style)  
+  - [ ] Total minutes 
 - [ ] Allow reset / upload another ZIP  
 
 ---

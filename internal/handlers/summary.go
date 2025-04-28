@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,31 +14,21 @@ import (
 
 func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log.Printf("[SummaryHandler] Cookies: %+v", r.Cookies())
 
-	// Get existing session
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
 	if err != nil {
-		log.Printf("[SummaryHandler] Session error: %v", err)
 		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
 		return
 	}
 
-	log.Printf("[SummaryHandler] Session values: %+v", sess.Values)
-
 	userID, ok := sess.Values["user_id"].(string)
 	if !ok || userID == "" {
-		log.Printf("[SummaryHandler] No valid user_id in session! Values: %+v", sess.Values)
 		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", nil)
 		return
 	}
 
-	log.Printf("[SummaryHandler] Found user_id: %s", userID)
-
-	// Get user data from database
 	dbUser, err := utils.Cfg.DB.GetUserData(ctx, userID)
 	if err != nil {
-		log.Printf("[SummaryHandler] Database error: %v", err)
 		utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)
 		return
 	}
@@ -96,18 +85,16 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	startTracks := offset
 	endArtists := offset + limit
 	endTracks := offset + limit
+
 	if startArtists > artistLen {
 		startArtists = artistLen - limit
 	}
-
 	if endArtists > artistLen {
 		endArtists = artistLen
 	}
-
 	if startTracks > trackLen {
 		startTracks = trackLen - limit
 	}
-
 	if endTracks > trackLen {
 		endTracks = trackLen
 	}
@@ -119,9 +106,6 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 
 	pagedArtists := topArtists[startArtists:endArtists]
 	pagedTracks := topTracks[startTracks:endTracks]
-
-	log.Printf("TOP TRACKS TEST: %v", pagedTracks)
-	log.Printf("TOP ARTIST TEST: %v", pagedArtists)
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
 		"offset":               offset,
