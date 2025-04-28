@@ -36,7 +36,7 @@ func main() {
 		log.Fatal("DB_PATH must be set")
 	}
 
-	dbConn, err := sql.Open("sqlite3", "/data/userdata.sqlite")
+	dbConn, err := sql.Open("sqlite3", "data/userdata.sqlite")
 	if err != nil {
 		log.Fatalf("Error opening database: %s", err)
 	}
