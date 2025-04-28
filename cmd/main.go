@@ -53,8 +53,9 @@ func main() {
 		port = "8080"
 	}
 
-	addr := "127.0.0.1:" + port
-	// const addr = ":8080"
+	// addr := "127.0.0.1:" + port
+	// debugging
+	addr := "127.0.0.1:8080"
 
 	if os.Getenv("DOCKER") != "" {
 		addr = "0.0.0.0:8080"
