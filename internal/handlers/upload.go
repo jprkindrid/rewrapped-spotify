@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -118,12 +119,13 @@ func storeDataInDB(r *http.Request, data []parser.UserSongData) (database.User, 
 
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
 	if err != nil {
-		log.Printf("Session error: %v", err)
+		log.Printf("[storeDataInDB] Session error: %v", err)
 		return database.User{}, err
 	}
 
-	spotifyID, _ := sess.Values["user_id"].(string)
-	if spotifyID == "" {
+	spotifyID, ok := sess.Values["user_id"].(string)
+	if !ok || spotifyID == "" {
+		log.Printf("[storeDataInDB] No valid user_id in session! Values: %+v", sess.Values)
 		return database.User{}, errors.New("no user ID in session")
 	}
 
@@ -138,19 +140,28 @@ func storeDataInDB(r *http.Request, data []parser.UserSongData) (database.User, 
 		if errors.Is(err, sql.ErrNoRows) {
 			// no existing user → create new
 			newID := uuid.New().String()
-			return utils.Cfg.DB.CreateUser(ctx, database.CreateUserParams{
+			newUser, err := utils.Cfg.DB.CreateUser(ctx, database.CreateUserParams{
 				ID:        newID,
 				SpotifyID: spotifyID,
 				Data:      blobText,
 			})
+			if err != nil {
+				return database.User{}, fmt.Errorf("error creating new user: %w", err)
+			}
+			return newUser, nil
 		}
 		// any other error is fatal
-		return database.User{}, err
+		return database.User{}, fmt.Errorf("error checking for existing user: %w", err)
 	}
 
 	// existing found → update
-	return utils.Cfg.DB.UpdateUser(ctx, database.UpdateUserParams{
+	updatedUser, err := utils.Cfg.DB.UpdateUser(ctx, database.UpdateUserParams{
 		ID:   existing.ID,
 		Data: blobText,
 	})
+	if err != nil {
+		return database.User{}, fmt.Errorf("error updating user: %w", err)
+	}
+
+	return updatedUser, nil
 }

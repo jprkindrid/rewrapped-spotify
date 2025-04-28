@@ -357,3 +357,42 @@ footer {
         margin: 0.5rem 0;
     }
 }
+
+.top-list {
+    list-style-position: inside;
+    padding: 0;
+    margin: 0;
+}
+
+.top-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-list li:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: 500;
+    flex: 1;
+}
+
+.item-count {
+    color: #1DB954;
+    font-weight: bold;
+}
+
+#results-container {
+    margin-top: 20px;
+}
+
+.results-text {
+    font-family: monospace;
+    font-size: 14px;
+    white-space: pre;
+    padding: 20px;
+}

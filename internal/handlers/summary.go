@@ -15,27 +15,39 @@ import (
 
 func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	log.Printf("[SummaryHandler] Cookies: %+v", r.Cookies())
 
+	// Get existing session
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
 	if err != nil {
-		log.Printf("Session error: %v", err)
+		log.Printf("[SummaryHandler] Session error: %v", err)
+		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
 		return
 	}
 
-	spotifyID, _ := sess.Values["user_id"].(string)
-	if spotifyID == "" {
-		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", err)
+	log.Printf("[SummaryHandler] Session values: %+v", sess.Values)
+
+	userID, ok := sess.Values["user_id"].(string)
+	if !ok || userID == "" {
+		log.Printf("[SummaryHandler] No valid user_id in session! Values: %+v", sess.Values)
+		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", nil)
 		return
 	}
 
-	dbUser, err := utils.Cfg.DB.GetUserData(ctx, spotifyID)
+	log.Printf("[SummaryHandler] Found user_id: %s", userID)
+
+	// Get user data from database
+	dbUser, err := utils.Cfg.DB.GetUserData(ctx, userID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusNotFound, "user data not found", err)
+		log.Printf("[SummaryHandler] Database error: %v", err)
+		utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)
 		return
 	}
+
 	var data []parser.UserSongData
 	if err := json.Unmarshal([]byte(dbUser.Data), &data); err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "failed to parse user data from database", err)
+		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to parse user data from database", err)
+		return
 	}
 
 	startStr := r.URL.Query().Get("start")
@@ -101,13 +113,15 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var totalTimeListenedMS int
-
 	for _, track := range topTracks {
 		totalTimeListenedMS += track.TotalMs
 	}
 
 	pagedArtists := topArtists[startArtists:endArtists]
 	pagedTracks := topTracks[startTracks:endTracks]
+
+	log.Printf("TOP TRACKS TEST: %v", pagedTracks)
+	log.Printf("TOP ARTIST TEST: %v", pagedArtists)
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
 		"offset":               offset,

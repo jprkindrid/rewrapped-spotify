@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"encoding/gob"
+	"log"
 	"net/http"
 	"os"
 
@@ -12,36 +14,57 @@ import (
 )
 
 const (
-	key    = "wowAKewlKey"
-	MaxAge = 84600 * 30
-	IsProd = false
+	MaxAge = 86400 * 30 // 30 days
 )
 
 func NewAuth() {
+	// Load env only once
 	if os.Getenv("DOCKER") == "" {
-		_ = godotenv.Load()
+		if err := godotenv.Load(); err != nil {
+			log.Printf("Warning: Error loading .env file: %v", err)
+		}
 	}
 
 	spotifyClientID := os.Getenv("SPOTIFY_CLIENT_ID")
 	spotifyClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
+	callback := os.Getenv("SPOTIFY_REDIRECT_URI")
 
-	store := sessions.NewCookieStore([]byte(key))
-	store.MaxAge(MaxAge)
+	if spotifyClientID == "" || spotifyClientSecret == "" || callback == "" {
+		log.Fatal("Missing required Spotify credentials in environment")
+	}
 
+	// Use a consistent key for sessions
+	sessionKey := []byte("spotify-data-analyzer-session-key-v1")
+	store := sessions.NewCookieStore(sessionKey)
+
+	// Set consistent session options
 	store.Options = &sessions.Options{
 		Path:     "/",
+		MaxAge:   MaxAge,
 		HttpOnly: true,
-		Secure:   IsProd,
+		Secure:   false, // Must be false for localhost HTTP
 		SameSite: http.SameSiteLaxMode,
 	}
 
+	// Register all types we store in sessions
+	gob.Register(map[string]any{})
+	gob.Register([]any{})
+	gob.Register("")
+	gob.Register(true)
+
+	// Configure Gothic to use our store
 	gothic.Store = store
 
-	godotenv.Load()
-	callback := os.Getenv("SPOTIFY_REDIRECT_URI")
-
+	// Configure Spotify OAuth provider with additional scopes
 	goth.UseProviders(
-		spotify.New(spotifyClientID, spotifyClientSecret, callback, "user-read-email"),
+		spotify.New(
+			spotifyClientID,
+			spotifyClientSecret,
+			callback,
+			"user-read-email",
+			"user-read-private",
+		),
 	)
 
+	log.Printf("[NewAuth] Initialized auth with provider=spotify, callback=%s", callback)
 }

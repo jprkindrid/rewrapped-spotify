@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Handle form submission
-    uploadForm.addEventListener('submit', function(e) {
+    uploadForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         if (fileUpload.files.length === 0) {
@@ -49,24 +49,25 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadStatus.classList.remove('hidden');
         uploadButton.disabled = true;
         
-        // Create FormData object
-        const formData = new FormData();
-        for (let i = 0; i < fileUpload.files.length; i++) {
-            formData.append('files', fileUpload.files[i]);
-        }
-        
-        // Send data to server
-        fetch('/api/analyze', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
+        try {
+            // Create FormData object
+            const formData = new FormData();
+            for (let i = 0; i < fileUpload.files.length; i++) {
+                formData.append('files', fileUpload.files[i]);
+            }
+            
+            // Send data to server
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();
-        })
-        .then(data => {
+            const data = await response.json();
+            
             // Hide loading state
             uploadStatus.classList.add('hidden');
             
@@ -76,13 +77,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show results section
             uploadSection.classList.add('hidden');
             resultsSection.classList.remove('hidden');
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error:', error);
             uploadStatus.classList.add('hidden');
             uploadButton.disabled = false;
             alert('Error processing your data. Please try again.');
-        });
+        }
     });
     
     // Function to display results
