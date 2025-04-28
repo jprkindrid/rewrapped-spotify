@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data - Spotify Data Analyzer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Spotify Data Analyzer</h1>
+            <p>Upload and analyze your Spotify data</p>
+            <nav>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/upload" class="nav-link active">Upload & Analyze</a>
+            </nav>
+        </header>
+        
+        <main>
+            <section id="upload-section" class="card">
+                <h2>Upload Your Data</h2>
+                <p>Upload the streaming history JSON files from your Spotify data download.</p>
+                
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="file-input-container">
+                        <label for="file-upload" class="file-input-label">
+                            <span>Choose Files</span>
+                        </label>
+                        <input type="file" id="file-upload" name="files" multiple accept=".json">
+                        <div id="file-names">No files selected</div>
+                    </div>
+                    <button type="submit" id="upload-button" class="button">Analyze Data</button>
+                </form>
+                
+                <div id="upload-status" class="hidden">
+                    <div class="loader"></div>
+                    <p>Processing your data...</p>
+                </div>
+            </section>
+            
+            <section id="analysis-section" class="card">
+                <h2>Data Analysis</h2>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="start-date">Start Date:</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="end-date">End Date:</label>
+                        <input type="date" id="end-date">
+                    </div>
+                    <button id="apply-filters" class="button">Apply Filters</button>
+                    <button id="reset-filters" class="button button-secondary">Reset</button>
+                </div>
+                
+                <div class="pagination">
+                    <button id="prev-page" class="button pagination-button" disabled>Previous</button>
+                    <span id="page-info">Page 1</span>
+                    <button id="next-page" class="button pagination-button" disabled>Next</button>
+                </div>
+            </section>
+            
+            <section id="results-section" class="hidden">
+                <div class="card">
+                    <h2>Your Listening Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Tracks</h3>
+                            <p id="total-tracks">-</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Artists</h3>
+                            <p id="total-artists">-</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Listening Time</h3>
+                            <p id="total-time">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Top Artists</h2>
+                    <canvas id="artists-chart"></canvas>
+                </div>
+                
+                <div class="card">
+                    <h2>Top Tracks</h2>
+                    <canvas id="tracks-chart"></canvas>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Created with <a href="https://github.com/kindiregg/spotify-data-analyzer" target="_blank">spotify-data-analyzer</a></p>
+        </footer>
+    </div>
+    
+    <script src="/static/js/upload.js"></script>
+</body>
+</html>
