@@ -1,173 +1,231 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get DOM elements
+    // DOM elements
     const uploadForm = document.getElementById('upload-form');
     const fileUpload = document.getElementById('file-upload');
     const fileNames = document.getElementById('file-names');
     const uploadButton = document.getElementById('upload-button');
     const uploadStatus = document.getElementById('upload-status');
     const resultsSection = document.getElementById('results-section');
-    
-    // Create a results container if it doesn't exist
-    let resultsContainer = document.getElementById('results-container');
-    if (!resultsContainer) {
-        resultsContainer = document.createElement('div');
-        resultsContainer.id = 'results-container';
-        resultsSection.appendChild(resultsContainer);
-    }
-    
-    // Handle file selection
+    const totalTracksElement = document.getElementById('total-tracks');
+    const totalArtistsElement = document.getElementById('total-artists');
+    const totalTimeElement = document.getElementById('total-time');
+    const artistsChartElement = document.getElementById('artists-chart');
+    const tracksChartElement = document.getElementById('tracks-chart');
+  
+    // Filters and pagination
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const applyFiltersBtn = document.getElementById('apply-filters');
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const pageInfoSpan = document.getElementById('page-info');
+  
+    // Pagination state
+    const PAGE_SIZE = 10;
+    let currentPage = 1;
+    let totalPages = 1;
+  
+    // --- File selection ---
     fileUpload.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            let names = Array.from(this.files).map(file => file.name).join(', ');
-            fileNames.textContent = names;
-            uploadButton.disabled = false;
-        } else {
-            fileNames.textContent = 'No files selected';
-            uploadButton.disabled = true;
-        }
-    });
-    
-    // Handle form submission
-    uploadForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        if (fileUpload.files.length === 0) {
-            alert('Please select at least one file to upload');
-            return;
-        }
-        
-        // Show loading state
-        uploadStatus.classList.remove('hidden');
+      if (this.files.length > 0) {
+        let names = Array.from(this.files).map(file => file.name).join(', ');
+        fileNames.textContent = names;
+        uploadButton.disabled = false;
+      } else {
+        fileNames.textContent = 'No files selected';
         uploadButton.disabled = true;
-        
-        try {
-            // Create FormData object
-            const formData = new FormData();
-            
-            // Use 'file' as the field name as expected by the server
-            for (let i = 0; i < fileUpload.files.length; i++) {
-                formData.append('file', fileUpload.files[i]);
-            }
-            
-            // Send data to server
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            });
-            
-            // Get the response as text first for debugging
-            const text = await response.text();
-            
-            // Try to parse as JSON
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                data = { error: 'Failed to parse response as JSON', rawResponse: text };
-            }
-            
-            // Hide loading state
-            uploadStatus.classList.add('hidden');
-            uploadButton.disabled = false;
-            
-            // Reset file input
-            fileUpload.value = '';
-            fileNames.textContent = 'No files selected';
-            
-            // Show results section
-            resultsSection.classList.remove('hidden');
-            
-            // Display the upload response
-            displayUploadResponse(data);
-            
-            // If it was successful, fetch and display the summary data
-            if (!data.error) {
-                await fetchAndDisplaySummary();
-            }
-        } catch (error) {
-            uploadStatus.classList.add('hidden');
-            uploadButton.disabled = false;
-            displayError(error.message);
-        }
+      }
     });
-    
-    function displayUploadResponse(data) {
-        const uploadDiv = document.createElement('div');
-        uploadDiv.className = 'response-section';
-        uploadDiv.innerHTML = `
-            <h3>Upload Response:</h3>
-            <pre style="margin-top: 10px;">${JSON.stringify(data, null, 2)}</pre>
-        `;
-        resultsContainer.innerHTML = '';
-        resultsContainer.appendChild(uploadDiv);
-    }
-    
-    function displayError(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'response-section';
-        errorDiv.innerHTML = `
-            <h3>Error:</h3>
-            <pre style="margin-top: 10px; color: red;">${message}</pre>
-        `;
-        resultsContainer.innerHTML = '';
-        resultsContainer.appendChild(errorDiv);
-    }
-    
-    async function fetchAndDisplaySummary() {
-        const summaryDiv = document.createElement('div');
-        summaryDiv.className = 'response-section';
-        summaryDiv.innerHTML = '<h3>Summary Data:</h3><p>Loading...</p>';
-        resultsContainer.appendChild(summaryDiv);
-        
-        try {
-            const response = await fetch('/api/summary', {
-                credentials: 'include'
-            });
-            
-            const text = await response.text();
-            
-            let data;
-            try {
-                data = JSON.parse(text);
-                
-                // Create a formatted summary display
-                let summaryHtml = '<h3>Summary Data:</h3>';
-                
-                // Add top artists section
-                summaryHtml += '<h4 style="margin-top: 20px;">Top Artists:</h4><ul>';
-                for (const artist of data.top_artists) {
-                    const minutes = Math.floor(artist.TotalMs / 60000);
-                    summaryHtml += `<li>${artist.Name} - ${minutes} minutes (${artist.Count} plays)</li>`;
-                }
-                summaryHtml += '</ul>';
-                
-                // Add top tracks section
-                summaryHtml += '<h4 style="margin-top: 20px;">Top Tracks:</h4><ul>';
-                for (const track of data.top_tracks) {
-                    const minutes = Math.floor(track.TotalMs / 60000);
-                    summaryHtml += `<li>${track.Name} - ${minutes} minutes (${track.Count} plays)</li>`;
-                }
-                summaryHtml += '</ul>';
-                
-                // Add total listening time
-                const totalHours = Math.floor(data.total_time_listening / (60000 * 60));
-                const totalMinutes = Math.floor((data.total_time_listening % (60000 * 60)) / 60000);
-                summaryHtml += `<h4 style="margin-top: 20px;">Total Listening Time:</h4>`;
-                summaryHtml += `<p>${totalHours} hours and ${totalMinutes} minutes</p>`;
-                
-                summaryDiv.innerHTML = summaryHtml;
-            } catch (e) {
-                summaryDiv.innerHTML = `
-                    <h3>Summary Data:</h3>
-                    <pre style="margin-top: 10px;">${text}</pre>
-                `;
-            }
-        } catch (error) {
-            summaryDiv.innerHTML = `
-                <h3>Summary Data:</h3>
-                <p style="color: red;">Error: ${error.message}</p>
-            `;
+  
+    // --- File upload ---
+    uploadForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (fileUpload.files.length === 0) {
+        alert('Please select at least one file to upload');
+        return;
+      }
+      uploadStatus.classList.remove('hidden');
+      uploadButton.disabled = true;
+      try {
+        const formData = new FormData();
+        for (let i = 0; i < fileUpload.files.length; i++) {
+          formData.append('file', fileUpload.files[i]);
         }
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+        const data = await response.json();
+        uploadStatus.classList.add('hidden');
+        uploadButton.disabled = false;
+        fileUpload.value = '';
+        fileNames.textContent = 'No files selected';
+        resultsSection.classList.remove('hidden');
+        if (!data.error) {
+            // Reset filters and pagination on new upload
+            startDateInput.value = '';
+            endDateInput.value = '';
+            currentPage = 1;
+            await fetchAndDisplaySummary();
+          } else {
+            displayNoUserData();
+          }
+          
+      } catch (error) {
+        uploadStatus.classList.add('hidden');
+        uploadButton.disabled = false;
+        displayNoUserData();
+      }
+    });
+  
+    // --- Filters ---
+    applyFiltersBtn.addEventListener('click', function() {
+      const startDate = startDateInput.value;
+      const endDate = endDateInput.value;
+      if (startDate && endDate) {
+        currentPage = 1;
+        fetchAndDisplaySummary(startDate, endDate, currentPage);
+      } else {
+        alert('Please select both start and end dates');
+      }
+    });
+    resetFiltersBtn.addEventListener('click', function() {
+      startDateInput.value = '';
+      endDateInput.value = '';
+      currentPage = 1;
+      fetchAndDisplaySummary();
+    });
+  
+    // --- Pagination ---
+    prevPageBtn.addEventListener('click', function() {
+      if (currentPage > 1) {
+        currentPage--;
+        fetchAndDisplaySummary(startDateInput.value, endDateInput.value, currentPage);
+      }
+    });
+    nextPageBtn.addEventListener('click', function() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        fetchAndDisplaySummary(startDateInput.value, endDateInput.value, currentPage);
+      }
+    });
+  
+    function updatePagination(newTotalPages = 1) {
+      totalPages = newTotalPages;
+      pageInfoSpan.textContent = `Page ${currentPage}${totalPages > 0 ? ` of ${totalPages}` : ''}`;
+      prevPageBtn.disabled = currentPage <= 1;
+      nextPageBtn.disabled = currentPage >= totalPages;
     }
-});
+  
+    // --- Display functions ---
+    function displayNoUserData() {
+      totalTracksElement.textContent = '-';
+      totalArtistsElement.textContent = '-';
+      totalTimeElement.textContent = '-';
+      artistsChartElement.innerHTML = '<p>No user data</p>';
+      tracksChartElement.innerHTML = '<p>No user data</p>';
+      updatePagination(1);
+    }
+  
+    function displayTopArtists(artists) {
+      artistsChartElement.innerHTML = '';
+      if (!artists.length) {
+        artistsChartElement.innerHTML = '<p>No user data</p>';
+        return;
+      }
+      const list = document.createElement('ul');
+      list.className = 'stats-list';
+      artists.forEach(artist => {
+        const minutes = Math.floor(artist.TotalMs / 60000);
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${artist.Name}</strong> - ${minutes} minutes (${artist.Count} plays)`;
+        list.appendChild(li);
+      });
+      artistsChartElement.appendChild(list);
+    }
+  
+    function displayTopTracks(tracks) {
+      tracksChartElement.innerHTML = '';
+      if (!tracks.length) {
+        tracksChartElement.innerHTML = '<p>No user data</p>';
+        return;
+      }
+      const list = document.createElement('ul');
+      list.className = 'stats-list';
+      tracks.forEach(track => {
+        const minutes = Math.floor(track.TotalMs / 60000);
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${track.Name}</strong> - ${minutes} minutes (${track.Count} plays)`;
+        list.appendChild(li);
+      });
+      tracksChartElement.appendChild(list);
+    }
+  
+    // --- Date helpers ---
+    function getDateISOString(dateStr, isStart) {
+      if (!dateStr) return null;
+      return isStart
+        ? `${dateStr}T00:00:00Z`
+        : `${dateStr}T23:59:59Z`;
+    }
+  
+    // --- Fetch and display summary ---
+    async function fetchAndDisplaySummary(startDate = null, endDate = null, page = 1) {
+      artistsChartElement.innerHTML = '<p>Loading artist data...</p>';
+      tracksChartElement.innerHTML = '<p>Loading track data...</p>';
+  
+      // Build query parameters
+      const params = new URLSearchParams();
+      const offset = (page - 1) * PAGE_SIZE;
+      params.append('offset', offset);
+      params.append('limit', PAGE_SIZE);
+  
+      // Add start/end if present
+      const startISO = getDateISOString(startDate, true);
+      const endISO = getDateISOString(endDate, false);
+      if (startISO) params.append('start', startISO);
+      if (endISO) params.append('end', endISO);
+  
+      try {
+        const response = await fetch(`/api/summary?${params.toString()}`, {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error('No user data');
+        const data = await response.json();
+  
+        // Defensive: If backend returns error or empty
+        if (data.error || (!data.top_artists && !data.top_tracks)) {
+          displayNoUserData();
+          return;
+        }
+  
+        // Use correct property names from your backend
+        totalTracksElement.textContent = data.total_tracks_count ?? '-';
+        totalArtistsElement.textContent = data.total_artists_count ?? '-';
+        const totalHours = Math.floor((data.total_time_listening || 0) / (60000 * 60));
+        const totalMinutes = Math.floor(((data.total_time_listening || 0) % (60000 * 60)) / 60000);
+        totalTimeElement.textContent = `${totalHours}h ${totalMinutes}m`;
+  
+        // Pagination: calculate total pages from total_tracks_count or total_artists_count
+        const totalItems = Math.max(
+          data.total_tracks_count || 0,
+          data.total_artists_count || 0
+        );
+        const newTotalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+        updatePagination(newTotalPages);
+  
+        // Lists
+        displayTopArtists(data.top_artists || []);
+        displayTopTracks(data.top_tracks || []);
+        resultsSection.classList.remove('hidden');
+      } catch (error) {
+        displayNoUserData();
+      }
+    }
+  
+    // --- On page load ---
+    fetchAndDisplaySummary();
+  });
+  

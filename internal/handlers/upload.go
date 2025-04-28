@@ -65,8 +65,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 		}
 
-		log.Println("Extracted:", outPath)
-
 		os.Remove(outPath)
 
 		utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
@@ -81,10 +79,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			utils.RespondWithError(w, http.StatusInternalServerError, "Failed to extract zip", err)
 			return
-		}
-
-		for _, path := range paths {
-			log.Println("Extracted:", path)
 		}
 
 		parsedData, err := parser.ParseJsonFiles(paths)
@@ -138,7 +132,6 @@ func storeDataInDB(r *http.Request, data []parser.UserSongData) (database.User, 
 	existing, err := utils.Cfg.DB.GetUserData(ctx, spotifyID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			// no existing user → create new
 			newID := uuid.New().String()
 			newUser, err := utils.Cfg.DB.CreateUser(ctx, database.CreateUserParams{
 				ID:        newID,
@@ -150,11 +143,9 @@ func storeDataInDB(r *http.Request, data []parser.UserSongData) (database.User, 
 			}
 			return newUser, nil
 		}
-		// any other error is fatal
 		return database.User{}, fmt.Errorf("error checking for existing user: %w", err)
 	}
 
-	// existing found → update
 	updatedUser, err := utils.Cfg.DB.UpdateUser(ctx, database.UpdateUserParams{
 		ID:   existing.ID,
 		Data: blobText,

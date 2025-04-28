@@ -47,8 +47,6 @@ func FetchArtistData(token, artistID string) (*Artist, error) {
 	}
 
 	var artist Artist
-	fmt.Println("Raw JSON:", string(body))
-	fmt.Println()
 	err = json.Unmarshal(body, &artist)
 	if err != nil {
 		return nil, err

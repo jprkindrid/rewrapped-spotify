@@ -18,7 +18,6 @@ const (
 )
 
 func NewAuth() {
-	// Load env only once
 	if os.Getenv("DOCKER") == "" {
 		if err := godotenv.Load(); err != nil {
 			log.Printf("Warning: Error loading .env file: %v", err)
@@ -33,11 +32,9 @@ func NewAuth() {
 		log.Fatal("Missing required Spotify credentials in environment")
 	}
 
-	// Use a consistent key for sessions
 	sessionKey := []byte("spotify-data-analyzer-session-key-v1")
 	store := sessions.NewCookieStore(sessionKey)
 
-	// Set consistent session options
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   MaxAge,
@@ -46,16 +43,13 @@ func NewAuth() {
 		SameSite: http.SameSiteLaxMode,
 	}
 
-	// Register all types we store in sessions
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 	gob.Register("")
 	gob.Register(true)
 
-	// Configure Gothic to use our store
 	gothic.Store = store
 
-	// Configure Spotify OAuth provider with additional scopes
 	goth.UseProviders(
 		spotify.New(
 			spotifyClientID,
