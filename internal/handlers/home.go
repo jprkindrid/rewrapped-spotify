@@ -15,5 +15,5 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, filepath.Join("web", "public", "index.html"))
+	http.ServeFile(w, r, filepath.Join("web", "static", "index.html"))
 }

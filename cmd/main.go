@@ -66,8 +66,8 @@ func main() {
 	// pages
 	mux.HandleFunc("/", handlers.HomeHandler)
 	mux.HandleFunc("/upload", handlers.UploadPageHandler)
-	mux.Handle("/public/",
-		http.StripPrefix("/public/", http.FileServer(http.Dir("./web/public"))),
+	mux.Handle("/static/",
+		http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static"))),
 	)
 
 	//api

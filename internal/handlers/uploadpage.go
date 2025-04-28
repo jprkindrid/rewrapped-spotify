@@ -31,5 +31,5 @@ func UploadPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error refreshing session: %v", err)
 	}
 
-	http.ServeFile(w, r, "./web/public/upload/index.html")
+	http.ServeFile(w, r, "./web/static/upload/upload.html")
 }
