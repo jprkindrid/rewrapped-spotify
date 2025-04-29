@@ -2,8 +2,8 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,7 +36,6 @@ type UserSongData struct {
 
 func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 	var allSongs []UserSongData
-	log.Printf("Processing %d uploaded user json files", len(filePaths))
 
 	for _, path := range filePaths {
 		if filepath.Ext(path) != ".json" {
@@ -47,12 +46,12 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer jsonFile.Close()
 
 		byteValue, err := io.ReadAll(jsonFile)
 		if err != nil {
 			return nil, err
 		}
+		jsonFile.Close()
 
 		var songs []UserSongData
 		err = json.Unmarshal(byteValue, &songs)
@@ -67,15 +66,17 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 		}
 	}
 
-	log.Println("All json processed")
+	if len(allSongs) == 0 {
+		return nil, fmt.Errorf("no valid song entries found in %d files", len(filePaths))
+
+	}
 
 	return allSongs, nil
 }
 
 func normalizeEntry(song *UserSongData) bool {
 	if song.EpisodeName != "" || song.EpisodeShowName != "" {
-		// log.Printf("⏩ Skipped podcast: %s — %s (%d ms)", song.MasterMetadataAlbumArtistName, song.MasterMetadataTrackName, song.MsPlayed)
-		// we dont give a shit about podcasts lol
+		// skips podcasts
 		// 3 BAGILLION MORE DOLLARS TO JOE ROGAN
 		return false
 	}

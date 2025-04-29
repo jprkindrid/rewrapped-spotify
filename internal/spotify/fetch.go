@@ -29,6 +29,8 @@ type Artist struct {
 	URI        string `json:"uri"`
 }
 
+// I dont know why i did this firstbut this and clientToken.go are for later when I implement artist images and such into the pages
+
 func GetArtistData(token, artistID string) (*Artist, error) {
 	url := fmt.Sprintf("https://api.spotify.com/v1/artists/%s", artistID)
 	req, _ := http.NewRequest("GET", url, nil)
