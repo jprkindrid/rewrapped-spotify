@@ -82,6 +82,7 @@ func main() {
 	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)
 	mux.HandleFunc("GET /auth/spotify", handlers.LoginHandler)
 	mux.HandleFunc("GET /auth/spotify/callback", handlers.CallbackHandler)
+	mux.HandleFunc("GET /callback", handlers.CallbackHandler)
 	mux.HandleFunc("POST /auth/logout", handlers.LogoutHandler)
 
 	srv := http.Server{
