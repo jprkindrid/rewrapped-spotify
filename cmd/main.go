@@ -32,11 +32,17 @@ func main() {
 	}
 
 	dbPath := os.Getenv("DB_PATH")
+	if os.Getenv("DOCKER") != "" {
+		dockerDBPath := os.Getenv("DB_PATH_DOCKER")
+		if dockerDBPath != "" {
+			dbPath = dockerDBPath
+		}
+	}
 	if dbPath == "" {
-		log.Fatal("DB_PATH must be set")
+		log.Fatal("DB_PATH or DB_PATH_DOCKER must be set")
 	}
 
-	dbConn, err := sql.Open("sqlite3", "data/userdata.sqlite")
+	dbConn, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatalf("Error opening database: %s", err)
 	}

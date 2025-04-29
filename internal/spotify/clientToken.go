@@ -30,6 +30,8 @@ var (
 	appTokenMU sync.RWMutex
 )
 
+// I dont know why i did this firstbut this and fetch.go are for later when I implement artist images and such into the pages
+
 func GetValidToken() (string, error) {
 
 	devClientID := os.Getenv("DEV_CLIENT_ID")
