@@ -70,18 +70,31 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ### 💻 Phase 7: Frontend Visualization (8–10h)  
 - [✅ ] Build dashboard UI in vanilla JS  
 - [ ] Display:  
-  - [ ] Top artists (bar chart or cards)  
-  - [ ] Total minutes 
-- [ ] Allow reset / upload another ZIP  
+  - [✅] Top artists (bar chart or cards)  
+  - [✅] Total minutes 
+- [✅] Allow reset / upload another ZIP  
 
 ---
 
-### 🧪 Phase 8: Polish & Extras (4–6h)  
+### 🚀 Phase 8: Deploy to Fly.io (2–3h) 
+ - [ ] Create Fly.io account and install CLI  
+ - [ ] Initialize Fly.io app in project root  
+ - [ ] Create persistent volume for SQLite database  
+ - [ ] Update `fly.toml` to mount volume at `/data`  
+ - [ ] Update app to use `/data/userdata.sqlite` as DB path  
+ - [ ] Set Spotify credentials and secrets in Fly.io  
+ - [ ] Ensure Dockerfile uses `/data` for SQLite  
+ - [ ] Deploy app to Fly.io  
+ - [ ] Test deployed app at Fly.io URL  
+ - [ ] (Optional) Configure custom domain  
+
+
+### 🧪 Phase 9: Polish & Extras (4–6h)  
 - [ ] Add error handling for bad ZIPs / no data  
 - [ ] Improve mobile layout/responsiveness  
 - [ ] Optional: export data as image or PDF  
 - [ ] Optional: add additional login/auth for saving sessions  
-- [ ] Deploy to Fly.io / Vercel / Render  
+- [ ] ADD A README
 
 ---
 
@@ -91,3 +104,4 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 - [ ] Compare multiple users (upload two sets of data)  
 - [ ] Match songs to Spotify audio features (via API)  
 - [ ] Build a shareable "MyWrapped" page (with public link)  
+- [ ] Display artist images alongside cards

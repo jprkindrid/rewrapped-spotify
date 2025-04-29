@@ -66,6 +66,10 @@
     background-color: rgba(255, 255, 255, 0.3);
     font-weight: bold;
   }
+
+  #logout-button {
+    margin-left: auto;
+  }
   
   /* Card */
   .card {
@@ -376,5 +380,28 @@
     padding: 1rem;
     color: #666;
     font-size: 0.9rem;
+  }
+  
+  .year-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+  .year-button {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+  }
+  .year-button.active,
+  .year-button:hover {
+    background-color: var(--spotify-green);
+    color: white;
   }
   
