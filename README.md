@@ -11,6 +11,10 @@ Spotify Data Analyzer lets you securely upload your Spotify streaming history (d
 - Activity by date and hour
 - Trends and patterns in your music habits
 
+### DEMO
+
+Demo available at [https://spotify-data-analyzer-aged-fire-4895.fly.dev/](https://spotify-data-analyzer-aged-fire-4895.fly.dev/)
+
 ## ✨ Features
 
 - **Spotify OAuth Login:** Secure authentication using your Spotify account.
