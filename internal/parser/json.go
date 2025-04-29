@@ -36,12 +36,12 @@ type UserSongData struct {
 
 func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 	var allSongs []UserSongData
+	log.Printf("Processing %d uploaded user json files", len(filePaths))
 
-	for i, path := range filePaths {
+	for _, path := range filePaths {
 		if filepath.Ext(path) != ".json" {
 			continue
 		}
-		log.Printf("Processing uploaded json %d...", i+1)
 
 		jsonFile, err := os.Open(path)
 		if err != nil {

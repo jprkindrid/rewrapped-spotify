@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevPageBtn = document.getElementById('prev-page');
     const nextPageBtn = document.getElementById('next-page');
     const pageInfoSpan = document.getElementById('page-info');
+    const logoutBtn = document.getElementById('logout-button');
+    const yearButtonsContainer = document.querySelector('.year-buttons');
   
     // Pagination state
     const PAGE_SIZE = 10;
@@ -224,6 +226,58 @@ document.addEventListener('DOMContentLoaded', function() {
         displayNoUserData();
       }
     }
+    // --- Logout ---
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async function() {
+        try {
+          const response = await fetch('/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          if (response.ok) {
+            window.location.href = '/';
+          } else {
+            alert('Logout failed.');
+          }
+        } catch (err) {
+          alert('Logout failed.');
+        }
+      });
+    }
+
+    // --- Year Buttons ---
+    const YEAR_START = 2015;
+    const YEAR_END = 2025;
+
+    function setYearButtonsActive(year) {
+      document.querySelectorAll('.year-button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.year === String(year));
+      });
+    }
+
+    for (let y = YEAR_START; y <= YEAR_END; y++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'year-button';
+      btn.textContent = y;
+      btn.dataset.year = y;
+      btn.addEventListener('click', function() {
+        // Set date pickers to this year
+        startDateInput.value = `${y}-01-01`;
+        endDateInput.value = `${y}-12-31`;
+        setYearButtonsActive(y);
+        currentPage = 1;
+        fetchAndDisplaySummary(startDateInput.value, endDateInput.value, currentPage);
+      });
+      yearButtonsContainer.appendChild(btn);
+    }
+
+    // Optional: clear year button highlight when filters are manually changed
+    [startDateInput, endDateInput].forEach(input => {
+      input.addEventListener('input', () => setYearButtonsActive(null));
+    });
+
+    
   
     // --- On page load ---
     fetchAndDisplaySummary();

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
@@ -51,4 +52,13 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Pragma", "no-cache")
 
 	http.Redirect(w, r, "/upload", http.StatusSeeOther)
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	err := gothic.Logout(w, r)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "error logging out", err)
+	}
+	log.Printf("Successfully logged out user")
+	http.Redirect(w, r, "/", http.StatusFound)
 }
