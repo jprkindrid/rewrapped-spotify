@@ -124,6 +124,11 @@ GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset=0&li
 
 Authentication is required for all endpoints except the homepage and login.
 
+## 🤝 Contributing
+
+Contributions are very welcome! 
+If you would like to contribute please fork the repo and create a pull request to the `main` branch.
+
 ## 📝 Usage
 
 1. **Login with Spotify:** Click "Login with Spotify" on the homepage.
