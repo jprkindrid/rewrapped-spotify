@@ -28,6 +28,12 @@ func NewAuth() {
 	spotifyClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
 	callback := os.Getenv("SPOTIFY_REDIRECT_URI")
 
+	productionBuild := false
+	productionBuildenv := os.Getenv("PRODUCTION_BUILD")
+	if productionBuildenv == "TRUE" {
+		productionBuild = true
+	}
+
 	if spotifyClientID == "" || spotifyClientSecret == "" || callback == "" {
 		log.Fatal("Missing required Spotify credentials in environment")
 	}
@@ -39,7 +45,7 @@ func NewAuth() {
 		Path:     "/",
 		MaxAge:   MaxAge,
 		HttpOnly: true,
-		Secure:   false, // Must be false for localhost HTTP
+		Secure:   productionBuild,
 		SameSite: http.SameSiteLaxMode,
 	}
 
