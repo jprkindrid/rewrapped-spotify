@@ -61,10 +61,10 @@ func main() {
 
 	// addr := "127.0.0.1:" + port
 	// debugging
-	addr := "127.0.0.1:8080"
+	addr := "0.0.0.0:8080"
 
-	if os.Getenv("DOCKER") != "" {
-		addr = "0.0.0.0:8080"
+	if os.Getenv("DOCKER") == "" {
+		addr = "127.0.0.1:8080"
 	}
 	auth.NewAuth()
 
