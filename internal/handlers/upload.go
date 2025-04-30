@@ -21,90 +21,91 @@ import (
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	const uploadLimit = 32 << 20 // 32MB
-	r.ParseMultipartForm(uploadLimit)
-
-	file, header, err := r.FormFile("file")
+	err := r.ParseMultipartForm(uploadLimit)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
-		return
+		utils.RespondWithError(w, http.StatusInternalServerError, "File parsing error", err)
 	}
-	defer file.Close()
+	files := r.MultipartForm.File["file"]
+	var userSongData []parser.UserSongData
 
-	ext := strings.ToLower(filepath.Ext(header.Filename))
-
-	switch ext {
-	case ".json":
-		outPath := filepath.Join("tmp", header.Filename)
-
-		if err := os.MkdirAll("tmp", os.ModePerm); err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "Failed to create tmp dir", err)
+	for _, fileheader := range files {
+		file, err := fileheader.Open()
+		if err != nil {
+			utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
 			return
 		}
+		defer file.Close()
 
-		outFile, err := os.Create(outPath)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save JSON file", err)
-			return
+		ext := strings.ToLower(filepath.Ext(fileheader.Filename))
+
+		switch ext {
+		case ".json":
+			outPath := filepath.Join("tmp", fileheader.Filename)
+
+			if err := os.MkdirAll("tmp", os.ModePerm); err != nil {
+				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to create tmp dir", err)
+				return
+			}
+
+			outFile, err := os.Create(outPath)
+			if err != nil {
+				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save JSON file", err)
+				return
+			}
+			defer outFile.Close()
+
+			if _, err := io.Copy(outFile, file); err != nil {
+				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to write JSON file", err)
+				return
+			}
+
+			parsedData, err := parser.ParseJsonFiles([]string{outPath})
+			if err != nil {
+				fmt.Printf("Bad file upload at %s", outPath)
+				continue
+			}
+
+			userSongData = append(userSongData, parsedData...)
+
+			os.Remove(outPath)
+
+			file.Close()
+		case ".zip":
+			paths, err := parser.UnzipAndExtractFiles(file, "tmp")
+			if err != nil {
+				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to extract zip", err)
+				return
+			}
+
+			parsedData, err := parser.ParseJsonFiles(paths)
+			if err != nil {
+				utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json files", err)
+			}
+
+			userSongData = append(userSongData, parsedData...)
+
+			for _, path := range paths {
+				os.Remove(path)
+			}
+
+			file.Close()
+
+		default:
+			file.Close()
+			continue
 		}
-		defer outFile.Close()
-
-		if _, err := io.Copy(outFile, file); err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "Failed to write JSON file", err)
-			return
-		}
-
-		paths := make([]string, 1)
-		paths = append(paths, outPath)
-		parsedData, err := parser.ParseJsonFiles(paths)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json file", err)
-		}
-
-		dbUser, err := storeDataInDB(r, parsedData)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
-		}
-
-		os.Remove(outPath)
-
-		utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
-			"message": "JSON file processed succesfully",
-			"path":    outPath,
-			"user":    dbUser.SpotifyID,
-			"data":    dbUser.Data,
-		})
-
-	case ".zip":
-		paths, err := parser.UnzipAndExtractFiles(file, "tmp")
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "Failed to extract zip", err)
-			return
-		}
-
-		parsedData, err := parser.ParseJsonFiles(paths)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json files", err)
-		}
-
-		dbUser, err := storeDataInDB(r, parsedData)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
-		}
-
-		for _, path := range paths {
-			os.Remove(path)
-		}
-
-		utils.RespondWithJSON(w, http.StatusAccepted, map[string]any{
-			"message": "ZIP processed successfully",
-			"files":   paths,
-			"user":    dbUser.SpotifyID,
-			"data":    dbUser.Data,
-		})
-
-	default:
-		utils.RespondWithError(w, http.StatusBadRequest, "Only .json and .zip files are supported", nil)
 	}
+
+	dbUser, err := storeDataInDB(r, userSongData)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
+	}
+
+	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
+		"message": "Uploaded files processed succesfully",
+		"user":    dbUser.SpotifyID,
+		"data":    dbUser.Data,
+	})
 
 }
 

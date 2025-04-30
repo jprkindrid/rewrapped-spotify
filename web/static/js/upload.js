@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Year Buttons ---
-    const YEAR_START = 2015;
+    const YEAR_START = 2011;
     const YEAR_END = 2025;
 
     function setYearButtonsActive(year) {
