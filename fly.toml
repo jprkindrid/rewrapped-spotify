@@ -19,6 +19,10 @@ primary_region = 'dfw'
   min_machines_running = 0
   processes = ['app']
 
+[mounts]
+  source = "userdata"
+  destination = "/data"
+
 [[vm]]
   memory = '4gb'
   cpu_kind = 'shared'

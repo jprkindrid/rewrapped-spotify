@@ -68,8 +68,8 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 💻 Phase 7: Frontend Visualization (8–10h)  
-- [✅ ] Build dashboard UI in vanilla JS  
-- [ ] Display:  
+- [✅] Build dashboard UI in vanilla JS  
+- [✅] Display:  
   - [✅] Top artists (bar chart or cards)  
   - [✅] Total minutes 
 - [✅] Allow reset / upload another ZIP  
@@ -77,24 +77,32 @@ Build a web app that lets users upload their Spotify data export (ZIP), parses a
 ---
 
 ### 🚀 Phase 8: Deploy to Fly.io (2–3h) 
- - [ ] Create Fly.io account and install CLI  
- - [ ] Initialize Fly.io app in project root  
- - [ ] Create persistent volume for SQLite database  
- - [ ] Update `fly.toml` to mount volume at `/data`  
- - [ ] Update app to use `/data/userdata.sqlite` as DB path  
- - [ ] Set Spotify credentials and secrets in Fly.io  
- - [ ] Ensure Dockerfile uses `/data` for SQLite  
- - [ ] Deploy app to Fly.io  
- - [ ] Test deployed app at Fly.io URL  
- - [ ] (Optional) Configure custom domain  
+ - [✅] Create Fly.io account and install CLI  
+ - [✅] Initialize Fly.io app in project root  
+ - [✅] Create persistent volume for SQLite database  
+ - [✅] Update `fly.toml` to mount volume at `/data`  
+ - [✅] Update app to use `/data/userdata.sqlite` as DB path  
+ - [✅] Set Spotify credentials and secrets in Fly.io  
+ - [✅] Ensure Dockerfile uses `/data` for SQLite  
+ - [✅] Deploy app to Fly.io  
+ - [✅] Test deployed app at Fly.io URL  
+ 
+
+### 💼 Phase 9: Spotify Extended App Program
+- [ ] Add track metadata links to each track/artist on the display page.
+- [ ] Display a tiny album art/artist art next to each entry on the display page
+- [ ] Configure custom domain that doesnt start with the word spotify
+- [ ] Sort by either play count or play time
+- [ ] (Optional)
 
 
-### 🧪 Phase 9: Polish & Extras (4–6h)  
-- [ ] Add error handling for bad ZIPs / no data  
+### 🧪 Phase 10: Polish & Extras (4–6h)  
+- [✅] Add error handling for bad ZIPs / no data  
+- [ ] Secondary sort alpahbetically
 - [ ] Improve mobile layout/responsiveness  
 - [ ] Optional: export data as image or PDF  
 - [ ] Optional: add additional login/auth for saving sessions  
-- [ ] ADD A README
+- [ ] Search by artist
 
 ---
 
