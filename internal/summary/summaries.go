@@ -34,7 +34,10 @@ func TopArtistsInRange(data []parser.UserSongData, start, end time.Time) []Score
 	}
 
 	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Count > sorted[j].Count
+		if sorted[i].Count != sorted[j].Count {
+			return sorted[i].Count > sorted[j].Count
+		}
+		return sorted[i].Name < sorted[j].Name
 	})
 
 	return sorted
@@ -61,7 +64,10 @@ func TopTracksInRange(data []parser.UserSongData, start, end time.Time) []Scored
 	}
 
 	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Count > sorted[j].Count
+		if sorted[i].Count != sorted[j].Count {
+			return sorted[i].Count > sorted[j].Count
+		}
+		return sorted[i].Name < sorted[j].Name
 	})
 
 	return sorted
