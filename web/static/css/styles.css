@@ -244,8 +244,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1.5rem;
+    gap: 8px; /* Adjust this value for more or less space */
   }
+  
   .pagination-button {
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
@@ -436,3 +437,9 @@
       background-color: var(--spotify-green);
       color: white;
   }
+
+  .entry-number {
+    color: var(--spotify-green);
+    font-weight: bold;
+    margin-right: 8px;
+}
