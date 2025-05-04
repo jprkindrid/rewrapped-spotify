@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/kindiregg/spotify-data-analyzer/internal/database"
+import "github.com/kindiregg/rewrapped-spotify/internal/database"
 
 var Cfg *Config
 

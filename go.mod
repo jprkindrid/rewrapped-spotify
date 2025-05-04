@@ -1,4 +1,4 @@
-module github.com/kindiregg/spotify-data-analyzer
+module github.com/kindiregg/rewrapped-spotify
 
 go 1.24
 

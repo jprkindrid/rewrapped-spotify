@@ -4,7 +4,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
+	"github.com/kindiregg/rewrapped-spotify/internal/parser"
 )
 
 type ScoredEntry struct {

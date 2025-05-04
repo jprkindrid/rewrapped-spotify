@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/kindiregg/spotify-data-analyzer/internal/parser"
-	"github.com/kindiregg/spotify-data-analyzer/internal/summary"
-	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
+	"github.com/kindiregg/rewrapped-spotify/internal/parser"
+	"github.com/kindiregg/rewrapped-spotify/internal/summary"
+	"github.com/kindiregg/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
 
