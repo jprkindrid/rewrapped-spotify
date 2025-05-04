@@ -88,14 +88,28 @@
                 </div>
                 
                 <div class="card">
-                    <h2>Top Artists</h2>
+                    <div class="section-header">
+                      <h2>Top Artists</h2>
+                      <div class="sort-buttons" data-section="artists">
+                        <button data-sort="count" class="sort-button active">By Play Count</button>
+                        <button data-sort="time" class="sort-button">By Time</button>
+                      </div>
+                    </div>
                     <div id="artists-chart"></div>
-                </div>
-                
-                <div class="card">
-                    <h2>Top Tracks</h2>
+                  </div>
+                  <div class="card">
+                    <div class="section-header">
+                      <h2>Top Tracks</h2>
+                      <div class="sort-buttons" data-section="tracks">
+                        <button data-sort="count" class="sort-button active">By Play Count</button>
+                        <button data-sort="time" class="sort-button">By Time</button>
+                      </div>
+                    </div>
                     <div id="tracks-chart"></div>
-                </div>
+                  </div>
+                  
+                  
+                
             </section>
         </main>
         

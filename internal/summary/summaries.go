@@ -13,7 +13,7 @@ type ScoredEntry struct {
 	Count   int
 }
 
-func TopArtistsInRange(data []parser.UserSongData, start, end time.Time) []ScoredEntry {
+func TopArtistsInRange(data []parser.UserSongData, start, end time.Time, sortBy string) []ScoredEntry {
 	counts := make(map[string]*ScoredEntry)
 
 	for _, entry := range data {
@@ -32,18 +32,25 @@ func TopArtistsInRange(data []parser.UserSongData, start, end time.Time) []Score
 	for _, v := range counts {
 		sorted = append(sorted, *v)
 	}
-
-	sort.Slice(sorted, func(i, j int) bool {
-		if sorted[i].Count != sorted[j].Count {
-			return sorted[i].Count > sorted[j].Count
-		}
-		return sorted[i].Name < sorted[j].Name
-	})
-
+	if sortBy == "count" {
+		sort.Slice(sorted, func(i, j int) bool {
+			if sorted[i].Count != sorted[j].Count {
+				return sorted[i].Count > sorted[j].Count
+			}
+			return sorted[i].Name < sorted[j].Name
+		})
+	} else if sortBy == "time" {
+		sort.Slice(sorted, func(i, j int) bool {
+			if sorted[i].TotalMs != sorted[j].TotalMs {
+				return sorted[i].TotalMs > sorted[j].TotalMs
+			}
+			return sorted[i].Name < sorted[j].Name
+		})
+	}
 	return sorted
 }
 
-func TopTracksInRange(data []parser.UserSongData, start, end time.Time) []ScoredEntry {
+func TopTracksInRange(data []parser.UserSongData, start, end time.Time, sortBy string) []ScoredEntry {
 	counts := make(map[string]*ScoredEntry)
 
 	for _, entry := range data {
@@ -63,12 +70,21 @@ func TopTracksInRange(data []parser.UserSongData, start, end time.Time) []Scored
 		sorted = append(sorted, *v)
 	}
 
-	sort.Slice(sorted, func(i, j int) bool {
-		if sorted[i].Count != sorted[j].Count {
-			return sorted[i].Count > sorted[j].Count
-		}
-		return sorted[i].Name < sorted[j].Name
-	})
+	if sortBy == "count" {
+		sort.Slice(sorted, func(i, j int) bool {
+			if sorted[i].Count != sorted[j].Count {
+				return sorted[i].Count > sorted[j].Count
+			}
+			return sorted[i].Name < sorted[j].Name
+		})
+	} else if sortBy == "time" {
+		sort.Slice(sorted, func(i, j int) bool {
+			if sorted[i].TotalMs != sorted[j].TotalMs {
+				return sorted[i].TotalMs > sorted[j].TotalMs
+			}
+			return sorted[i].Name < sorted[j].Name
+		})
+	}
 
 	return sorted
 }
