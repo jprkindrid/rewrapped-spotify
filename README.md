@@ -13,7 +13,7 @@ ReWrapped Spotify lets you securely upload your Spotify streaming history (downl
 
 ### DEMO
 
-Demo available at [https://spotify-data-analyzer-aged-fire-4895.fly.dev/](https://spotify-data-analyzer-aged-fire-4895.fly.dev/)
+Demo available at [https://rewrapped-spotify.fly.dev/](https://rewrapped-spotify.fly.dev/)
 
 ## ✨ Features
 
