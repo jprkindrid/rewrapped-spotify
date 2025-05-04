@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
+	"github.com/kindiregg/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
 

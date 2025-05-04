@@ -1,10 +1,10 @@
-# Spotify Data Analyzer
+# ReWrapped Spotify
 
-**Spotify Data Analyzer** is a web application that helps you explore and visualize your Spotify listening history. Upload your Spotify data and discover your top tracks, artists, and listening patterns over time.
+**ReWrapped Spotify** is a web application that helps you explore and visualize your Spotify listening history. Upload your Spotify data and discover your top tracks, artists, and listening patterns over time.
 
-## 🚀 What is Spotify Data Analyzer?
+## 🚀 What is ReWrapped Spotify?
 
-Spotify Data Analyzer lets you securely upload your Spotify streaming history (downloaded from Spotify’s privacy portal) and provides interactive insights, such as:
+ReWrapped Spotify lets you securely upload your Spotify streaming history (downloaded from Spotify’s privacy portal) and provides interactive insights, such as:
 
 - Top tracks and artists
 - Total listening time

@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/kindiregg/spotify-data-analyzer/internal/auth"
-	"github.com/kindiregg/spotify-data-analyzer/internal/database"
-	"github.com/kindiregg/spotify-data-analyzer/internal/handlers"
-	"github.com/kindiregg/spotify-data-analyzer/internal/utils"
+	"github.com/kindiregg/rewrapped-spotify/internal/auth"
+	"github.com/kindiregg/rewrapped-spotify/internal/database"
+	"github.com/kindiregg/rewrapped-spotify/internal/handlers"
+	"github.com/kindiregg/rewrapped-spotify/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
 
