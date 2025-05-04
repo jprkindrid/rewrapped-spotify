@@ -64,14 +64,19 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	offsetStr := r.URL.Query().Get("offset")
+	offsetTrackStr := r.URL.Query().Get("offset_tracks")
+	offsetArtistStr := r.URL.Query().Get("offset_artists")
 	limitStr := r.URL.Query().Get("limit")
 
-	offset, _ := strconv.Atoi(offsetStr)
+	offsetTracks, _ := strconv.Atoi(offsetTrackStr)
+	offsetArtists, _ := strconv.Atoi(offsetArtistStr)
 	limit, _ := strconv.Atoi(limitStr)
 
-	if offset < 0 {
-		offset = 0
+	if offsetTracks < 0 {
+		offsetTracks = 0
+	}
+	if offsetArtists < 0 {
+		offsetArtists = 0
 	}
 	if limit <= 0 {
 		limit = 10
@@ -90,10 +95,10 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	topTracks := summary.TopTracksInRange(data, timeStart, timeEnd, sortByTracks)
 	artistLen := len(topArtists)
 	trackLen := len(topTracks)
-	startArtists := offset
-	startTracks := offset
-	endArtists := offset + limit
-	endTracks := offset + limit
+	startArtists := offsetArtists
+	startTracks := offsetTracks
+	endArtists := offsetArtists + limit
+	endTracks := offsetTracks + limit
 
 	if startArtists > artistLen {
 		startArtists = artistLen - limit
@@ -117,7 +122,8 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	pagedTracks := topTracks[startTracks:endTracks]
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
-		"offset":               offset,
+		"offset_artists":       offsetArtists,
+		"offset_tracks":        offsetTracks,
 		"limit":                limit,
 		"total_artists_count":  artistLen,
 		"total_tracks_count":   trackLen,
