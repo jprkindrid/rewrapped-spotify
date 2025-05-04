@@ -405,3 +405,34 @@
     color: white;
   }
   
+  .sort-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .sort-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0; /* Override the existing margin */
+}
+
+  .sort-button {
+      padding: 6px 12px;
+      background-color: var(--medium-gray);
+      color: var(--dark-gray);
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+  }
+
+  .sort-button:hover {
+      background-color: #d0d0d0;
+  }
+
+  .sort-button.active {
+      background-color: var(--spotify-green);
+      color: white;
+  }

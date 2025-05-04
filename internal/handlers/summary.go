@@ -76,9 +76,18 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 	if limit <= 0 {
 		limit = 10
 	}
+	sortByArtists := r.URL.Query().Get("sort_by_artists")
+	sortByTracks := r.URL.Query().Get("sort_by_tracks")
 
-	topArtists := summary.TopArtistsInRange(data, timeStart, timeEnd)
-	topTracks := summary.TopTracksInRange(data, timeStart, timeEnd)
+	if sortByArtists != "time" && sortByArtists != "count" {
+		sortByArtists = "count"
+	}
+	if sortByTracks != "time" && sortByTracks != "count" {
+		sortByTracks = "count"
+	}
+
+	topArtists := summary.TopArtistsInRange(data, timeStart, timeEnd, sortByArtists)
+	topTracks := summary.TopTracksInRange(data, timeStart, timeEnd, sortByTracks)
 	artistLen := len(topArtists)
 	trackLen := len(topTracks)
 	startArtists := offset
