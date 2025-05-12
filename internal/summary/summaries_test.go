@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kindiregg/rewrapped-spotify/internal/parser"
+	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 )
 
 func TestTopArtistsInRange(t *testing.T) {
