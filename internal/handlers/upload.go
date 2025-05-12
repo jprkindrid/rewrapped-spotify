@@ -13,9 +13,9 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/kindiregg/rewrapped-spotify/internal/database"
-	"github.com/kindiregg/rewrapped-spotify/internal/parser"
-	"github.com/kindiregg/rewrapped-spotify/internal/utils"
+	"github.com/jprkindrid/rewrapped-spotify/internal/database"
+	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
+	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
 

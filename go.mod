@@ -1,4 +1,4 @@
-module github.com/kindiregg/rewrapped-spotify
+module github.com/jprkindrid/rewrapped-spotify
 
 go 1.24
 
