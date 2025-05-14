@@ -11,6 +11,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
+	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -45,6 +46,11 @@ func main() {
 	dbConn, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Fatalf("Error opening database: %s", err)
+	}
+
+	_, err = spotify.GetValidToken()
+	if err != nil {
+		log.Fatalf("Error getting valid spotify API token: %v", err)
 	}
 
 	dbQueries := database.New(dbConn)
