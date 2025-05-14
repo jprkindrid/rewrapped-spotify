@@ -12,6 +12,8 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type TokenResponse struct {
@@ -33,9 +35,11 @@ var (
 // I dont know why i did this firstbut this and fetch.go are for later when I implement artist images and such into the pages
 
 func GetValidToken() (string, error) {
-
-	devClientID := os.Getenv("DEV_CLIENT_ID")
-	devClientSecret := os.Getenv("DEV_CLIENT_SECRET")
+	if os.Getenv("DOCKER") == "" {
+		_ = godotenv.Load()
+	}
+	devClientID := os.Getenv("SPOTIFY_CLIENT_ID")
+	devClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
 	if devClientID == "" || devClientSecret == "" {
 		return "", fmt.Errorf("missing client credentials")
 	}
@@ -55,7 +59,7 @@ func GetValidToken() (string, error) {
 		return "", err
 	}
 
-	if token.AccessToken == "" {
+	if newToken.AccessToken == "" {
 		return "", fmt.Errorf("received empty access token")
 	}
 
