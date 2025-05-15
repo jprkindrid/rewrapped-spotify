@@ -1,10 +1,9 @@
-FROM golang:1.24-alpine AS builder
+FROM stagex/pallet-go AS builder
 
-# Install C compiler and build tools for sqlite3
-RUN apk add --no-cache gcc musl-dev
+COPY --from=stagex/pallet-gcc . /
 
-# Enable CGO for sqlite3
 ENV CGO_ENABLED=1
+ENV GOBIN=/app/bin
 
 WORKDIR /app
 COPY go.mod go.sum ./
@@ -13,20 +12,21 @@ COPY . .
 RUN go build -o app ./cmd
 RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
-FROM alpine:3.21
+FROM stagex/pallet-gcc-gnu-busybox
 
-# Install sqlite runtime libraries and bash
-RUN apk add --no-cache sqlite-libs bash
+COPY --from=stagex/core-sqlite3 . /
+COPY --from=stagex/core-bash . /
+COPY --from=stagex/core-ca-certificates . /
+
 
 WORKDIR /app
 COPY --from=builder /app/app .
 COPY --from=builder /app/web ./web
 COPY --from=builder /app/sql ./sql
-COPY --from=builder /go/bin/goose /usr/local/bin/goose
-COPY scripts/entrypoint.sh /entrypoint.sh
+COPY --from=builder /app/bin/goose /usr/local/bin/goose
 
-# Create data directory with world-writable permissions
-RUN mkdir /data && chmod 777 /data
+COPY scripts/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 8080
 
