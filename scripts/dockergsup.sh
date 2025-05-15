@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Accept DB path as first argument, default to /data/userdata.sqlite
