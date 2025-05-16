@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -36,35 +37,83 @@ type UserSongData struct {
 }
 
 func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
-	var allSongs []UserSongData
+	type result struct {
+		songs []UserSongData
+		err   error
+	}
+
+	resultCh := make(chan result, len(filePaths))
+	var wg sync.WaitGroup
 
 	for _, path := range filePaths {
 		if filepath.Ext(path) != ".json" {
 			continue
 		}
 
-		jsonFile, err := os.Open(path)
-		if err != nil {
-			return nil, err
-		}
-
-		byteValue, err := io.ReadAll(jsonFile)
-		if err != nil {
-			return nil, err
-		}
-		jsonFile.Close()
-
-		var songs []UserSongData
-		err = json.Unmarshal(byteValue, &songs)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, entry := range songs {
-			if normalizeEntry(&entry) {
-				allSongs = append(allSongs, entry)
+		wg.Add(1)
+		go func(path string) {
+			defer wg.Done()
+			jsonFile, err := os.Open(path)
+			if err != nil {
+				resultCh <- result{nil, err}
+				return
 			}
+
+			byteValue, err := io.ReadAll(jsonFile)
+			if err != nil {
+				resultCh <- result{nil, err}
+				return
+			}
+			jsonFile.Close()
+
+			var songs []UserSongData
+			err = json.Unmarshal(byteValue, &songs)
+			if err != nil {
+				resultCh <- result{nil, err}
+				return
+			}
+			var normalizedSongs []UserSongData
+			var normWg sync.WaitGroup
+			normCh := make(chan UserSongData, len(songs))
+			for _, entry := range songs {
+				normWg.Add(1)
+				go func(song UserSongData) {
+					defer normWg.Done()
+					if normalizeEntry(&song) {
+						normCh <- song
+					}
+				}(entry)
+			}
+
+			go func() {
+				normWg.Wait()
+				close(normCh)
+			}()
+
+			for song := range normCh {
+				normalizedSongs = append(normalizedSongs, song)
+			}
+
+			resultCh <- result{normalizedSongs, nil}
+		}(path)
+	}
+	go func() {
+		wg.Wait()
+		close(resultCh)
+	}()
+
+	var allSongs []UserSongData
+	var firstErr error
+
+	for res := range resultCh {
+		if res.err != nil && firstErr == nil {
+			firstErr = res.err
 		}
+		allSongs = append(allSongs, res.songs...)
+	}
+
+	if len(allSongs) == 0 && firstErr != nil {
+		return nil, firstErr
 	}
 
 	if len(allSongs) == 0 {
