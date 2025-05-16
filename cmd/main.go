@@ -90,6 +90,7 @@ func main() {
 	mux.HandleFunc("GET /auth/spotify/callback", handlers.CallbackHandler)
 	mux.HandleFunc("GET /callback", handlers.CallbackHandler)
 	mux.HandleFunc("POST /auth/logout", handlers.LogoutHandler)
+	mux.HandleFunc("DELETE /api/delete", handlers.DeleteHandler)
 
 	srv := http.Server{
 		Handler:      mux,

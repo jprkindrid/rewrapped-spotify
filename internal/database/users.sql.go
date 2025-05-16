@@ -36,6 +36,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users
+WHERE spotify_id = ?1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, spotifyID string) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, spotifyID)
+	return err
+}
+
 const getUserData = `-- name: GetUserData :one
 SELECT id, created_at, updated_at, spotify_id, data FROM users
 WHERE spotify_id = ?1

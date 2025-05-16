@@ -19,7 +19,7 @@ sqlc.yaml
 .git
 .gitignore
 
-# Environment files (if you don't want them in the image)
+# Environment files
 .env
 .env.*
 
@@ -28,7 +28,7 @@ Dockerfile
 docker-compose.yml
 .dockerignore
 
-# SQLite database (if you don't want to copy a local dev DB)
+# SQLite database
 *.db
 *.sqlite
 *.sqlite3

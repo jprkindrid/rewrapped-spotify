@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
@@ -59,6 +58,5 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error logging out", err)
 	}
-	log.Printf("Successfully logged out user")
 	http.Redirect(w, r, "/", http.StatusFound)
 }
