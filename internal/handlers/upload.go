@@ -80,9 +80,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			if len(paths) == 0 {
+				utils.RespondWithError(w, http.StatusInternalServerError, "No valid JSON files in zip", err)
+				return
+
+			}
+
 			parsedData, err := parser.ParseJsonFiles(paths)
 			if err != nil {
-				utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse json files", err)
+				utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse JSON files", err)
 			}
 
 			userSongData = append(userSongData, parsedData...)
