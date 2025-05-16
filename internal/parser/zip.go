@@ -32,8 +32,12 @@ func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
 	var extracted []string
 
 	for _, f := range r.File {
-
 		if f.FileInfo().IsDir() {
+			continue
+		}
+
+		ext := filepath.Ext(f.Name)
+		if !(ext == ".json") {
 			continue
 		}
 

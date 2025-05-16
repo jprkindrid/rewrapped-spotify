@@ -29,17 +29,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	var userSongData []parser.UserSongData
 
 	for _, fileheader := range files {
-		file, err := fileheader.Open()
-		if err != nil {
-			utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
-			return
-		}
-		defer file.Close()
-
 		ext := strings.ToLower(filepath.Ext(fileheader.Filename))
 
 		switch ext {
 		case ".json":
+			file, err := fileheader.Open()
+			if err != nil {
+				utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
+				return
+			}
 			outPath := filepath.Join("tmp", fileheader.Filename)
 
 			if err := os.MkdirAll("tmp", os.ModePerm); err != nil {
@@ -71,6 +69,11 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 			file.Close()
 		case ".zip":
+			file, err := fileheader.Open()
+			if err != nil {
+				utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
+				return
+			}
 			paths, err := parser.UnzipAndExtractFiles(file, "tmp")
 			if err != nil {
 				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to extract zip", err)
@@ -91,7 +94,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 			file.Close()
 
 		default:
-			file.Close()
 			continue
 		}
 	}
