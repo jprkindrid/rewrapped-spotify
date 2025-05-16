@@ -114,15 +114,5 @@ func GetAccessToken(clientID, clientSecret string) (*CachedToken, error) {
 		ExpiresAt:   expiresAt,
 	}
 
-	jsonData, err := json.MarshalIndent(cachedToken, "", " ")
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.WriteFile("token_cache.json", jsonData, 0644)
-	if err != nil {
-		return nil, err
-	}
-
 	return &cachedToken, nil
 }

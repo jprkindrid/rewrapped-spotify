@@ -443,3 +443,14 @@
     font-weight: bold;
     margin-right: 8px;
 }
+
+  .delete-link {
+      color: #e74c3c; 
+      font-weight: bold;
+      cursor: pointer;
+  }
+  .delete-link:focus,
+  .delete-link:hover {
+      text-decoration: underline;
+      color: #c0392b;
+  }

@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const applyFiltersBtn = document.getElementById('apply-filters');
   const resetFiltersBtn = document.getElementById('reset-filters');
   const logoutBtn = document.getElementById('logout-button');
+  const deleteBtn = document.getElementById('delete-button');
   const yearButtonsContainer = document.querySelector('.year-buttons');
+
 
   // Per-section state
   const PAGE_SIZE = 10;
@@ -314,6 +316,29 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  // --- Delete User Data ---
+  if (deleteBtn) {
+      deleteBtn.addEventListener('click', async function(event) {
+        event.preventDefault();
+
+        if (!confirm('Are you sure you want to delete all your data?')) return;
+        try {
+          const response = await fetch('/api/delete', {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+          if (response.ok) {
+            alert('Your data has been successfully deleted')
+            window.location.href = '/';
+          } else {
+            alert('Delete failed');
+          }
+        } catch (err) {
+          alert('Delete call failed.');
+        }
+      });
+    }
 
   // --- Year Buttons ---
   const YEAR_START = 2011;
