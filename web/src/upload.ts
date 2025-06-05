@@ -1,12 +1,10 @@
-// src/upload.ts
-
-interface TopArtist {
+interface Artist {
   Name: string;
   TotalMs: number;
   Count: number;
 }
 
-interface TopTrack {
+interface Track {
   Name: string;
   TotalMs: number;
   Count: number;
@@ -17,8 +15,8 @@ interface SummaryResponse {
   total_tracks_count?: number;
   total_artists_count?: number;
   total_time_listening?: number;
-  top_artists?: TopArtist[];
-  top_tracks?: TopTrack[];
+  top_artists?: Artist[];
+  top_tracks?: Track[];
 }
 
 interface SectionState {
@@ -257,11 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (section === 'artists') {
         sectionState.artists.totalPages = Math.max(1, Math.ceil((data.total_artists_count || 0) / PAGE_SIZE));
         sectionState.artists.updatePaginationDisplay?.();
-        displayTopArtists(data.top_artists || []);
+        displayArtists(data.top_artists || []);
       } else if (section === 'tracks') {
         sectionState.tracks.totalPages = Math.max(1, Math.ceil((data.total_tracks_count || 0) / PAGE_SIZE));
         sectionState.tracks.updatePaginationDisplay?.();
-        displayTopTracks(data.top_tracks || []);
+        displayTracks(data.top_tracks || []);
       }
 
       resultsSection.classList.remove('hidden');
@@ -271,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Display functions with numbering ---
-  function displayTopArtists(artists: TopArtist[]) {
+  function displayArtists(artists: Artist[]) {
     artistsChartElement.innerHTML = '';
     if (!artists.length) {
       artistsChartElement.innerHTML = '<p>No user data</p>';
@@ -289,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     artistsChartElement.appendChild(list);
   }
 
-  function displayTopTracks(tracks: TopTrack[]) {
+  function displayTracks(tracks: Track[]) {
     tracksChartElement.innerHTML = '';
     if (!tracks.length) {
       tracksChartElement.innerHTML = '<p>No user data</p>';
