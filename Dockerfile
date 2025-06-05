@@ -26,7 +26,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN go build -o app ./cmd
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+RUN go install github.com/pressly/goose/v3/cmd/goose@f2b5a9d8bcd75d257ff9b484e79e2edb94dd0b8c
 
 # --- Final image ---
 FROM stagex/pallet-gcc-gnu-busybox
