@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "module": "ESNext",
+    "rootDir": "./web/src",
+    "outDir": "./web/static/dist",
+    "strict": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["web/src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
