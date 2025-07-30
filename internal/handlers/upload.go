@@ -26,7 +26,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, "File parsing error", err)
 	}
 	files := r.MultipartForm.File["file"]
-	var userSongData []parser.UserSongData
+	var userSongData []parser.MinifiedSongData
 
 	for _, fileheader := range files {
 		ext := strings.ToLower(filepath.Ext(fileheader.Filename))
@@ -63,7 +63,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			userSongData = append(userSongData, parsedData...)
+			minifiedData := parser.MinifyParsedData(parsedData)
+
+			userSongData = append(userSongData, minifiedData...)
 
 			os.Remove(outPath)
 
@@ -91,7 +93,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 				utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse JSON files", err)
 			}
 
-			userSongData = append(userSongData, parsedData...)
+			minifiedData := parser.MinifyParsedData(parsedData)
+
+			userSongData = append(userSongData, minifiedData...)
 
 			for _, path := range paths {
 				os.Remove(path)
@@ -117,7 +121,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func storeDataInDB(r *http.Request, data []parser.UserSongData) (database.User, error) {
+func storeDataInDB(r *http.Request, data []parser.MinifiedSongData) (database.User, error) {
 	ctx := r.Context()
 
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
