@@ -11,6 +11,11 @@ interface Track {
   Count: number;
 }
 
+interface UploadResponse {
+  message: string;
+  error?: string;
+}
+
 interface SummaryResponse {
   error?: string;
   total_tracks_count?: number;
@@ -234,23 +239,23 @@ async function handleFileUpload(e: Event): Promise<void> {
       credentials: 'include'
     });
 
-    const data: SummaryResponse = await response.json();
+    const data: UploadResponse = await response.json();
     uploadStatus.classList.add('hidden');
     uploadButton.disabled = false;
     fileUpload.value = '';
     fileNames.textContent = 'No files selected';
-    resultsSection.classList.remove('hidden');
 
     if (!data.error) {
-      // Reset filters and pagination on new upload
       startDateInput.value = '';
       endDateInput.value = '';
       sectionState.artists.currentPage = 1;
       sectionState.tracks.currentPage = 1;
+      
       fetchAndDisplaySection('artists');
       fetchAndDisplaySection('tracks');
+      resultsSection.classList.remove('hidden');
     } else {
-      displayNoUserData();
+      throw new Error(data.message)
     }
   } catch (error) {
     uploadStatus.classList.add('hidden');

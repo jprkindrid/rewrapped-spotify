@@ -108,15 +108,13 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	dbUser, err := storeDataInDB(r, userSongData)
+	_, err = storeDataInDB(r, userSongData)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 	}
 
 	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
-		"message": "Uploaded files processed succesfully",
-		"user":    dbUser.SpotifyID,
-		"data":    dbUser.Data,
+		"message": "Files uploaded and processed succesfully",
 	})
 
 }
