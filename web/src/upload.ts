@@ -12,7 +12,7 @@ interface Track {
 }
 
 interface UploadResponse {
-  message: string;
+  message?: string;
   error?: string;
 }
 
