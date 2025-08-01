@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MaxAge = 86400 * 30 // 30 days
+	MaxAge = 86400 * 7 // 7 days
 )
 
 func NewAuth() {
@@ -38,7 +38,12 @@ func NewAuth() {
 		log.Fatal("Missing required Spotify credentials in environment")
 	}
 
-	sessionKey := []byte("spotify-data-analyzer-session-key-v1")
+	secret := os.Getenv("SESSION_SECRET")
+	if len(secret) < 32 {
+		panic("SESSION_SECRET must be at least 32 characters")
+	}
+
+	sessionKey := []byte(secret)
 	store := sessions.NewCookieStore(sessionKey)
 
 	store.Options = &sessions.Options{
