@@ -40,7 +40,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	session.Values["provider"] = "spotify"
 	session.Values["user_id"] = user.UserID
-	session.Values["access_token"] = user.AccessToken
+	session.Values["user_name"] = user.Name
 
 	if err := session.Save(r, w); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save session: "+err.Error(), err)
