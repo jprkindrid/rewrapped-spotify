@@ -8,7 +8,7 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func UploadPageHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerUploadPage(w http.ResponseWriter, r *http.Request) {
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -23,10 +23,8 @@ func UploadPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := sess.Save(r, w); err != nil {
 		log.Printf("[UploadPageHandler] Error saving session: %v", err)
-		// Continue anyway since we have a valid session
 	}
 
-	// Set security headers
 	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
 	w.Header().Set("Pragma", "no-cache")
 	w.Header().Set("Expires", "0")

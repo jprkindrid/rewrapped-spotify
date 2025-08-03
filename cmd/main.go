@@ -13,7 +13,6 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
-	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -56,10 +55,9 @@ func main() {
 
 	dbQueries := database.New(dbConn)
 
-	// initializing config in utils package so database can be passed without handlers being methods of config
-	utils.InitConfig(&utils.Config{
+	cfg := &handlers.ApiConfig{
 		DB: dbQueries,
-	})
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -78,21 +76,21 @@ func main() {
 	mux := http.NewServeMux()
 
 	// pages
-	mux.HandleFunc("/", handlers.HomeHandler)
-	mux.HandleFunc("/upload", handlers.UploadPageHandler)
+	mux.HandleFunc("/", cfg.HandlerHome)
+	mux.HandleFunc("/upload", cfg.HandlerUploadPage)
 	mux.Handle("/static/",
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static"))),
 	)
 
 	//api
-	mux.HandleFunc("GET /health", handlers.HealthHandler)
-	mux.HandleFunc("POST /api/upload", handlers.UploadHandler)
-	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)
-	mux.HandleFunc("GET /auth/spotify", handlers.LoginHandler)
-	mux.HandleFunc("GET /auth/spotify/callback", handlers.CallbackHandler)
-	mux.HandleFunc("GET /callback", handlers.CallbackHandler)
-	mux.HandleFunc("POST /auth/logout", handlers.LogoutHandler)
-	mux.HandleFunc("DELETE /api/delete", handlers.DeleteHandler)
+	mux.HandleFunc("GET /health", cfg.HandlerHealth)
+	mux.HandleFunc("POST /api/upload", cfg.HandlerUpload)
+	mux.HandleFunc("GET /api/summary", cfg.HandlerSummary)
+	mux.HandleFunc("GET /auth/spotify", cfg.HandlerLogin)
+	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
+	mux.HandleFunc("GET /callback", cfg.HandlerCallback)
+	mux.HandleFunc("POST /auth/logout", cfg.HandlerLogout)
+	mux.HandleFunc("DELETE /api/delete", cfg.HandlerDelete)
 
 	srv := http.Server{
 		Handler:      mux,

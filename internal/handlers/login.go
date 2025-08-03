@@ -7,13 +7,11 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	// Clear any existing session
+func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	session, _ := gothic.Store.Get(r, gothic.SessionName)
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 
-	// Start auth process
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
@@ -21,7 +19,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	gothic.BeginAuthHandler(w, r)
 }
 
-func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
@@ -53,7 +51,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/upload", http.StatusSeeOther)
 }
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
 	err := gothic.Logout(w, r)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error logging out", err)

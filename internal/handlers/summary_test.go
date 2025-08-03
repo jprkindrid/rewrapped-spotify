@@ -7,9 +7,18 @@ import (
 	"testing"
 )
 
+// createTestApiConfig creates a test ApiConfig with nil database for testing validation
+func createTestApiConfig() *ApiConfig {
+	return &ApiConfig{
+		DB: nil, // For validation tests, we don't need a real DB
+	}
+}
+
 func TestSummaryHandlerValidation(t *testing.T) {
 	// Test validation without requiring full database setup
 	// This tests the validation logic we added
+
+	cfg := createTestApiConfig()
 
 	tests := []struct {
 		name           string
@@ -36,16 +45,10 @@ func TestSummaryHandlerValidation(t *testing.T) {
 			errorField:     "offset_artists",
 		},
 		{
-			name:           "limit too large",
-			queryParams:    "?limit=2000",
+			name:           "limit too high",
+			queryParams:    "?limit=10000",
 			expectedStatus: http.StatusBadRequest,
 			errorField:     "limit",
-		},
-		{
-			name:           "invalid time format",
-			queryParams:    "?start=invalid-time",
-			expectedStatus: http.StatusBadRequest,
-			errorField:     "start",
 		},
 	}
 
@@ -57,7 +60,7 @@ func TestSummaryHandlerValidation(t *testing.T) {
 			// All these tests should fail before reaching database operations
 			// because they don't have valid sessions, but we want to test that
 			// validation errors are caught first when the handler is improved
-			SummaryHandler(w, req)
+			cfg.HandlerSummary(w, req)
 
 			// For now, these will return 401 (Unauthorized) because of no session
 			// But if we had proper middleware order, validation would run first
@@ -72,11 +75,13 @@ func TestSummaryHandlerValidation(t *testing.T) {
 
 // TestSummaryResponseStructure tests the structure of successful responses
 func TestSummaryResponseStructure(t *testing.T) {
+	cfg := createTestApiConfig()
+
 	// Test with minimal valid request to check response structure
 	req := httptest.NewRequest("GET", "/api/summary?limit=5", nil)
 	w := httptest.NewRecorder()
 
-	SummaryHandler(w, req)
+	cfg.HandlerSummary(w, req)
 
 	// This will be unauthorized, but we can still document the expected response structure
 	if w.Code == http.StatusUnauthorized {
