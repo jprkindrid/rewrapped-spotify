@@ -7,7 +7,7 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
 	session, err := gothic.Store.Get(r, gothic.SessionName)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
@@ -20,7 +20,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.Cfg.DB.DeleteUser(r.Context(), userID)
+	err = cfg.DB.DeleteUser(r.Context(), userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data", err)
 		return

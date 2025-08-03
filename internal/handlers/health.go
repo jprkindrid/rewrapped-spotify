@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-
-	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
 // HealthResponse represents the health check response
@@ -17,17 +15,17 @@ type HealthResponse struct {
 	Services  map[string]string `json:"services"`
 }
 
-// HealthHandler provides application health status
-func HealthHandler(w http.ResponseWriter, r *http.Request) {
+// HandlerHealth is the method-based health handler
+func (cfg *ApiConfig) HandlerHealth(w http.ResponseWriter, r *http.Request) {
 	response := HealthResponse{
 		Status:    "healthy",
 		Timestamp: time.Now(),
 		Services:  make(map[string]string),
-		Version:   "1.0.0", // TODO: Get from build info
+		Version:   "1.0.0",
 	}
 
 	// Check database connectivity
-	if err := checkDatabaseHealth(r.Context()); err != nil {
+	if err := cfg.checkDatabaseHealth(r.Context()); err != nil {
 		response.Status = "unhealthy"
 		response.Services["database"] = "error: " + err.Error()
 		w.WriteHeader(http.StatusServiceUnavailable)
@@ -39,18 +37,11 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// checkDatabaseHealth verifies database connectivity
-func checkDatabaseHealth(ctx context.Context) error {
-	// Try a simple query to verify database is accessible
-	if utils.Cfg == nil || utils.Cfg.DB == nil {
-		return nil // Database not initialized, but we'll consider it healthy for startup
+func (cfg *ApiConfig) checkDatabaseHealth(ctx context.Context) error {
+	if cfg.DB == nil {
+		return nil
 	}
-
-	// Try to query a simple test - we expect this to fail with "no rows"
-	// which means DB connection is working. A real connection error would be different.
-	_, err := utils.Cfg.DB.GetUserData(ctx, "health-check-non-existent-user")
-	// If we get a "no rows" error, that's actually good - it means DB is responding
-	// If we get a connection error, that's bad
+	_, err := cfg.DB.GetUserData(ctx, "health-check-non-existent-user")
 	if err != nil && err.Error() != "sql: no rows in result set" {
 		return err
 	}

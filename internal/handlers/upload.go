@@ -20,7 +20,7 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func UploadHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(constants.MaxFileUploadSize)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "File parsing error", err)
@@ -109,7 +109,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	_, err = storeDataInDB(r, userSongData)
+	_, err = storeDataInDB(r, userSongData, cfg.DB)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 	}
@@ -120,7 +120,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func storeDataInDB(r *http.Request, data []parser.MinifiedSongData) (database.User, error) {
+func storeDataInDB(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
 	ctx := r.Context()
 
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
@@ -141,11 +141,11 @@ func storeDataInDB(r *http.Request, data []parser.MinifiedSongData) (database.Us
 	}
 	blobText := string(blob)
 
-	existing, err := utils.Cfg.DB.GetUserData(ctx, spotifyID)
+	existing, err := db.GetUserData(ctx, spotifyID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			newID := uuid.New().String()
-			newUser, err := utils.Cfg.DB.CreateUser(ctx, database.CreateUserParams{
+			newUser, err := db.CreateUser(ctx, database.CreateUserParams{
 				ID:        newID,
 				SpotifyID: spotifyID,
 				Data:      blobText,
@@ -158,7 +158,7 @@ func storeDataInDB(r *http.Request, data []parser.MinifiedSongData) (database.Us
 		return database.User{}, fmt.Errorf("error checking for existing user: %w", err)
 	}
 
-	updatedUser, err := utils.Cfg.DB.UpdateUser(ctx, database.UpdateUserParams{
+	updatedUser, err := db.UpdateUser(ctx, database.UpdateUserParams{
 		ID:   existing.ID,
 		Data: blobText,
 	})

@@ -7,7 +7,7 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerHome(w http.ResponseWriter, r *http.Request) {
 	sess, _ := gothic.Store.Get(r, gothic.SessionName)
 
 	userID, ok := sess.Values["user_id"].(string)

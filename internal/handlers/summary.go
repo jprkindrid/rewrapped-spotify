@@ -11,7 +11,7 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func SummaryHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	sess, err := gothic.Store.Get(r, gothic.SessionName)
@@ -26,7 +26,7 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbUser, err := utils.Cfg.DB.GetUserData(ctx, userID)
+	dbUser, err := cfg.DB.GetUserData(ctx, userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)
 		return
@@ -38,21 +38,18 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate time range parameters
 	timeParams, err := validation.ValidateTimeRange(r)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error(), err)
 		return
 	}
 
-	// Validate pagination parameters
 	paginationParams, err := validation.ValidatePaginationParams(r)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, err.Error(), err)
 		return
 	}
 
-	// Validate sort parameters
 	sortParams := validation.ValidateSortParams(r)
 
 	topArtists := summary.TopArtistsInRange(data, timeParams.Start, timeParams.End, sortParams.SortByArtists)
@@ -82,7 +79,6 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		totalTimeListenedMS += track.TotalMs
 	}
 
-	// Ensure safe slicing with bounds checking
 	var pagedArtists []summary.ScoredEntry
 	var pagedTracks []summary.ScoredEntry
 
