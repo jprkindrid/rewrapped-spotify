@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
@@ -20,10 +21,10 @@ import (
 )
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	const uploadLimit = 32 << 20 // 32MB
-	err := r.ParseMultipartForm(uploadLimit)
+	err := r.ParseMultipartForm(constants.MaxFileUploadSize)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "File parsing error", err)
+		return
 	}
 	files := r.MultipartForm.File["file"]
 	var userSongData []parser.MinifiedSongData
@@ -38,9 +39,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 				utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
 				return
 			}
-			outPath := filepath.Join("tmp", fileheader.Filename)
+			outPath := filepath.Join(constants.TempDirName, fileheader.Filename)
 
-			if err := os.MkdirAll("tmp", os.ModePerm); err != nil {
+			if err := os.MkdirAll(constants.TempDirName, os.ModePerm); err != nil {
 				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to create tmp dir", err)
 				return
 			}
@@ -76,7 +77,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 				utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
 				return
 			}
-			paths, err := parser.UnzipAndExtractFiles(file, "tmp")
+			paths, err := parser.UnzipAndExtractFiles(file, constants.TempDirName)
 			if err != nil {
 				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to extract zip", err)
 				return

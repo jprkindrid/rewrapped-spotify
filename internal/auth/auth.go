@@ -8,13 +8,14 @@ import (
 
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/spotify"
 )
 
 const (
-	MaxAge = 86400 * 7 // 7 days
+	MaxAge = constants.SessionMaxAge // Use constant from constants package
 )
 
 func NewAuth() {
@@ -39,7 +40,7 @@ func NewAuth() {
 	}
 
 	secret := os.Getenv("SESSION_SECRET")
-	if len(secret) < 32 {
+	if len(secret) < constants.MinSessionSecretLength {
 		panic("SESSION_SECRET must be at least 32 characters")
 	}
 

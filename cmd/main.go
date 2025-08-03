@@ -9,6 +9,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
@@ -84,6 +85,7 @@ func main() {
 	)
 
 	//api
+	mux.HandleFunc("GET /health", handlers.HealthHandler)
 	mux.HandleFunc("POST /api/upload", handlers.UploadHandler)
 	mux.HandleFunc("GET /api/summary", handlers.SummaryHandler)
 	mux.HandleFunc("GET /auth/spotify", handlers.LoginHandler)
@@ -95,8 +97,8 @@ func main() {
 	srv := http.Server{
 		Handler:      mux,
 		Addr:         addr,
-		WriteTimeout: 30 * time.Second,
-		ReadTimeout:  30 * time.Second,
+		WriteTimeout: constants.HTTPWriteTimeout * time.Second,
+		ReadTimeout:  constants.HTTPReadTimeout * time.Second,
 	}
 
 	log.Printf("Server running at http://%s\n", addr)
