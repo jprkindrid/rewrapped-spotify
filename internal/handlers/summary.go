@@ -3,12 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
+	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
 	"github.com/markbates/goth/gothic"
 )
 
@@ -39,75 +38,40 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	startStr := r.URL.Query().Get("start")
-	endStr := r.URL.Query().Get("end")
-
-	var timeStart time.Time
-	var timeEnd time.Time
-	if startStr == "" {
-		timeStart = time.Time{}
-	} else {
-		timeStart, err = time.Parse(time.RFC3339, startStr)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusUnprocessableEntity, "invalid timeStart datetime, use RFC3339", err)
-			timeStart = time.Time{}
-		}
+	// Validate time range parameters
+	timeParams, err := validation.ValidateTimeRange(r)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, err.Error(), err)
+		return
 	}
 
-	if endStr == "" {
-		timeEnd = time.Now()
-	} else {
-		timeEnd, err = time.Parse(time.RFC3339, endStr)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusUnprocessableEntity, "invalid timeEnd datetime, use RFC3339", err)
-			timeEnd = time.Now()
-		}
+	// Validate pagination parameters
+	paginationParams, err := validation.ValidatePaginationParams(r)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, err.Error(), err)
+		return
 	}
 
-	offsetTrackStr := r.URL.Query().Get("offset_tracks")
-	offsetArtistStr := r.URL.Query().Get("offset_artists")
-	limitStr := r.URL.Query().Get("limit")
+	// Validate sort parameters
+	sortParams := validation.ValidateSortParams(r)
 
-	offsetTracks, _ := strconv.Atoi(offsetTrackStr)
-	offsetArtists, _ := strconv.Atoi(offsetArtistStr)
-	limit, _ := strconv.Atoi(limitStr)
-
-	if offsetTracks < 0 {
-		offsetTracks = 0
-	}
-	if offsetArtists < 0 {
-		offsetArtists = 0
-	}
-	if limit <= 0 {
-		limit = 10
-	}
-	sortByArtists := r.URL.Query().Get("sort_by_artists")
-	sortByTracks := r.URL.Query().Get("sort_by_tracks")
-
-	if sortByArtists != "time" && sortByArtists != "count" {
-		sortByArtists = "count"
-	}
-	if sortByTracks != "time" && sortByTracks != "count" {
-		sortByTracks = "count"
-	}
-
-	topArtists := summary.TopArtistsInRange(data, timeStart, timeEnd, sortByArtists)
-	topTracks := summary.TopTracksInRange(data, timeStart, timeEnd, sortByTracks)
+	topArtists := summary.TopArtistsInRange(data, timeParams.Start, timeParams.End, sortParams.SortByArtists)
+	topTracks := summary.TopTracksInRange(data, timeParams.Start, timeParams.End, sortParams.SortByTracks)
 	artistLen := len(topArtists)
 	trackLen := len(topTracks)
-	startArtists := offsetArtists
-	startTracks := offsetTracks
-	endArtists := offsetArtists + limit
-	endTracks := offsetTracks + limit
+	startArtists := paginationParams.OffsetArtists
+	startTracks := paginationParams.OffsetTracks
+	endArtists := paginationParams.OffsetArtists + paginationParams.Limit
+	endTracks := paginationParams.OffsetTracks + paginationParams.Limit
 
 	if startArtists > artistLen {
-		startArtists = artistLen - limit
+		startArtists = max(0, artistLen-paginationParams.Limit)
 	}
 	if endArtists > artistLen {
 		endArtists = artistLen
 	}
 	if startTracks > trackLen {
-		startTracks = trackLen - limit
+		startTracks = max(0, trackLen-paginationParams.Limit)
 	}
 	if endTracks > trackLen {
 		endTracks = trackLen
@@ -118,13 +82,22 @@ func SummaryHandler(w http.ResponseWriter, r *http.Request) {
 		totalTimeListenedMS += track.TotalMs
 	}
 
-	pagedArtists := topArtists[startArtists:endArtists]
-	pagedTracks := topTracks[startTracks:endTracks]
+	// Ensure safe slicing with bounds checking
+	var pagedArtists []summary.ScoredEntry
+	var pagedTracks []summary.ScoredEntry
+
+	if startArtists < artistLen && endArtists > startArtists {
+		pagedArtists = topArtists[startArtists:endArtists]
+	}
+
+	if startTracks < trackLen && endTracks > startTracks {
+		pagedTracks = topTracks[startTracks:endTracks]
+	}
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
-		"offset_artists":       offsetArtists,
-		"offset_tracks":        offsetTracks,
-		"limit":                limit,
+		"offset_artists":       paginationParams.OffsetArtists,
+		"offset_tracks":        paginationParams.OffsetTracks,
+		"limit":                paginationParams.Limit,
 		"total_artists_count":  artistLen,
 		"total_tracks_count":   trackLen,
 		"top_artists":          pagedArtists,
