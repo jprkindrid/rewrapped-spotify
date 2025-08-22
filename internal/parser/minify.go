@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"log/slog"
 	"time"
 )
 
@@ -17,15 +18,18 @@ type MinifiedSongData struct {
 
 func MinifyParsedData(parsedData []UserSongData) []MinifiedSongData {
 	if parsedData == nil {
+		slog.Debug("No parsed data to minify")
 		return nil
 	}
 
+	slog.Info("Starting data minification", "input_count", len(parsedData))
 	minifiedData := make([]MinifiedSongData, 0, len(parsedData))
 	for _, data := range parsedData {
 		result := minifyUserSongData(data)
 		minifiedData = append(minifiedData, result)
 	}
 
+	slog.Info("Data minification completed", "output_count", len(minifiedData))
 	return minifiedData
 }
 

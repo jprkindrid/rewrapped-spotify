@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,6 +38,7 @@ type UserSongData struct {
 }
 
 func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
+	slog.Info("Starting JSON file parsing", "file_count", len(filePaths))
 	type result struct {
 		songs []UserSongData
 		err   error
@@ -55,6 +57,7 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 			defer wg.Done()
 			jsonFile, err := os.Open(path)
 			if err != nil {
+				slog.Error("Failed to open JSON file", "file", path, "error", err)
 				resultCh <- result{nil, err}
 				return
 			}
@@ -69,6 +72,7 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 			var songs []UserSongData
 			err = json.Unmarshal(byteValue, &songs)
 			if err != nil {
+				slog.Error("Failed to unmarshal JSON", "file", path, "error", err)
 				resultCh <- result{nil, err}
 				return
 			}
@@ -93,7 +97,6 @@ func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
 			for song := range normCh {
 				normalizedSongs = append(normalizedSongs, song)
 			}
-
 			resultCh <- result{normalizedSongs, nil}
 		}(path)
 	}
@@ -128,19 +131,23 @@ func normalizeEntry(song *UserSongData) bool {
 	if song.EpisodeName != "" || song.EpisodeShowName != "" {
 		// skips podcasts
 		// 3 BAGILLION MORE DOLLARS TO JOE ROGAN
+		slog.Debug("Skipping podcast entry", "episode_name", song.EpisodeName, "show_name", song.EpisodeShowName)
 		return false
 	}
 
 	if song.MasterMetadataTrackName == "" {
+		slog.Debug("Skipping entry with empty track name")
 		return false
 	}
 
 	if song.MasterMetadataAlbumArtistName == "" {
+		slog.Debug("Skipping entry with empty artist name")
 		return false
 	}
 
 	// Skip if under 30s (not considered a 'stream' by Spotify)
 	if song.MsPlayed < 30000 {
+		slog.Debug("Skipping entry under 30 seconds", "ms_played", song.MsPlayed)
 		return false
 	}
 
