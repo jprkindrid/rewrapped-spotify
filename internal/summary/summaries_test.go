@@ -9,16 +9,16 @@ import (
 
 func TestTopArtistsInRange(t *testing.T) {
 	now := time.Now()
-	testData := []parser.UserSongData{
+	testData := []parser.MinifiedSongData{
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist A",
-			MsPlayed:                      180000, // 3 minutes
+			Ts:         now,
+			ArtistName: "Artist A",
+			MsPlayed:   180000, // 3 minutes
 		},
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist A",
-			MsPlayed:                      120000, // 2 minutes
+			Ts:         now,
+			ArtistName: "Artist A",
+			MsPlayed:   120000, // 2 minutes
 		},
 	}
 
@@ -35,12 +35,12 @@ func TestTopArtistsInRange(t *testing.T) {
 
 func TestTopTracksInRange(t *testing.T) {
 	now := time.Now()
-	testData := []parser.UserSongData{
+	testData := []parser.MinifiedSongData{
 		{
-			Ts:                            now,
-			MasterMetadataTrackName:       "Track A",
-			MasterMetadataAlbumArtistName: "Artist A",
-			MsPlayed:                      180000,
+			Ts:         now,
+			TrackName:  "Track A",
+			ArtistName: "Artist A",
+			MsPlayed:   180000,
 		},
 	}
 
@@ -60,12 +60,12 @@ func TestTopArtistsInRangeEmpty(t *testing.T) {
 
 func TestTopTracksOutOfRange(t *testing.T) {
 	now := time.Now()
-	testData := []parser.UserSongData{
+	testData := []parser.MinifiedSongData{
 		{
-			Ts:                            now,
-			MasterMetadataTrackName:       "Track A",
-			MasterMetadataAlbumArtistName: "Artist A",
-			MsPlayed:                      180000,
+			Ts:         now,
+			TrackName:  "Track A",
+			ArtistName: "Artist A",
+			MsPlayed:   180000,
 		},
 	}
 
@@ -109,36 +109,36 @@ func TestGroupByYear(t *testing.T) {
 
 func TestTopArtistsInRangeSortByTime(t *testing.T) {
 	now := time.Now()
-	testData := []parser.UserSongData{
+	testData := []parser.MinifiedSongData{
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist A",
-			MsPlayed:                      180000,
+			Ts:         now,
+			ArtistName: "Artist A",
+			MsPlayed:   180000,
 		},
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist A",
-			MsPlayed:                      120000,
+			Ts:         now,
+			ArtistName: "Artist A",
+			MsPlayed:   120000,
 		},
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist B",
-			MsPlayed:                      400000,
+			Ts:         now,
+			ArtistName: "Artist B",
+			MsPlayed:   400000,
 		},
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist C",
-			MsPlayed:                      90000,
+			Ts:         now,
+			ArtistName: "Artist C",
+			MsPlayed:   90000,
 		},
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist C",
-			MsPlayed:                      90000,
+			Ts:         now,
+			ArtistName: "Artist C",
+			MsPlayed:   90000,
 		},
 		{
-			Ts:                            now,
-			MasterMetadataAlbumArtistName: "Artist C",
-			MsPlayed:                      90000,
+			Ts:         now,
+			ArtistName: "Artist C",
+			MsPlayed:   90000,
 		},
 	}
 

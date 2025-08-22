@@ -183,18 +183,17 @@ async function handleFileUpload(e) {
         uploadButton.disabled = false;
         fileUpload.value = '';
         fileNames.textContent = 'No files selected';
-        resultsSection.classList.remove('hidden');
         if (!data.error) {
-            // Reset filters and pagination on new upload
             startDateInput.value = '';
             endDateInput.value = '';
             sectionState.artists.currentPage = 1;
             sectionState.tracks.currentPage = 1;
             fetchAndDisplaySection('artists');
             fetchAndDisplaySection('tracks');
+            resultsSection.classList.remove('hidden');
         }
         else {
-            displayNoUserData();
+            throw new Error(data.message);
         }
     }
     catch (error) {

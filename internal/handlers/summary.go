@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	// "log/slog"
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
@@ -32,11 +33,15 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data []parser.UserSongData
+	var data []parser.MinifiedSongData
 	if err := json.Unmarshal([]byte(dbUser.Data), &data); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to parse user data from database", err)
 		return
 	}
+
+	// for _, v := range data {
+	// 	slog.Info("Checking summarized data", "artist", v.)
+	// }
 
 	timeParams, err := validation.ValidateTimeRange(r)
 	if err != nil {

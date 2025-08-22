@@ -29,5 +29,6 @@ func (cfg *ApiConfig) HandlerUploadPage(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Pragma", "no-cache")
 	w.Header().Set("Expires", "0")
 
+	log.Printf("------ LOAD UPLOAD PAGE ---- ")
 	http.ServeFile(w, r, filepath.Join("web", "static", "upload", "upload.html"))
 }
