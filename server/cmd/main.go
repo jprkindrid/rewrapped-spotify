@@ -82,11 +82,12 @@ func main() {
 	mux.HandleFunc("GET /api/summary", cfg.HandlerSummary)
 	mux.HandleFunc("GET /auth/spotify/login", cfg.HandlerLogin)
 	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
+	mux.HandleFunc("GET /api/user", cfg.HandlerUser)
 	mux.HandleFunc("GET /callback", cfg.HandlerCallback)
 	mux.HandleFunc("POST /auth/logout", cfg.HandlerLogout)
 	mux.HandleFunc("DELETE /api/delete", cfg.HandlerDelete)
 
-	allowedOrigins := []string{"http://127.0.0.1:5173"}
+	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
 
 	if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
 		allowedOrigins = []string{"INSERT URL HERE"}

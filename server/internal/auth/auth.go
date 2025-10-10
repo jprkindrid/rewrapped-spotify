@@ -29,12 +29,6 @@ func NewAuth() {
 	spotifyClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
 	callback := os.Getenv("SPOTIFY_REDIRECT_URI")
 
-	productionBuild := false
-	productionBuildenv := os.Getenv("PRODUCTION_BUILD")
-	if productionBuildenv == "TRUE" {
-		productionBuild = true
-	}
-
 	if spotifyClientID == "" || spotifyClientSecret == "" || callback == "" {
 		log.Fatal("Missing required Spotify credentials in environment")
 	}
@@ -46,15 +40,25 @@ func NewAuth() {
 
 	sessionKey := []byte(secret)
 	store := sessions.NewCookieStore(sessionKey)
-
-	store.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   MaxAge,
-		HttpOnly: true,
-		Secure:   productionBuild,
-		SameSite: http.SameSiteLaxMode,
+	if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
+		store.Options = &sessions.Options{
+			Path:     "/",
+			Domain:   "",
+			MaxAge:   86400,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
+		}
+	} else {
+		store.Options = &sessions.Options{
+			Path:     "/",
+			Domain:   "127.0.0.1",
+			MaxAge:   86400,
+			HttpOnly: true,
+			Secure:   false,
+			SameSite: http.SameSiteLaxMode,
+		}
 	}
-
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 	gob.Register("")
