@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
@@ -15,8 +17,6 @@ func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
-
-	gothic.BeginAuthHandler(w, r)
 }
 
 func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
@@ -26,15 +26,12 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "Auth error: "+err.Error(), err)
+		log.Printf("[Callback] CompleteUserAuth error: %v", err)
+		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] Auth Error: "+err.Error(), err)
 		return
 	}
 
-	session, err := gothic.Store.New(r, gothic.SessionName)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "Session error: "+err.Error(), err)
-		return
-	}
+	session, _ := gothic.Store.Get(r, gothic.SessionName)
 
 	session.Values["provider"] = "spotify"
 	session.Values["user_id"] = user.UserID
@@ -48,7 +45,9 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Pragma", "no-cache")
 
-	http.Redirect(w, r, "/upload", http.StatusSeeOther)
+	frontendURL := os.Getenv("FRONTEND_REDIRECT_URL")
+
+	http.Redirect(w, r, frontendURL, http.StatusSeeOther)
 }
 
 func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
