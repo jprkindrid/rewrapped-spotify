@@ -19,7 +19,7 @@ import (
 func main() {
 
 	if os.Getenv("DOCKER") == "" {
-		_ = godotenv.Load()
+		_ = godotenv.Load("../.env")
 	}
 
 	spotifyClientID := os.Getenv("SPOTIFY_CLIENT_ID")
@@ -74,13 +74,6 @@ func main() {
 	auth.NewAuth()
 
 	mux := http.NewServeMux()
-
-	// pages
-	mux.HandleFunc("/", cfg.HandlerHome)
-	mux.HandleFunc("/upload", cfg.HandlerUploadPage)
-	mux.Handle("/static/",
-		http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static"))),
-	)
 
 	//api
 	mux.HandleFunc("GET /health", cfg.HandlerHealth)
