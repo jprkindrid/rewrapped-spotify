@@ -11,9 +11,6 @@ importers:
 
   .:
     dependencies:
-      '@tailwindcss/vite':
-        specifier: ^4.1.14
-        version: 4.1.14(rolldown-vite@7.1.14(@types/node@24.7.1)(jiti@2.6.1))
       '@tanstack/react-query':
         specifier: ^5.90.2
         version: 5.90.2(react@19.2.0)
@@ -29,13 +26,13 @@ importers:
       react-dom:
         specifier: ^19.1.1
         version: 19.2.0(react@19.2.0)
-      tailwindcss:
-        specifier: ^4.1.14
-        version: 4.1.14
     devDependencies:
       '@eslint/js':
         specifier: ^9.36.0
         version: 9.37.0
+      '@tailwindcss/vite':
+        specifier: ^4.1.14
+        version: 4.1.14(rolldown-vite@7.1.14(@types/node@24.7.1)(jiti@2.6.1))
       '@types/node':
         specifier: ^24.6.0
         version: 24.7.1
@@ -66,6 +63,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.14
         version: 0.6.14(prettier@3.6.2)
+      tailwindcss:
+        specifier: ^4.1.14
+        version: 4.1.14
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
