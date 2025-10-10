@@ -5,7 +5,9 @@ export const SummaryPage = () => {
     <>
       <NavBar />
       <div className="dark:bg-spotify-black text-spotify-black flex h-screen justify-center bg-white font-sans transition dark:text-white">
-        <div className="w-full max-w-5xl"></div>
+        <div className="w-full max-w-5xl">
+          AND HERE THERE WILL BE COOL THING YES
+        </div>
       </div>
     </>
   );

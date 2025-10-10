@@ -5,11 +5,11 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import SignInPage from "./pages/SignInPage";
 import SummaryPage from "./pages/SummaryPage";
 import { useEffect } from "react";
 import { initTheme } from "./utils/theme";
 import UploadPage from "./pages/UploadPage";
+import HomePage from "./pages/HomePage";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -28,18 +28,14 @@ const indexRoute = createRoute({
       initTheme();
     }, []);
 
-    return (
-      <div className="p-2">
-        <h3>Welcome Home!</h3>
-      </div>
-    );
+    return <HomePage />;
   },
 });
 
 const signInRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/sign-in",
-  component: SignInPage,
+  path: "/home",
+  component: HomePage,
 });
 
 const summaryRoute = createRoute({
