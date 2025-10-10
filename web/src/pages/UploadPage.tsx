@@ -1,7 +1,19 @@
+import { useQuery } from "@tanstack/react-query";
 import Explanation from "../shared-components/Explanation";
 import NavBar from "../shared-components/NavBar";
+import { fetchUserIDs } from "../services/user";
 
 const UploadPage = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["userIDs"],
+    queryFn: fetchUserIDs,
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  console.log(data);
+
+  console.log(data);
   return (
     <>
       <NavBar />

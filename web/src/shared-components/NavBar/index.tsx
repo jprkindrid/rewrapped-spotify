@@ -4,9 +4,9 @@ import DarkModeButtons from "./DarkModeButtons";
 const NavBar = () => {
   return (
     <div>
-      <div className="bg-spotify-black relative flex w-full justify-center pt-6 pb-16 font-sans shadow-sm">
-        <div className="relative mx-8 flex w-full items-center justify-between">
-          <div className="flex space-x-4 text-white">
+      <div className="bg-spotify-black relative flex w-full justify-center pt-6 pb-6 font-sans shadow-sm">
+        <div className="mx-8 flex w-full items-center justify-between">
+          <div className="hidden w-60 space-x-4 text-white sm:flex">
             <button className="hover:text-spotify-green flex text-white transition">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -43,18 +43,19 @@ const NavBar = () => {
             </button>
           </div>
 
-          <div className="absolute top-0 right-1/2 flex translate-x-1/2 flex-col">
+          <div className="mx-auto flex max-w-xl flex-col text-center">
             <div className="text-spotify-green text-4xl">
-              <div className="absolute right-4 h-full"></div>
               <h1 className="font-bold">ReWrapped Spotify</h1>
-              <nav className="font-base flex justify-around pt-4 text-xl">
-                <Link to="/">Home</Link>
+              <nav className="font-base flex justify-around space-x-2 pt-4 text-xl">
+                <Link to="/" className="">
+                  Home
+                </Link>
                 <Link to="/upload">Upload</Link>
                 <Link to="/summary">Analyze</Link>
               </nav>
             </div>
           </div>
-          <div>
+          <div className="hidden w-60 justify-end sm:flex">
             <DarkModeButtons />
           </div>
         </div>

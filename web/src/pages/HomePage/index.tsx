@@ -1,11 +1,8 @@
 import Explanation from "../../shared-components/Explanation";
 import NavBar from "../../shared-components/NavBar";
+import { API_URL } from "../../utils/constants";
 
 const HomePage = () => {
-  // const API_URL = import.meta.env.VITE_API_BASE_URL;
-  const AUTH_URL = import.meta.env.VITE_SPOTIFY_AUTH_URL;
-  // const CALLBACK_URL = import.meta.env.VITE_SPOTIFY_CALLBACK_URL;
-
   return (
     <>
       <NavBar />
@@ -15,7 +12,7 @@ const HomePage = () => {
             <button
               className="bg-spotify-green text-spotify-black flex items-center justify-center rounded-full p-4 text-2xl shadow-sm transition hover:scale-105 hover:cursor-pointer dark:text-white dark:shadow-white"
               onClick={() => {
-                window.location.href = AUTH_URL;
+                window.location.href = `${API_URL}/auth/spotify/login`;
               }}
             >
               <div className="mr-4">

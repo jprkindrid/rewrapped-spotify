@@ -4,19 +4,25 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
-	session, _ := gothic.Store.Get(r, gothic.SessionName)
+
+	session, _ := gothic.Store.Get(r, "user_session")
+	gothic.Logout(w, r)
+
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
+
+	gothic.BeginAuthHandler(w, r)
 }
 
 func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
@@ -31,22 +37,28 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := gothic.Store.Get(r, gothic.SessionName)
+	log.Printf("[Callback] User authenticated: %s", user.UserID)
 
-	session.Values["provider"] = "spotify"
-	session.Values["user_id"] = user.UserID
-	session.Values["user_name"] = user.Name
-
-	if err := session.Save(r, w); err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save session: "+err.Error(), err)
-		return
+	// Fix: Remove the deletion cookie that CompleteUserAuth adds
+	cookies := w.Header()["Set-Cookie"]
+	var validCookies []string
+	for _, cookie := range cookies {
+		// Keep only cookies that aren't deletion cookies (Max-Age=0)
+		if !strings.Contains(cookie, "Max-Age=0") &&
+			!strings.Contains(cookie, "Expires=Thu, 01 Jan 1970") {
+			validCookies = append(validCookies, cookie)
+		}
 	}
 
-	w.Header().Set("Cache-Control", "no-store")
-	w.Header().Set("Pragma", "no-cache")
+	// Clear and re-add only valid cookies
+	w.Header().Del("Set-Cookie")
+	for _, cookie := range validCookies {
+		w.Header().Add("Set-Cookie", cookie)
+	}
+
+	log.Printf("[Callback] Filtered to %d valid cookies", len(validCookies))
 
 	frontendURL := os.Getenv("FRONTEND_REDIRECT_URL")
-
 	http.Redirect(w, r, frontendURL, http.StatusSeeOther)
 }
 
