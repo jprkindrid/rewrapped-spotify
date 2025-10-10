@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	MaxAge = constants.SessionMaxAge // Use constant from constants package
+	MaxAge = constants.SessionMaxAge
 )
 
 func NewAuth() {
 	if os.Getenv("DOCKER") == "" {
-		if err := godotenv.Load(); err != nil {
+		if err := godotenv.Load("../.env"); err != nil {
 			log.Printf("Warning: Error loading .env file: %v", err)
 		}
 	}
@@ -60,8 +60,6 @@ func NewAuth() {
 	gob.Register("")
 	gob.Register(true)
 
-	gothic.Store = store
-
 	goth.UseProviders(
 		spotify.New(
 			spotifyClientID,
@@ -71,6 +69,8 @@ func NewAuth() {
 			"user-read-private",
 		),
 	)
+
+	gothic.Store = store
 
 	log.Printf("[NewAuth] Initialized auth with provider=spotify, callback=%s", callback)
 }
