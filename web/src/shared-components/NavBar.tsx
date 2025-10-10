@@ -1,8 +1,9 @@
+import { Link } from "@tanstack/react-router";
 import * as themeUtil from "../utils/theme";
 
 const NavBar = () => {
   return (
-    <div className="bg-spotify-black dark:shadow-spotify-green relative flex w-full justify-center font-sans shadow-sm">
+    <div className="bg-spotify-black relative flex w-full flex-col items-center justify-center py-6 font-sans shadow-sm">
       <div className="absolute right-4 flex h-full items-center">
         <button
           className="rounded-lg p-2 text-white transition hover:bg-slate-500/50"
@@ -62,8 +63,13 @@ const NavBar = () => {
           </svg>
         </button>
       </div>
-      <div className="text-spotify-green py-8 text-4xl font-bold">
-        ReWrapped Spotify
+      <div className="text-spotify-green text-4xl">
+        <span className="font-bold">ReWrapped Spotify</span>
+        <nav className="font-base flex justify-around pt-4 text-xl">
+          <Link to="/">Home</Link>
+          <Link to="/upload">Upload</Link>
+          <Link to="/summary">Analyze</Link>
+        </nav>
       </div>
     </div>
   );

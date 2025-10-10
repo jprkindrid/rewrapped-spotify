@@ -1,11 +1,17 @@
-import { Outlet, createRoute, createRootRoute } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRoute,
+  createRootRoute,
+  createRouter,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import SignInPage from "./pages/SignInPage";
 import SummaryPage from "./pages/SummaryPage";
 import { useEffect } from "react";
 import { initTheme } from "./utils/theme";
+import UploadPage from "./pages/UploadPage";
 
-export const rootRoute = createRootRoute({
+const rootRoute = createRootRoute({
   component: () => (
     <>
       <Outlet />
@@ -14,7 +20,7 @@ export const rootRoute = createRootRoute({
   ),
 });
 
-export const indexRoute = createRoute({
+const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: function Index() {
@@ -30,14 +36,29 @@ export const indexRoute = createRoute({
   },
 });
 
-export const signInRoute = createRoute({
+const signInRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sign-in",
   component: SignInPage,
 });
 
-export const summaryRoute = createRoute({
+const summaryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/summary",
   component: SummaryPage,
 });
+
+const uploadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/upload",
+  component: UploadPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  signInRoute,
+  summaryRoute,
+  uploadRoute,
+]);
+
+export const router = createRouter({ routeTree });
