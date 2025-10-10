@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+@theme {
+  --color-spotify-green: oklch(0.77 0.212 148.7);
+}

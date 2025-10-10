@@ -1,28 +1,16 @@
-import {
-  Outlet,
-  Link,
-  createRoute,
-  createRootRoute,
-} from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import { Outlet, createRoute, createRootRoute } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import SignInPage from "./pages/SignInPage";
+import SummaryPage from "./pages/SummaryPage";
 
 export const rootRoute = createRootRoute({
   component: () => (
     <>
-      <div className="flex gap-2 p-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>
-      </div>
-      <hr />
       <Outlet />
       <TanStackRouterDevtools />
     </>
   ),
-})
+});
 
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -32,14 +20,18 @@ export const indexRoute = createRoute({
       <div className="p-2">
         <h3>Welcome Home!</h3>
       </div>
-    )
+    );
   },
-})
+});
 
-export const aboutRoute = createRoute({
+export const signInRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/about",
-  component: function About() {
-    return <div className="p-2">Hello from About!</div>
-  },
-})
+  path: "/sign-in",
+  component: SignInPage,
+});
+
+export const summaryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/summary",
+  component: SummaryPage,
+});
