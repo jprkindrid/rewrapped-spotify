@@ -2,4 +2,7 @@
 
 @theme {
   --color-spotify-green: oklch(0.77 0.212 148.7);
+  --color-spotify-black: oklch(0.182 0 0);
 }
+
+@variant dark (&:is(.dark *));

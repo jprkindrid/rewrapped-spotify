@@ -2,6 +2,8 @@ import { Outlet, createRoute, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import SignInPage from "./pages/SignInPage";
 import SummaryPage from "./pages/SummaryPage";
+import { useEffect } from "react";
+import { initTheme } from "./utils/theme";
 
 export const rootRoute = createRootRoute({
   component: () => (
@@ -16,6 +18,10 @@ export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: function Index() {
+    useEffect(() => {
+      initTheme();
+    }, []);
+
     return (
       <div className="p-2">
         <h3>Welcome Home!</h3>
