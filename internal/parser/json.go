@@ -34,11 +34,9 @@ type UserSongData struct {
 	Offline                       bool      `json:"offline"`
 	OfflineTimestamp              int       `json:"offline_timestamp"`
 	IncognitoMode                 bool      `json:"incognito_mode"`
-	//TODO: songid((fromURI)).album.images[3].url to get the tiny image
 }
 
 func ParseJsonFiles(filePaths []string) ([]UserSongData, error) {
-	slog.Info("Starting JSON file parsing", "file_count", len(filePaths))
 	type result struct {
 		songs []UserSongData
 		err   error
