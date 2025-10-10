@@ -10,7 +10,6 @@ import (
 )
 
 func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
-	slog.Info("Starting file extraction", "destination", dest)
 	if err := os.MkdirAll(dest, os.ModePerm); err != nil {
 		slog.Error("Failed to create destination directory", "destination", dest, "error", err)
 		return nil, err
@@ -48,7 +47,6 @@ func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
 			continue
 		}
 
-		slog.Info("Extracting JSON file", "file", f.Name)
 		rc, err := f.Open()
 		if err != nil {
 			slog.Error("Failed to open file in zip", "file", f.Name, "error", err)
@@ -79,10 +77,8 @@ func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
 			return nil, err
 		}
 
-		slog.Info("Successfully extracted file", "path", outPath)
 		extracted = append(extracted, outPath)
 	}
 
-	slog.Info("File extraction completed", "extracted_count", len(extracted))
 	return extracted, nil
 }
