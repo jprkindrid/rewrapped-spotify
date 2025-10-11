@@ -59,6 +59,8 @@ func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
 	}
 	appSession.Options.MaxAge = -1
 	appSession.Save(r, w)
+	gothic.Logout(w, r)
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	log.Println("[Logout] Logging out user")
+	utils.RespondWithJSON(w, http.StatusNoContent, "logout successful")
 }

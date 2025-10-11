@@ -2,23 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import Explanation from "../shared-components/Explanation";
 import NavBar from "../shared-components/NavBar";
 import { fetchUserIDs } from "../services/user";
+import type { UserIdData } from "../shared-components/UserIdData";
 
 const UploadPage = () => {
-  const { data, isLoading, error } = useQuery({
+  const { data: userIdData } = useQuery<UserIdData>({
     queryKey: ["userIDs"],
     queryFn: fetchUserIDs,
     retry: false,
     staleTime: 60_000,
   });
 
-  console.log(data);
-  // console.log(isLoading);
-  // console.log(error);
-
-  console.log(data);
   return (
     <>
-      <NavBar />
+      <NavBar userIdData={userIdData} includeUser={true} />
       <div className="dark:bg-spotify-black text-spotify-black flex w-screen justify-center pt-8 transition dark:text-white">
         <div className="mx-4 h-screen w-full max-w-5xl">
           <section className="flex flex-col items-center rounded-xl border-2 border-stone-500/10 text-center shadow-md dark:border-white/20">
