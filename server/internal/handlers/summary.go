@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
@@ -14,7 +15,7 @@ import (
 func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	sess, err := gothic.Store.Get(r, gothic.SessionName)
+	sess, err := gothic.Store.Get(r, constants.UserSession)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
 		return

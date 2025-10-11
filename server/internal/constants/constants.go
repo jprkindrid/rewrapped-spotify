@@ -31,3 +31,5 @@ const (
 const (
 	DefaultSortBy = SortByCount
 )
+
+const UserSession = "user_session"

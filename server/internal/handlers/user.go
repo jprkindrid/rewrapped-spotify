@@ -4,13 +4,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerUser(w http.ResponseWriter, r *http.Request) {
-	// Check if the gothic session cookie exists
-	cookie, err := r.Cookie(gothic.SessionName)
+	cookie, err := r.Cookie(constants.UserSession)
 	if err != nil || cookie.Value == "" {
 		utils.RespondWithError(w, http.StatusUnauthorized, "No session cookie", nil)
 		return
@@ -18,15 +18,13 @@ func (cfg *ApiConfig) HandlerUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Found cookie: %s", cookie.Name)
 
-	// Now get the session
-	session, err := gothic.Store.Get(r, gothic.SessionName)
+	session, err := gothic.Store.Get(r, constants.UserSession)
 	if err != nil {
 		log.Printf("Error getting session: %v", err)
 		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
 		return
 	}
 
-	// Check for our stored fields
 	userID, ok := session.Values["user_id"].(string)
 	if !ok || userID == "" {
 		log.Printf("No user_id in session. Session values: %v", session.Values)
