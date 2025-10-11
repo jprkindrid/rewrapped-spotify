@@ -5,7 +5,7 @@ import { API_URL } from "../../utils/constants";
 const HomePage = () => {
   return (
     <>
-      <NavBar />
+      <NavBar userIdData={undefined} includeUser={false} />
       <div className="dark:bg-spotify-black text-spotify-black flex w-screen justify-center pt-8 transition dark:text-white">
         <div className="mx-4 h-screen w-full max-w-5xl">
           <div className="mt-4 mb-8 flex flex-col items-center rounded-xl">

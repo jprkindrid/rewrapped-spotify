@@ -82,9 +82,9 @@ func main() {
 	mux.HandleFunc("GET /api/summary", cfg.HandlerSummary)
 	mux.HandleFunc("GET /auth/spotify/login", cfg.HandlerLogin)
 	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
+	mux.HandleFunc("POST /auth/logout", cfg.HandlerLogout)
 	mux.HandleFunc("GET /api/user", cfg.HandlerUser)
 	mux.HandleFunc("GET /callback", cfg.HandlerCallback)
-	mux.HandleFunc("POST /auth/logout", cfg.HandlerLogout)
 	mux.HandleFunc("DELETE /api/delete", cfg.HandlerDelete)
 
 	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", "http://127.0.0.1:4173", " https://127.0.0.1:4173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
