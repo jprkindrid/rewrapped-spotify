@@ -50,9 +50,15 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
-	err := gothic.Logout(w, r)
+
+	appSession, err := gothic.Store.Get(r, constants.UserSession)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "error logging out", err)
+		log.Printf(("[Logout] Error getting user session"))
+		utils.RespondWithError(w, http.StatusInternalServerError, "[Logout] Auth Error: "+err.Error(), err)
+
 	}
+	appSession.Options.MaxAge = -1
+	appSession.Save(r, w)
+
 	http.Redirect(w, r, "/", http.StatusFound)
 }
