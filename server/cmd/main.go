@@ -87,12 +87,12 @@ func main() {
 	mux.HandleFunc("POST /auth/logout", cfg.HandlerLogout)
 	mux.HandleFunc("DELETE /api/delete", cfg.HandlerDelete)
 
-	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
+	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", "http://127.0.0.1:4173", " https://127.0.0.1:4173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
 
-	if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
-		allowedOrigins = []string{"INSERT URL HERE"}
-		log.Fatal("REDIRECT URL NOT YET SET UP")
-	}
+	// if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
+	// 	allowedOrigins = []string{"INSERT URL HERE"}
+	// 	log.Fatal("REDIRECT URL NOT YET SET UP")
+	// }
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   allowedOrigins,

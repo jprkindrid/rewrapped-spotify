@@ -12,6 +12,8 @@ const UploadPage = () => {
   });
 
   console.log(data);
+  // console.log(isLoading);
+  // console.log(error);
 
   console.log(data);
   return (
