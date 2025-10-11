@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import Explanation from "../shared-components/Explanation";
 import NavBar from "../shared-components/NavBar";
-import { fetchUserIDs } from "../services/user";
+import * as userService from "../services/user";
 import type { UserIdData } from "../shared-components/UserIdData";
 
 const UploadPage = () => {
   const { data: userIdData } = useQuery<UserIdData>({
     queryKey: ["userIDs"],
-    queryFn: fetchUserIDs,
+    queryFn: userService.fetchUserIDs,
     retry: false,
     staleTime: 60_000,
   });

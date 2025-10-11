@@ -9,7 +9,6 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 )
 
-// ValidationError represents input validation errors
 type ValidationError struct {
 	Field   string
 	Message string
@@ -19,26 +18,22 @@ func (e ValidationError) Error() string {
 	return fmt.Sprintf("validation error for field '%s': %s", e.Field, e.Message)
 }
 
-// PaginationParams holds validated pagination parameters
 type PaginationParams struct {
 	OffsetTracks  int
 	OffsetArtists int
 	Limit         int
 }
 
-// TimeRangeParams holds validated time range parameters
 type TimeRangeParams struct {
 	Start time.Time
 	End   time.Time
 }
 
-// SortParams holds validated sort parameters
 type SortParams struct {
 	SortByArtists string
 	SortByTracks  string
 }
 
-// ValidatePaginationParams validates and parses pagination parameters
 func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
 	offsetTrackStr := r.URL.Query().Get("offset_tracks")
 	offsetArtistStr := r.URL.Query().Get("offset_artists")
@@ -47,7 +42,6 @@ func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
 	params := &PaginationParams{}
 	var err error
 
-	// Parse offset_tracks with validation
 	if offsetTrackStr != "" {
 		params.OffsetTracks, err = strconv.Atoi(offsetTrackStr)
 		if err != nil {
@@ -58,7 +52,6 @@ func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
 		}
 	}
 
-	// Parse offset_artists with validation
 	if offsetArtistStr != "" {
 		params.OffsetArtists, err = strconv.Atoi(offsetArtistStr)
 		if err != nil {
@@ -69,7 +62,6 @@ func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
 		}
 	}
 
-	// Parse limit with validation
 	if limitStr != "" {
 		params.Limit, err = strconv.Atoi(limitStr)
 		if err != nil {
@@ -79,13 +71,12 @@ func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
 			return nil, ValidationError{Field: "limit", Message: fmt.Sprintf("must be between %d and %d", constants.MinLimit, constants.MaxLimit)}
 		}
 	} else {
-		params.Limit = constants.DefaultLimit // Default
+		params.Limit = constants.DefaultLimit
 	}
 
 	return params, nil
 }
 
-// ValidateTimeRange validates and parses time range parameters
 func ValidateTimeRange(r *http.Request) (*TimeRangeParams, error) {
 	startStr := r.URL.Query().Get("start")
 	endStr := r.URL.Query().Get("end")
@@ -111,7 +102,6 @@ func ValidateTimeRange(r *http.Request) (*TimeRangeParams, error) {
 		}
 	}
 
-	// Validate that start is before end
 	if !params.Start.IsZero() && params.Start.After(params.End) {
 		return nil, ValidationError{Field: "start", Message: "start time must be before end time"}
 	}
@@ -119,12 +109,10 @@ func ValidateTimeRange(r *http.Request) (*TimeRangeParams, error) {
 	return params, nil
 }
 
-// ValidateSortParams validates sort parameters
 func ValidateSortParams(r *http.Request) *SortParams {
 	sortByArtists := r.URL.Query().Get("sort_by_artists")
 	sortByTracks := r.URL.Query().Get("sort_by_tracks")
 
-	// Default to "count" if invalid
 	if sortByArtists != constants.SortByTime && sortByArtists != constants.SortByCount {
 		sortByArtists = constants.DefaultSortBy
 	}
