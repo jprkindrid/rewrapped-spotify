@@ -20,6 +20,10 @@ export const SummaryPage = () => {
         limit: 10,
     });
 
+    const [displayType, setDisplayType] = useState<"tracks" | "artists">(
+        "tracks"
+    );
+
     const { data: userIdData } = useQuery<UserIdData>({
         queryKey: ["userIDs"],
         queryFn: userService.fetchUserIDs,
@@ -37,21 +41,15 @@ export const SummaryPage = () => {
     return (
         <>
             <NavBar userIdData={userIdData} includeUser={true} />
-            <div className="dark:bg-spotify-black text-spotify-black relative flex h-screen justify-center border border-red-500 bg-white font-sans transition dark:text-white">
+            <div className="dark:bg-spotify-black text-spotify-black relative flex h-screen justify-center bg-white font-sans transition dark:text-white">
                 <div className="flex h-full w-full max-w-5xl flex-col">
                     <SummaryBlock
-                        displayType="tracks"
+                        displayType={displayType}
+                        setDisplayType={setDisplayType}
                         summaryData={summaryData}
                         setRange={setRange}
                         setOffSetLimit={setOffsetLimit}
-                        isLoading={summaryIsLoading}
-                        error={summaryError}
-                    />
-                    <SummaryBlock
-                        displayType="artists"
-                        summaryData={summaryData}
-                        setRange={setRange}
-                        setOffSetLimit={setOffsetLimit}
+                        offsetLimit={offsetLimit}
                         isLoading={summaryIsLoading}
                         error={summaryError}
                     />
