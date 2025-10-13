@@ -185,24 +185,21 @@ func TestValidateSortParams(t *testing.T) {
 			name:  "valid sort params",
 			query: url.Values{"sort_by_artists": {"time"}, "sort_by_tracks": {"count"}},
 			expected: &SortParams{
-				SortByArtists: constants.SortByTime,
-				SortByTracks:  constants.SortByCount,
+				SortBy: constants.SortByTime,
 			},
 		},
 		{
 			name:  "empty values use defaults",
 			query: url.Values{},
 			expected: &SortParams{
-				SortByArtists: constants.DefaultSortBy,
-				SortByTracks:  constants.DefaultSortBy,
+				SortBy: constants.SortByTime,
 			},
 		},
 		{
 			name:  "invalid values use defaults",
 			query: url.Values{"sort_by_artists": {"invalid"}, "sort_by_tracks": {"invalid"}},
 			expected: &SortParams{
-				SortByArtists: constants.DefaultSortBy,
-				SortByTracks:  constants.DefaultSortBy,
+				SortBy: constants.SortByTime,
 			},
 		},
 	}
@@ -211,14 +208,12 @@ func TestValidateSortParams(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			req := &http.Request{URL: &url.URL{RawQuery: tt.query.Encode()}}
 
-			result := ValidateSortParams(req)
+			result := ValidateSortParam(req)
 
-			if result.SortByArtists != tt.expected.SortByArtists {
-				t.Errorf("expected SortByArtists %s, got %s", tt.expected.SortByArtists, result.SortByArtists)
+			if result.SortBy != tt.expected.SortBy {
+				t.Errorf("expected SortByArtists %s, got %s", tt.expected.SortBy, result.SortBy)
 			}
-			if result.SortByTracks != tt.expected.SortByTracks {
-				t.Errorf("expected SortByTracks %s, got %s", tt.expected.SortByTracks, result.SortByTracks)
-			}
+
 		})
 	}
 }
