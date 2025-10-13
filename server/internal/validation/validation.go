@@ -30,8 +30,7 @@ type TimeRangeParams struct {
 }
 
 type SortParams struct {
-	SortByArtists string
-	SortByTracks  string
+	SortBy string
 }
 
 func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
@@ -109,19 +108,14 @@ func ValidateTimeRange(r *http.Request) (*TimeRangeParams, error) {
 	return params, nil
 }
 
-func ValidateSortParams(r *http.Request) *SortParams {
-	sortByArtists := r.URL.Query().Get("sort_by_artists")
-	sortByTracks := r.URL.Query().Get("sort_by_tracks")
+func ValidateSortParam(r *http.Request) *SortParams {
+	sortBy := r.URL.Query().Get("sort_by")
 
-	if sortByArtists != constants.SortByTime && sortByArtists != constants.SortByCount {
-		sortByArtists = constants.DefaultSortBy
-	}
-	if sortByTracks != constants.SortByTime && sortByTracks != constants.SortByCount {
-		sortByTracks = constants.DefaultSortBy
+	if sortBy != constants.SortByTime && sortBy != constants.SortByCount {
+		sortBy = constants.DefaultSortBy
 	}
 
 	return &SortParams{
-		SortByArtists: sortByArtists,
-		SortByTracks:  sortByTracks,
+		SortBy: sortBy,
 	}
 }

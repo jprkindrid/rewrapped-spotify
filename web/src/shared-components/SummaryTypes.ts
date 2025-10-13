@@ -14,8 +14,7 @@ export interface SummmaryResponse {
 export interface SummaryParams extends OffsetLimit {
     start: Date;
     end: Date;
-    sortByTracks: "time" | "count";
-    sortByArtists: "time" | "count";
+    sortBy: SummarySortBy;
 }
 
 export interface OffsetLimit {
@@ -34,8 +33,7 @@ export interface SummaryEntry {
 
 export type SummaryFilters = {
     range: DateRange | undefined;
-    sortByArtists: SummarySortBy;
-    sortByTracks: SummarySortBy;
+    sortBy: SummarySortBy;
     offsetLimit: OffsetLimit;
 };
 

@@ -30,8 +30,7 @@ export const SummaryPage = () => {
 
     const [filters, setFilters] = useState<SummaryFilters>({
         range: initialRange,
-        sortByArtists: "count", // TODO: make this one parameter
-        sortByTracks: "count",
+        sortBy: "count",
         offsetLimit: initialOffsetLimit,
     });
 
@@ -51,12 +50,7 @@ export const SummaryPage = () => {
         data: summaryData,
         isLoading: summaryIsLoading,
         error: summaryError,
-    } = useSummaryQuery(
-        filters.range,
-        filters.offsetLimit,
-        filters.sortByArtists,
-        filters.sortByTracks
-    );
+    } = useSummaryQuery(filters.range, filters.offsetLimit, filters.sortBy);
 
     return (
         <>

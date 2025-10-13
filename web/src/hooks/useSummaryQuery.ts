@@ -10,36 +10,21 @@ import * as summaryService from "../services/summary";
 export function useSummaryQuery(
     range: DateRange | undefined,
     offsetLimit: OffsetLimit,
-    sortByArtists: SummarySortBy,
-    sortByTracks: SummarySortBy
+    sortBy: SummarySortBy
 ) {
-    type SummaryKey = [
-        string,
-        DateRange,
-        OffsetLimit,
-        SummarySortBy,
-        SummarySortBy,
-    ];
+    type SummaryKey = [string, DateRange, OffsetLimit, SummarySortBy];
 
     return useQuery<SummmaryResponse, Error, SummmaryResponse, SummaryKey>({
-        queryKey: [
-            "summary",
-            range,
-            offsetLimit,
-            sortByArtists,
-            sortByTracks,
-        ] as SummaryKey,
+        queryKey: ["summary", range, offsetLimit, sortBy] as SummaryKey,
         queryFn: ({ queryKey }: QueryFunctionContext<SummaryKey>) => {
-            const [, range, offsetLimit, sortByArtists, sortByTracks] =
-                queryKey;
+            const [, range, offsetLimit, sortBy] = queryKey;
             return summaryService.getUserSummary({
                 start: range.from!,
                 end: range.to!,
                 offsetTracks: offsetLimit.offsetTracks!,
                 offsetArtists: offsetLimit.offsetArtists!,
                 limit: offsetLimit.limit!,
-                sortByArtists: sortByArtists,
-                sortByTracks: sortByTracks,
+                sortBy: sortBy,
             });
         },
         retry: false,
