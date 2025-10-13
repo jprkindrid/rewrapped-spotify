@@ -29,3 +29,5 @@ export interface SummaryEntry {
     id: string;
     imageUrl: string;
 }
+
+export type SummarySortBy = "time" | "count";

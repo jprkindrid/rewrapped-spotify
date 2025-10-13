@@ -10,6 +10,8 @@ export async function getUserSummary({
     offsetArtists = 0,
     offsetTracks = 0,
     limit = 10,
+    sortByArtists = "count",
+    sortByTracks = "count",
 }: SummaryParams): Promise<SummmaryResponse> {
     const params = new URLSearchParams({
         start: start.toISOString(),
@@ -17,6 +19,8 @@ export async function getUserSummary({
         offsetTracks: offsetTracks.toString(),
         offsetArtists: offsetArtists.toString(),
         limit: limit.toString(),
+        sortByArtists: sortByArtists.toString(),
+        sortByTracks: sortByTracks.toString(),
     });
     const reqString = `/api/summary?${params.toString()}`;
     const res = await apiFetch("GET", reqString);

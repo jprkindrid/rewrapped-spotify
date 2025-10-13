@@ -1,4 +1,3 @@
-import type { DateRange } from "react-day-picker";
 import type {
     OffsetLimit,
     SummaryEntry,
@@ -6,10 +5,10 @@ import type {
 } from "../../../shared-components/SummaryTypes";
 import type { Setter } from "../../../utils/types";
 import clsx from "clsx";
+import ItemLinkButton from "./ItemLinkButton";
+import { formatMsDuration } from "../../../utils/formatDuration";
 
 type SummaryBlockProps = {
-    setRange: Setter<DateRange>;
-    setOffSetLimit: Setter<OffsetLimit>;
     offsetLimit: OffsetLimit;
     setDisplayType: Setter<"artists" | "tracks">;
     displayType: "artists" | "tracks";
@@ -19,8 +18,6 @@ type SummaryBlockProps = {
 };
 
 const SummaryBlock = ({
-    setRange,
-    setOffSetLimit,
     offsetLimit,
     setDisplayType,
     displayType,
@@ -39,6 +36,10 @@ const SummaryBlock = ({
 
     const placeHolderImgUrl =
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
+
+    console.log(summaryData?.top_tracks[0]);
+    console.log(summaryData?.top_artists[0]);
+
     return (
         <>
             <div className="border-spotify-black/50 relative my-2 flex flex-1 flex-col items-center overflow-clip rounded-lg border dark:border-white/50">
@@ -47,55 +48,75 @@ const SummaryBlock = ({
                         Error Getting Summary Data
                     </div>
                 )}
-                <div className="bg-spotify-green dark:bg-spotify-black w-full px-5 py-4 dark:border-b dark:border-white/50">
-                    <div className="text-spotify-black dark:text-spotify-green flex items-center font-bold">
+                <div className="bg-spotify-black flex w-full justify-center border-b border-white/50 px-5 py-2">
+                    <div className="bg-spotify-green flex overflow-clip rounded-md font-bold">
                         <button
-                            className="text-spotify-green dark:bg-spotify-green dark:text-spotify-black mr-2 rounded-md border border-black bg-black"
+                            className={clsx(
+                                "border-r border-black px-4 py-2",
+                                displayType !== "artists" &&
+                                    "text-spotify-green bg-stone-800 hover:cursor-pointer"
+                            )}
                             onClick={() => {
-                                setDisplayType((prev) =>
-                                    prev === "artists" ? "tracks" : "artists"
-                                );
+                                setDisplayType("artists");
                             }}
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2.5}
-                                stroke="currentColor"
-                                className="size-6"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
-                                />
-                            </svg>
+                            ARTISTS
                         </button>
-                        {displayType.toLocaleUpperCase()}
+                        <button
+                            className={clsx(
+                                "border-r border-black px-4 py-2",
+                                displayType !== "tracks" &&
+                                    "text-spotify-green bg-stone-800 hover:cursor-pointer"
+                            )}
+                            onClick={() => {
+                                setDisplayType("tracks");
+                            }}
+                        >
+                            TRACKS
+                        </button>
                     </div>
                 </div>
-                <div className="from-spotify-green/40 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white dark:via-stone-600 dark:to-90%">
+                <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white dark:from-stone-800">
                     {displayData?.map((item: SummaryEntry, i) => (
                         <div
                             key={i}
                             className={clsx(
-                                "border-spotify-black/50 mx-2 my-1 flex flex-1 items-center justify-between px-4 dark:border-white/50",
+                                "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2",
                                 i !== 0 && "border-t"
                             )}
                         >
-                            <div className="flex items-center text-2xl text-shadow-sm">
-                                <img
-                                    src={placeHolderImgUrl} // TODO: REPLACE THIS
-                                    className="mr-4 h-auto max-h-[80px] object-contain"
-                                />
-                                <div className="text-spotify-green mr-2 font-bold">
-                                    {i + offset * offsetLimit.limit + 1}
-                                    {"."}
+                            <div className="flex flex-1 items-center gap-3">
+                                <div className="mt-2 flex w-full items-center text-2xl text-shadow-sm">
+                                    <img
+                                        src={placeHolderImgUrl} // TODO: REPLACE THIS
+                                        className="mr-4 h-auto max-h-[80px] object-contain"
+                                    />
+                                    <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
+                                        <div className="flex sm:w-1/2">
+                                            <div className="text-spotify-green mr-2 flex font-bold">
+                                                {i +
+                                                    offset * offsetLimit.limit +
+                                                    1}
+                                                {"."}
+                                            </div>
+                                            <div>{item.Name}</div>
+                                        </div>
+
+                                        <div className="flex flex-1 text-base text-neutral-400 tabular-nums">
+                                            <div className="mr-1">
+                                                {item.Count} Plays -
+                                            </div>
+                                            <div>
+                                                {formatMsDuration(item.TotalMs)}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>{item.Name}</div>
                             </div>
-                            <div>yo</div>
+
+                            <div>
+                                <ItemLinkButton link={placeHolderImgUrl} />
+                            </div>
                         </div>
                     ))}
                 </div>
