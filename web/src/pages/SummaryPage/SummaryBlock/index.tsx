@@ -2,11 +2,11 @@ import type {
     OffsetLimit,
     SummaryEntry,
     SummmaryResponse,
-} from "../../../shared-components/SummaryTypes";
-import type { Setter } from "../../../utils/types";
+} from "@/shared-components/SummaryTypes";
+import type { Setter } from "@/utils/types";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
-import { formatMsDuration } from "../../../utils/formatDuration";
+import { formatMsDuration } from "@/utils/formatDuration";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
