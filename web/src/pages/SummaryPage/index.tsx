@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import * as userService from "../../services/user";
 import NavBar from "../../shared-components/NavBar";
 import type { UserIdData } from "../../shared-components/UserIdData";
-import type { OffsetLimit } from "../../shared-components/SummaryTypes";
+import {
+    type SummarySortBy,
+    type OffsetLimit,
+} from "../../shared-components/SummaryTypes";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "../../hooks/useSummaryQuery";
@@ -21,8 +24,11 @@ export const SummaryPage = () => {
     });
 
     const [displayType, setDisplayType] = useState<"tracks" | "artists">(
-        "tracks"
+        "artists"
     );
+
+    const [sortByArtists, setSortByArtists] = useState<SummarySortBy>("count");
+    const [sortByTracks, setSortByTracks] = useState<SummarySortBy>("count");
 
     const { data: userIdData } = useQuery<UserIdData>({
         queryKey: ["userIDs"],
@@ -35,20 +41,20 @@ export const SummaryPage = () => {
         data: summaryData,
         isLoading: summaryIsLoading,
         error: summaryError,
-    } = useSummaryQuery(range, offsetLimit);
+    } = useSummaryQuery(range, offsetLimit, sortByArtists, sortByTracks);
 
-    console.log(summaryData);
     return (
         <>
             <NavBar userIdData={userIdData} includeUser={true} />
-            <div className="dark:bg-spotify-black text-spotify-black relative flex h-screen justify-center bg-white font-sans transition dark:text-white">
+            <div className="dark:bg-spotify-black text-spotify-black relative flex h-screen flex-col items-center justify-center bg-white font-sans transition dark:text-white">
+                <div className="border-spotify-black/50 mt-4 flex w-full max-w-5xl justify-center rounded-md border p-4 dark:border-white/50">
+                    INSERT CONTROLS HERE
+                </div>
                 <div className="flex h-full w-full max-w-5xl flex-col">
                     <SummaryBlock
                         displayType={displayType}
                         setDisplayType={setDisplayType}
                         summaryData={summaryData}
-                        setRange={setRange}
-                        setOffSetLimit={setOffsetLimit}
                         offsetLimit={offsetLimit}
                         isLoading={summaryIsLoading}
                         error={summaryError}
