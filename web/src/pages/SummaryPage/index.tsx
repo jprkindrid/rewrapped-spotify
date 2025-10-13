@@ -3,8 +3,8 @@ import * as userService from "@/services/user";
 import NavBar from "@/shared-components/NavBar";
 import type { UserIdData } from "@/shared-components/UserIdData";
 import {
-    type SummarySortBy,
     type OffsetLimit,
+    type SummaryFilters,
 } from "@/shared-components/SummaryTypes";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
@@ -13,23 +13,32 @@ import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./SummaryBlock/FilterControls";
 
 export const SummaryPage = () => {
-    const [range, setRange] = useState<DateRange | undefined>({
-        from: new Date(2011, 0, 1),
-        to: new Date(),
-    } as DateRange);
-
-    const [offsetLimit, setOffsetLimit] = useState<OffsetLimit>({
-        offsetTracks: 0,
-        offsetArtists: 0,
-        limit: 10,
-    });
-
     const [displayType, setDisplayType] = useState<"tracks" | "artists">(
         "artists"
     );
 
-    const [sortByArtists, setSortByArtists] = useState<SummarySortBy>("count"); // TODO: make this one parameter
-    const [sortByTracks, setSortByTracks] = useState<SummarySortBy>("count");
+    const initialRange: DateRange = {
+        from: new Date(2011, 0, 1),
+        to: new Date(),
+    };
+
+    const initialOffsetLimit: OffsetLimit = {
+        offsetTracks: 0,
+        offsetArtists: 0,
+        limit: 10,
+    };
+
+    const [filters, setFilters] = useState<SummaryFilters>({
+        range: initialRange,
+        sortByArtists: "count", // TODO: make this one parameter
+        sortByTracks: "count",
+        offsetLimit: initialOffsetLimit,
+    });
+
+    const [bufferFilters, setBufferFilters] = useState(filters);
+
+    const handleApply = () => setFilters(bufferFilters);
+    const handleReset = () => setBufferFilters(filters);
 
     const { data: userIdData } = useQuery<UserIdData>({
         queryKey: ["userIDs"],
@@ -42,7 +51,12 @@ export const SummaryPage = () => {
         data: summaryData,
         isLoading: summaryIsLoading,
         error: summaryError,
-    } = useSummaryQuery(range, offsetLimit, sortByArtists, sortByTracks);
+    } = useSummaryQuery(
+        filters.range,
+        filters.offsetLimit,
+        filters.sortByArtists,
+        filters.sortByTracks
+    );
 
     return (
         <>
@@ -50,12 +64,10 @@ export const SummaryPage = () => {
             <div className="dark:bg-spotify-black text-spotify-black relative flex h-screen flex-col items-center justify-center bg-white font-sans transition dark:text-white">
                 <div className="border-spotify-black/50 mt-4 flex w-full max-w-5xl justify-center rounded-md border p-4 dark:border-white/50">
                     <FilterControls
-                        range={range}
-                        setRange={setRange}
-                        offsetLimit={offsetLimit}
-                        setOffsetLimit={setOffsetLimit}
-                        setSortByArtists={setSortByArtists}
-                        setSortByTracks={setSortByTracks}
+                        bufferFilters={bufferFilters}
+                        setBufferFilters={setBufferFilters}
+                        onApply={handleApply}
+                        onReset={handleReset}
                     />
                 </div>
                 <div className="flex h-full w-full max-w-5xl flex-col">
@@ -63,7 +75,7 @@ export const SummaryPage = () => {
                         displayType={displayType}
                         setDisplayType={setDisplayType}
                         summaryData={summaryData}
-                        offsetLimit={offsetLimit}
+                        offsetLimit={filters.offsetLimit}
                         isLoading={summaryIsLoading}
                         error={summaryError}
                     />

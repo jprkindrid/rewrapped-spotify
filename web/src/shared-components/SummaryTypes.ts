@@ -1,3 +1,5 @@
+import type { DateRange } from "react-day-picker";
+
 export interface SummmaryResponse {
     offset_artists: number;
     offset_tracks: number;
@@ -29,5 +31,12 @@ export interface SummaryEntry {
     id: string;
     imageUrl: string;
 }
+
+export type SummaryFilters = {
+    range: DateRange | undefined;
+    sortByArtists: SummarySortBy;
+    sortByTracks: SummarySortBy;
+    offsetLimit: OffsetLimit;
+};
 
 export type SummarySortBy = "time" | "count";
