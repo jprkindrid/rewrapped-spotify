@@ -8,7 +8,7 @@ import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as summaryService from "../services/summary";
 
 export function useSummaryQuery(
-    range: DateRange,
+    range: DateRange | undefined,
     offsetLimit: OffsetLimit,
     sortByArtists: SummarySortBy,
     sortByTracks: SummarySortBy

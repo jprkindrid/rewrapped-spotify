@@ -5,21 +5,21 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+    plugins: [react(), tailwindcss()],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "src"),
+        },
     },
-  },
-  server: {
-    host: "127.0.0.1",
-    port: 5173,
-    proxy: {
-      "^/(api|auth)": {
-        target: "http://127.0.0.1:8080",
-        changeOrigin: true,
-        cookieDomainRewrite: "127.0.0.1",
-      },
+    server: {
+        host: "127.0.0.1",
+        port: 5173,
+        proxy: {
+            "^/(api|auth)": {
+                target: "http://127.0.0.1:8080",
+                changeOrigin: true,
+                cookieDomainRewrite: "127.0.0.1",
+            },
+        },
     },
-  },
 });
