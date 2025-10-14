@@ -6,7 +6,7 @@ import type {
 import type { Setter } from "@/utils/types";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
-import { formatMsDuration } from "@/utils/formatDuration";
+import SummaryItem from "./SummaryItem";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
@@ -22,6 +22,7 @@ const SummaryBlock = ({
     setDisplayType,
     displayType,
     summaryData,
+    isLoading,
     error,
 }: SummaryBlockProps) => {
     const displayData: SummaryEntry[] | undefined =
@@ -33,6 +34,8 @@ const SummaryBlock = ({
         displayType === "artists"
             ? offsetLimit.offsetArtists
             : offsetLimit.offsetTracks;
+
+    const limit: number = offsetLimit.limit;
 
     const placeHolderImgUrl =
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
@@ -77,7 +80,7 @@ const SummaryBlock = ({
                 </div>
             </div>
             <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white dark:from-stone-800">
-                {summaryData ? (
+                {displayData ? (
                     displayData?.map((item: SummaryEntry, i) => (
                         <div
                             key={i}
@@ -87,32 +90,13 @@ const SummaryBlock = ({
                             )}
                         >
                             <div className="flex flex-1 items-center gap-3">
-                                <div className="mt-2 flex w-full items-center text-2xl text-shadow-sm">
-                                    <img
-                                        src={placeHolderImgUrl} // TODO: REPLACE THIS
-                                        className="mr-4 h-auto max-h-[80px] object-contain"
-                                    />
-                                    <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
-                                        <div className="flex sm:w-1/2">
-                                            <div className="text-spotify-green mr-2 flex font-bold">
-                                                {i +
-                                                    offset * offsetLimit.limit +
-                                                    1}
-                                                {"."}
-                                            </div>
-                                            <div>{item.Name}</div>
-                                        </div>
-
-                                        <div className="flex flex-1 text-base text-neutral-400 tabular-nums">
-                                            <div className="mr-1">
-                                                {item.Count} Plays -
-                                            </div>
-                                            <div>
-                                                {formatMsDuration(item.TotalMs)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <SummaryItem
+                                    i={i}
+                                    item={item}
+                                    offset={offset}
+                                    limit={limit}
+                                    isLoading={isLoading}
+                                />
                             </div>
 
                             <div>
@@ -121,8 +105,10 @@ const SummaryBlock = ({
                         </div>
                     ))
                 ) : (
-                    <div> Loading... </div>
-                )}{" "}
+                    <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
+                        No Data To Display For Current Selection
+                    </div>
+                )}
                 {/* TODO: REPLACE WITH IS LOADING PATTERN*/}
             </div>
         </div>

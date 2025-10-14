@@ -55,9 +55,9 @@ export const SummaryPage = () => {
     return (
         <>
             <NavBar userIdData={userIdData} includeUser={true} />
-            <div className="dark:bg-spotify-black text-spotify-black flex h-full w-full flex-col items-center justify-center bg-white py-4 font-sans transition sm:pb-16 dark:text-white">
+            <div className="dark:bg-spotify-black text-spotify-black flex h-screen w-full flex-col items-center bg-white py-4 font-sans transition sm:pb-16 dark:text-white">
                 <div className="w-full max-w-5xl">
-                    <div className="border-spotify-black/50 mx-2 mb-4 flex justify-center rounded-md border px-4 pb-2 dark:border-white/50">
+                    <div className="shadow:md mx-2 mb-4 flex justify-center rounded-md border border-stone-500/10 px-4 pb-2 shadow-md dark:border-white/50">
                         <FilterControls
                             bufferFilters={bufferFilters}
                             setBufferFilters={setBufferFilters}
