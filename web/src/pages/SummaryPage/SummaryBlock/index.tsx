@@ -45,7 +45,7 @@ const SummaryBlock = ({
             {error && (
                 <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center bg-stone-400/50 text-center text-2xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-stone-800/50">
                     <div>Error Getting Summary Data:</div>
-                    <div>{error.message}</div>
+                    <div className="text-sm">{error.message}</div>
                 </div>
             )}
             <div className="bg-spotify-black flex w-full justify-center border-b border-white/50 px-5 py-2">
