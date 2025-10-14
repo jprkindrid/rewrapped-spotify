@@ -44,9 +44,6 @@ const FilterControls = ({
                 />
             </div>
             <div className="flex items-center">
-                <label className="text-muted-foreground w-24 shrink-0 text-sm">
-                    By Year:
-                </label>
                 <YearRangeDropown setBufferFilters={setBufferFilters} />
             </div>
         </div>

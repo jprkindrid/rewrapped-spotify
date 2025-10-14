@@ -43,7 +43,7 @@ const DateRangePicker: React.FC<Props> = ({
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
-                            className="h-8 w-[140px] justify-start text-left font-normal"
+                            className="h-8 w-32 justify-start text-left font-normal"
                         >
                             {range?.from ? (
                                 <span>{format(range.from, "LLL dd, y")}</span>
@@ -78,7 +78,7 @@ const DateRangePicker: React.FC<Props> = ({
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
-                            className="h-8 w-[140px] justify-start text-left font-normal"
+                            className="h-8 w-32 justify-start text-left font-normal"
                         >
                             {range?.to ? (
                                 <span>{format(range.to, "LLL dd, y")}</span>
