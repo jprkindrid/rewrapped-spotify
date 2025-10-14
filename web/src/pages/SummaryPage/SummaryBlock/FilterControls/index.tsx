@@ -2,6 +2,7 @@ import type { SummaryFilters } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
 
 import DateRangePicker from "./DateRangePicker";
+import YearRangeDropown from "./YearRangeDropdown";
 
 type FilterControlParams = {
     bufferFilters: SummaryFilters;
@@ -17,8 +18,8 @@ const FilterControls = ({
     onReset,
 }: FilterControlParams) => {
     return (
-        <div className="flex flex-col items-center">
-            <div className="text-spotify-green text-2xl font-bold">
+        <div className="flex flex-col items-center text-start">
+            <div className="text-spotify-green text-2xl font-bold text-shadow-sm">
                 Filter Controls
             </div>
             <div className="mt-4 flex justify-end gap-2">
@@ -35,12 +36,18 @@ const FilterControls = ({
                     Apply
                 </button>
             </div>
-            <div className="my-2 flex flex-col items-center justify-center text-center">
+            <div className="my-2 flex flex-col justify-center text-start">
                 <div className="underline">Date Range</div>
                 <DateRangePicker
                     bufferFilters={bufferFilters}
                     setBufferFilters={setBufferFilters}
                 />
+            </div>
+            <div className="flex items-center">
+                <label className="text-muted-foreground w-24 shrink-0 text-sm">
+                    By Year:
+                </label>
+                <YearRangeDropown setBufferFilters={setBufferFilters} />
             </div>
         </div>
     );

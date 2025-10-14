@@ -55,24 +55,26 @@ export const SummaryPage = () => {
     return (
         <>
             <NavBar userIdData={userIdData} includeUser={true} />
-            <div className="dark:bg-spotify-black text-spotify-black relative flex h-screen flex-col items-center justify-center bg-white font-sans transition dark:text-white">
-                <div className="border-spotify-black/50 mt-4 flex w-full max-w-5xl justify-center rounded-md border p-4 dark:border-white/50">
-                    <FilterControls
-                        bufferFilters={bufferFilters}
-                        setBufferFilters={setBufferFilters}
-                        onApply={handleApply}
-                        onReset={handleReset}
-                    />
-                </div>
-                <div className="flex h-full w-full max-w-5xl flex-col">
-                    <SummaryBlock
-                        displayType={displayType}
-                        setDisplayType={setDisplayType}
-                        summaryData={summaryData}
-                        offsetLimit={filters.offsetLimit}
-                        isLoading={summaryIsLoading}
-                        error={summaryError}
-                    />
+            <div className="dark:bg-spotify-black text-spotify-black flex h-full w-full flex-col items-center justify-center bg-white py-4 font-sans transition sm:pb-16 dark:text-white">
+                <div className="w-full max-w-5xl">
+                    <div className="border-spotify-black/50 mb-4 flex justify-center rounded-md border px-4 pb-2 dark:border-white/50">
+                        <FilterControls
+                            bufferFilters={bufferFilters}
+                            setBufferFilters={setBufferFilters}
+                            onApply={handleApply}
+                            onReset={handleReset}
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <SummaryBlock
+                            displayType={displayType}
+                            setDisplayType={setDisplayType}
+                            summaryData={summaryData}
+                            offsetLimit={filters.offsetLimit}
+                            isLoading={summaryIsLoading}
+                            error={summaryError}
+                        />
+                    </div>
                 </div>
             </div>
         </>
