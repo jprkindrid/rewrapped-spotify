@@ -13,7 +13,7 @@ const UploadPage = () => {
     });
 
     return (
-        <>
+        <div className="flex flex-col">
             <NavBar userIdData={userIdData} includeUser={true} />
             <div className="dark:bg-spotify-black text-spotify-black flex w-screen justify-center pt-8 transition dark:text-white">
                 <div className="mx-4 h-screen w-full max-w-5xl">
@@ -45,7 +45,7 @@ const UploadPage = () => {
                     <Explanation />
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 export default UploadPage;

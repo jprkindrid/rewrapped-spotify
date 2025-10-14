@@ -32,52 +32,68 @@ const DateRangePicker: React.FC<Props> = ({
             range: { from: prev.range?.from, to: newTo },
         }));
 
-    const display =
-        range?.from && range.to
-            ? `${format(range.from, "LLL dd, y")} – ${format(range.to, "LLL dd, y")}`
-            : "Pick a date range";
-
     return (
-        <div className="flex flex-col gap-2">
-            <div className="flex items-center">
-                <div className="mx-2">Start Date:</div>
+        <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+                <label className="text-muted-foreground w-24 shrink-0 text-sm">
+                    Start Date
+                </label>
+
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
-                            className="w-[160px] justify-start text-left"
+                            className="h-8 w-[140px] justify-start text-left font-normal"
                         >
-                            {range?.from
-                                ? format(range.from, "LLL dd, y")
-                                : "Start date"}
+                            {range?.from ? (
+                                <span>{format(range.from, "LLL dd, y")}</span>
+                            ) : (
+                                <span className="text-muted-foreground">
+                                    Select date
+                                </span>
+                            )}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent align="start" className="p-0">
+
+                    <PopoverContent
+                        align="center"
+                        className="bg-background w-auto border p-2 shadow-md"
+                    >
                         <Calendar
                             mode="single"
                             selected={range?.from}
                             onSelect={handleStartChange}
                             disabled={(date) => !!range?.to && date > range.to}
+                            captionLayout="dropdown"
                         />
                     </PopoverContent>
                 </Popover>
             </div>
-
-            <div className="flex items-center">
-                <div className="mx-2">End Date:</div>
+            <div className="flex items-center gap-2">
+                <label className="text-muted-foreground w-24 shrink-0 text-sm">
+                    End Date
+                </label>
 
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
-                            className="w-[160px] justify-start text-left"
+                            className="h-8 w-[140px] justify-start text-left font-normal"
                         >
-                            {range?.to
-                                ? format(range.to, "LLL dd, y")
-                                : "End date"}
+                            {range?.to ? (
+                                <span>{format(range.to, "LLL dd, y")}</span>
+                            ) : (
+                                <span className="text-muted-foreground">
+                                    Select date
+                                </span>
+                            )}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent align="start" className="p-0">
+
+                    <PopoverContent
+                        align="center"
+                        className="bg-background w-auto border p-2 shadow-md"
+                    >
                         <Calendar
                             mode="single"
                             selected={range?.to}
@@ -85,14 +101,10 @@ const DateRangePicker: React.FC<Props> = ({
                             disabled={(date) =>
                                 !!range?.from && date < range.from
                             }
+                            captionLayout="dropdown"
                         />
                     </PopoverContent>
                 </Popover>
-            </div>
-
-            {/* Optional combined display */}
-            <div className="ml-3 flex items-center text-sm">
-                Range: {display}
             </div>
         </div>
     );
