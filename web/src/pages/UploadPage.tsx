@@ -16,7 +16,7 @@ const UploadPage = () => {
         <div className="flex flex-col">
             <NavBar userIdData={userIdData} includeUser={true} />
             <div className="dark:bg-spotify-black text-spotify-black flex w-full justify-center pt-8 transition dark:text-white">
-                <div className="mx-4 h-screen w-full max-w-5xl">
+                <div className="mx-2 h-screen w-full max-w-5xl">
                     <section className="flex flex-col items-center rounded-xl border-2 border-stone-500/10 text-center shadow-md dark:border-white/20">
                         <h2 className="pt-4 text-3xl font-bold">
                             Upload Your Streaming History
