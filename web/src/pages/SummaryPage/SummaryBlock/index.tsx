@@ -52,7 +52,7 @@ const SummaryBlock = ({
                 <div className="bg-spotify-green flex overflow-clip rounded-md font-bold">
                     <button
                         className={clsx(
-                            "border-r border-black px-4 py-2",
+                            "border-r border-black px-4 py-2 transition",
                             displayType !== "artists" &&
                                 "text-spotify-green bg-stone-800 hover:cursor-pointer"
                         )}
@@ -64,7 +64,7 @@ const SummaryBlock = ({
                     </button>
                     <button
                         className={clsx(
-                            "border-r border-black px-4 py-2",
+                            "border-r border-black px-4 py-2 transition",
                             displayType !== "tracks" &&
                                 "text-spotify-green bg-stone-800 hover:cursor-pointer"
                         )}
@@ -77,46 +77,53 @@ const SummaryBlock = ({
                 </div>
             </div>
             <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white dark:from-stone-800">
-                {displayData?.map((item: SummaryEntry, i) => (
-                    <div
-                        key={i}
-                        className={clsx(
-                            "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2",
-                            i !== 0 && "border-t"
-                        )}
-                    >
-                        <div className="flex flex-1 items-center gap-3">
-                            <div className="mt-2 flex w-full items-center text-2xl text-shadow-sm">
-                                <img
-                                    src={placeHolderImgUrl} // TODO: REPLACE THIS
-                                    className="mr-4 h-auto max-h-[80px] object-contain"
-                                />
-                                <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
-                                    <div className="flex sm:w-1/2">
-                                        <div className="text-spotify-green mr-2 flex font-bold">
-                                            {i + offset * offsetLimit.limit + 1}
-                                            {"."}
+                {summaryData ? (
+                    displayData?.map((item: SummaryEntry, i) => (
+                        <div
+                            key={i}
+                            className={clsx(
+                                "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2",
+                                i !== 0 && "border-t"
+                            )}
+                        >
+                            <div className="flex flex-1 items-center gap-3">
+                                <div className="mt-2 flex w-full items-center text-2xl text-shadow-sm">
+                                    <img
+                                        src={placeHolderImgUrl} // TODO: REPLACE THIS
+                                        className="mr-4 h-auto max-h-[80px] object-contain"
+                                    />
+                                    <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
+                                        <div className="flex sm:w-1/2">
+                                            <div className="text-spotify-green mr-2 flex font-bold">
+                                                {i +
+                                                    offset * offsetLimit.limit +
+                                                    1}
+                                                {"."}
+                                            </div>
+                                            <div>{item.Name}</div>
                                         </div>
-                                        <div>{item.Name}</div>
-                                    </div>
 
-                                    <div className="flex flex-1 text-base text-neutral-400 tabular-nums">
-                                        <div className="mr-1">
-                                            {item.Count} Plays -
-                                        </div>
-                                        <div>
-                                            {formatMsDuration(item.TotalMs)}
+                                        <div className="flex flex-1 text-base text-neutral-400 tabular-nums">
+                                            <div className="mr-1">
+                                                {item.Count} Plays -
+                                            </div>
+                                            <div>
+                                                {formatMsDuration(item.TotalMs)}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <ItemLinkButton link={placeHolderImgUrl} />
+                            <div>
+                                <ItemLinkButton link={placeHolderImgUrl} />
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <div> Loading... </div>
+                )}{" "}
+                {/* TODO: REPLACE WITH IS LOADING PATTERN*/}
             </div>
         </div>
     );
