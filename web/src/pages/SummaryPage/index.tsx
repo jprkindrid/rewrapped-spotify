@@ -10,7 +10,7 @@ import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
 import SummaryBlock from "./SummaryBlock";
-import FilterControls from "./SummaryBlock/FilterControls";
+import FilterControls from "./FilterControls";
 
 export const SummaryPage = () => {
     const [displayType, setDisplayType] = useState<"tracks" | "artists">(
@@ -57,7 +57,7 @@ export const SummaryPage = () => {
             <NavBar userIdData={userIdData} includeUser={true} />
             <div className="dark:bg-spotify-black text-spotify-black flex h-full w-full flex-col items-center justify-center bg-white py-4 font-sans transition sm:pb-16 dark:text-white">
                 <div className="w-full max-w-5xl">
-                    <div className="border-spotify-black/50 mb-4 flex justify-center rounded-md border px-4 pb-2 dark:border-white/50">
+                    <div className="border-spotify-black/50 mx-2 mb-4 flex justify-center rounded-md border px-4 pb-2 dark:border-white/50">
                         <FilterControls
                             bufferFilters={bufferFilters}
                             setBufferFilters={setBufferFilters}
@@ -65,7 +65,7 @@ export const SummaryPage = () => {
                             onReset={handleReset}
                         />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="mx-2 flex flex-col">
                         <SummaryBlock
                             displayType={displayType}
                             setDisplayType={setDisplayType}

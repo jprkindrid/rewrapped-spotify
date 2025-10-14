@@ -31,7 +31,7 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
     }, [showUserModal]);
 
     return (
-        <div className="bg-spotify-black relative flex w-screen items-center justify-center px-4 py-8 font-sans shadow-sm">
+        <div className="bg-spotify-black relative flex w-full items-center justify-center px-4 py-8 font-sans shadow-sm">
             <div className="w-full max-w-5xl">
                 <div className="flex w-full justify-between px-4 pb-4 sm:hidden">
                     <div className="flex items-center">

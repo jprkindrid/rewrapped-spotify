@@ -6,8 +6,8 @@ const HomePage = () => {
     return (
         <>
             <NavBar userIdData={undefined} includeUser={false} />
-            <div className="dark:bg-spotify-black text-spotify-black flex w-screen justify-center pt-8 transition dark:text-white">
-                <div className="mx-4 h-screen w-full max-w-5xl">
+            <div className="dark:bg-spotify-black text-spotify-black flex w-full justify-center pt-8 transition dark:text-white">
+                <div className="mx-2 h-screen w-full max-w-5xl">
                     <div className="mt-4 mb-8 flex flex-col items-center rounded-xl">
                         <button
                             className="bg-spotify-green text-spotify-black flex items-center justify-center rounded-full p-4 text-2xl shadow-sm transition hover:scale-105 hover:cursor-pointer dark:text-white dark:shadow-white"
