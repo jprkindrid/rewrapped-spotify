@@ -84,9 +84,8 @@ const SummaryBlock = ({
                             <SkeletonSummaryItem key={i} />
                         ))}
                     </div>
-                ) : displayData && displayData.length > 0 ? (
-                    // ✅ Actual Data
-                    displayData.map((item, i) => (
+                ) : displayData ? (
+                    (displayData ?? []).map((item, i) => (
                         <div
                             key={i}
                             className={clsx(
@@ -109,7 +108,6 @@ const SummaryBlock = ({
                         </div>
                     ))
                 ) : (
-                    // ❌ Empty
                     <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
                         No Data To Display For Current Selection
                     </div>

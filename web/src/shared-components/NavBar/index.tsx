@@ -32,7 +32,7 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
 
     return (
         <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center px-8 shadow-lg transition sm:py-6">
-            <div className="flex w-full justify-between">
+            <div className="flex w-full flex-col justify-center py-4 sm:flex-row sm:justify-between sm:py-0">
                 <div className="flex w-full justify-between px-4 pb-4 sm:hidden">
                     <div className="flex items-center">
                         <UserButton
@@ -64,7 +64,7 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                         </div>
                     )}
 
-                    <div className="flex flex-col text-center sm:w-1/3">
+                    <div className="flex w-full flex-col text-center sm:w-1/3">
                         <div className="dark:text-spotify-green text-spotify-black dark:text-shadow-spotify-green text-4xl text-shadow-sm dark:text-shadow-xs">
                             <h1 className="font-bold">ReWrapped Spotify</h1>
                             <nav className="font-base flex justify-around space-x-2 pt-4 text-xl">
