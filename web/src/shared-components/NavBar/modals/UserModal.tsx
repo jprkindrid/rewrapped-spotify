@@ -3,9 +3,9 @@ import { useLogout } from "@/hooks/useLogout";
 const UserModal = () => {
     const { mutate: logout, isPending } = useLogout();
     return (
-        <div className="flex flex-col">
+        <div className="text-spotify-black flex flex-col dark:text-white">
             <button
-                className="hover:text-spotify-green flex p-2 text-white transition"
+                className="hover:text-spotify-green flex p-2 transition"
                 onClick={() => {
                     logout();
                 }}
@@ -27,7 +27,7 @@ const UserModal = () => {
                 </svg>
                 Logout
             </button>
-            <button className="flex p-2 text-white transition hover:text-red-500">
+            <button className="flex p-2 transition hover:text-red-500">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
