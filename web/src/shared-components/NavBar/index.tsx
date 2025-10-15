@@ -31,8 +31,8 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
     }, [showUserModal]);
 
     return (
-        <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center py-2 shadow-lg transition">
-            <div className="flex w-full max-w-5xl justify-between">
+        <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center px-8 shadow-lg transition sm:py-6">
+            <div className="flex w-full justify-between">
                 <div className="flex w-full justify-between px-4 pb-4 sm:hidden">
                     <div className="flex items-center">
                         <UserButton
@@ -58,7 +58,7 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                     {showUserModal && (
                         <div
                             ref={userModalRef}
-                            className="absolute top-0 left-0 rounded-br-lg border-r border-b border-stone-500 bg-stone-900 p-6 transition"
+                            className="absolute top-0 left-0 rounded-br-lg border-r border-b border-stone-500 bg-stone-300 p-6 transition dark:bg-stone-900"
                         >
                             <UserModal />
                         </div>
