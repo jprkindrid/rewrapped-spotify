@@ -9,9 +9,9 @@ type Props = {
 
 const UserButton = ({ setShowUserModal, includeUser, userIdData }: Props) => {
     return (
-        <div className="w-60 space-x-4 text-white">
+        <div className="text-spotify-black space-x-4 dark:text-white">
             <button
-                className="hover:text-spotify-green flex text-white transition"
+                className="hover:text-spotify-green flex transition"
                 onClick={() => {
                     setShowUserModal(true);
                 }}

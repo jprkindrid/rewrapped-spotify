@@ -2,14 +2,14 @@ import * as themeUtil from "@/utils/theme";
 
 const DarkModeButtons = () => {
     return (
-        <div className="flex h-full items-center space-x-2">
+        <div className="text-spotify-black flex h-full items-center space-x-2 dark:text-white">
             <button
-                className="rounded-lg p-2 text-white transition hover:bg-slate-500/50"
+                className="rounded-lg p-2 transition hover:bg-stone-300/50 dark:hover:bg-slate-500/50"
                 onClick={() => themeUtil.setTheme("light")}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    fill="white"
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
@@ -23,7 +23,7 @@ const DarkModeButtons = () => {
                 </svg>
             </button>
             <button
-                className="rounded-lg p-2 text-white transition hover:bg-slate-500/50"
+                className="rounded-lg p-2 transition hover:bg-slate-500/50"
                 onClick={() => themeUtil.setTheme("dark")}
             >
                 <svg
@@ -42,7 +42,7 @@ const DarkModeButtons = () => {
                 </svg>
             </button>
             <button
-                className="rounded-lg p-2 text-white transition hover:bg-slate-500/50"
+                className="rounded-lg p-2 transition hover:bg-slate-500/50"
                 onClick={() => themeUtil.setTheme("system")}
             >
                 <svg

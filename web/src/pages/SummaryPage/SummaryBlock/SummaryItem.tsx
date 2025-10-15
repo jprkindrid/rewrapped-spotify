@@ -27,7 +27,7 @@ const SummaryItem = ({ i, item, offset, limit, isLoading }: Props) => {
                     <div>{isLoading ? "Loading..." : item.Name}</div>
                 </div>
 
-                <div className="flex flex-1 text-base text-neutral-400 tabular-nums">
+                <div className="flex flex-1 flex-col text-base text-neutral-400 tabular-nums sm:flex-row">
                     <div className="mr-1">{item.Count} Plays -</div>
                     <div>{formatMsDuration(item.TotalMs)}</div>
                 </div>

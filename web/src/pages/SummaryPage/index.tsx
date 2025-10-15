@@ -53,11 +53,11 @@ export const SummaryPage = () => {
     } = useSummaryQuery(filters.range, filters.offsetLimit, filters.sortBy);
 
     return (
-        <>
+        <div className="flex w-full flex-col">
             <NavBar userIdData={userIdData} includeUser={true} />
-            <div className="dark:bg-spotify-black text-spotify-black flex h-screen w-full flex-col items-center bg-white py-4 font-sans transition sm:pb-16 dark:text-white">
-                <div className="w-full max-w-5xl">
-                    <div className="shadow:md mx-2 mb-4 flex justify-center rounded-md border border-stone-500/10 px-4 pb-2 shadow-md dark:border-white/50">
+            <div className="text-spotify-black dark:bg-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:text-white">
+                <div className="relative h-full w-full max-w-5xl">
+                    <div className="shadow:md mx-2 mb-4 flex justify-center rounded-md border border-stone-500/10 pb-2 shadow-md dark:border-white/50">
                         <FilterControls
                             bufferFilters={bufferFilters}
                             setBufferFilters={setBufferFilters}
@@ -77,7 +77,7 @@ export const SummaryPage = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
