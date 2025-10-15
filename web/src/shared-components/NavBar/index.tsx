@@ -31,8 +31,8 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
     }, [showUserModal]);
 
     return (
-        <div className="bg-spotify-black relative flex w-full items-center justify-center px-4 py-8 font-sans shadow-sm">
-            <div className="w-full max-w-5xl">
+        <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center py-2 shadow-lg transition">
+            <div className="flex w-full max-w-5xl justify-between">
                 <div className="flex w-full justify-between px-4 pb-4 sm:hidden">
                     <div className="flex items-center">
                         <UserButton
@@ -46,8 +46,8 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                     </div>
                 </div>
 
-                <div className="flex w-full items-center justify-between px-8">
-                    <div className="hidden sm:flex">
+                <div className="flex w-full items-center justify-start px-8">
+                    <div className="hidden w-1/3 items-center sm:flex">
                         <UserButton
                             setShowUserModal={setShowUserModal}
                             includeUser={includeUser}
@@ -64,8 +64,8 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                         </div>
                     )}
 
-                    <div className="mx-auto flex max-w-xl flex-col text-center">
-                        <div className="text-spotify-green text-4xl">
+                    <div className="flex flex-col text-center sm:w-1/3">
+                        <div className="dark:text-spotify-green text-spotify-black dark:text-shadow-spotify-green text-4xl text-shadow-sm dark:text-shadow-xs">
                             <h1 className="font-bold">ReWrapped Spotify</h1>
                             <nav className="font-base flex justify-around space-x-2 pt-4 text-xl">
                                 <Link to="/" className="">
@@ -76,7 +76,7 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                             </nav>
                         </div>
                     </div>
-                    <div className="hidden w-60 justify-center sm:flex">
+                    <div className="hidden w-1/3 justify-end sm:flex">
                         <DarkModeButtons />
                     </div>
                 </div>

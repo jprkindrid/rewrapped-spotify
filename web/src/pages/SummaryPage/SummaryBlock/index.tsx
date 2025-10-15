@@ -7,6 +7,7 @@ import type { Setter } from "@/utils/types";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
+import SkeletonSummaryItem from "./SkeletonSummaryItem";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
@@ -39,9 +40,6 @@ const SummaryBlock = ({
 
     const placeHolderImgUrl =
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
-
-    console.log(summaryData?.top_tracks[0]);
-    console.log(summaryData?.top_artists[0]);
 
     return (
         <div className="border-spotify-black/50 relative flex flex-1 flex-col items-center overflow-clip rounded-lg border dark:border-white/50">
@@ -79,9 +77,16 @@ const SummaryBlock = ({
                     </button>
                 </div>
             </div>
-            <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white dark:from-stone-800">
-                {displayData ? (
-                    displayData?.map((item: SummaryEntry, i) => (
+            <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white transition dark:from-stone-800">
+                {isLoading ? (
+                    <div className="py-2">
+                        {Array.from({ length: limit }).map((_, i) => (
+                            <SkeletonSummaryItem key={i} />
+                        ))}
+                    </div>
+                ) : displayData && displayData.length > 0 ? (
+                    // ✅ Actual Data
+                    displayData.map((item, i) => (
                         <div
                             key={i}
                             className={clsx(
@@ -95,21 +100,20 @@ const SummaryBlock = ({
                                     item={item}
                                     offset={offset}
                                     limit={limit}
-                                    isLoading={isLoading}
+                                    isLoading={false}
                                 />
                             </div>
-
                             <div>
                                 <ItemLinkButton link={placeHolderImgUrl} />
                             </div>
                         </div>
                     ))
                 ) : (
+                    // ❌ Empty
                     <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
                         No Data To Display For Current Selection
                     </div>
                 )}
-                {/* TODO: REPLACE WITH IS LOADING PATTERN*/}
             </div>
         </div>
     );
