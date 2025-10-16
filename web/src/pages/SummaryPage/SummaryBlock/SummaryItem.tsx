@@ -13,7 +13,7 @@ const SummaryItem = ({ i, item, offset, limit, isLoading }: Props) => {
     const placeHolderImgUrl =
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
     return (
-        <div className="mt-2 flex w-full items-center text-2xl text-shadow-sm">
+        <div className="mt-2 flex w-full items-center text-xl text-shadow-sm sm:text-2xl">
             <img
                 src={placeHolderImgUrl} // TODO: REPLACE THIS
                 className="mr-4 h-auto max-h-[80px] object-contain"
@@ -27,7 +27,7 @@ const SummaryItem = ({ i, item, offset, limit, isLoading }: Props) => {
                     <div>{isLoading ? "Loading..." : item.Name}</div>
                 </div>
 
-                <div className="flex flex-1 flex-col text-base text-neutral-400 tabular-nums sm:flex-row">
+                <div className="flex flex-1 flex-col text-sm text-neutral-400 tabular-nums sm:flex-row sm:text-base">
                     <div className="mr-1">{item.Count} Plays -</div>
                     <div>{formatMsDuration(item.TotalMs)}</div>
                 </div>

@@ -21,22 +21,24 @@ const FilterControls = ({
     const { sortBy } = bufferFilters;
 
     return (
-        <div className="flex w-full justify-center">
+        <div className="flex w-full justify-center py-2">
             <div className="flex w-full flex-col items-center">
-                <div className="text-spotify-green mb-4 text-2xl font-bold text-shadow-sm">
+                <div className="text-spotify-green text-2xl font-bold text-shadow-sm sm:mb-4">
                     Filter Controls
                 </div>
 
-                <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-8">
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="mb-2 text-xl">Select Sort Type</div>
+                <div className="flex w-full max-w-4xl flex-col items-center justify-center">
+                    <div className="sm:justify-beginning mb-4 flex flex-col items-center gap-2 sm:mb-0 sm:flex-row">
+                        <div className="mb-2 text-xl sm:mb-0">
+                            Select Sort Type
+                        </div>
                         <div className="flex gap-2">
                             <button
                                 className={clsx(
-                                    "borderpx-4 w-22 rounded-md bg-stone-200 py-2 font-bold transition hover:bg-stone-600/50 dark:bg-stone-700/50",
+                                    "w-22 rounded-md border bg-stone-200 px-4 py-2 font-bold transition hover:brightness-105 dark:bg-stone-700/50",
                                     sortBy === "count"
                                         ? "border-inset border-spotify-green text-spotify-green"
-                                        : "border text-black dark:text-white/70"
+                                        : "text-black dark:text-white/70"
                                 )}
                                 onClick={() =>
                                     setBufferFilters((prev) => ({
@@ -49,9 +51,9 @@ const FilterControls = ({
                             </button>
                             <button
                                 className={clsx(
-                                    "w-22 rounded-md bg-stone-200 px-4 py-2 font-bold transition hover:bg-stone-600/50 dark:bg-stone-700/50",
+                                    "w-22 rounded-md border bg-stone-200 px-4 py-2 font-bold transition hover:brightness-105 dark:bg-stone-700/50",
                                     sortBy === "time"
-                                        ? "border-inset border-spotify-green text-spotify-green border"
+                                        ? "border-inset border-spotify-green text-spotify-green"
                                         : "border text-black dark:text-white/70"
                                 )}
                                 onClick={() =>
@@ -65,8 +67,10 @@ const FilterControls = ({
                             </button>
                         </div>
                     </div>
-                    <div className="flex flex-col items-center">
-                        <div className="mb-2 text-xl">Select Date Range</div>
+                    <div className="flex flex-col items-center sm:flex-row sm:items-end">
+                        <div className="mb-2 text-xl sm:mb-1">
+                            Select Date Range
+                        </div>
                         <div className="mt-4 flex flex-col items-center justify-center sm:flex-row">
                             <div className="mb-3 sm:mb-0">
                                 <YearRangeDropown
