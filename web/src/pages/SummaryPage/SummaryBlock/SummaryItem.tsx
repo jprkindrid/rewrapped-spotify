@@ -5,11 +5,10 @@ type Props = {
     i: number;
     item: SummaryEntry;
     offset: number;
-    limit: number;
     isLoading: boolean;
 };
 
-const SummaryItem = ({ i, item, offset, limit, isLoading }: Props) => {
+const SummaryItem = ({ i, item, offset, isLoading }: Props) => {
     const placeHolderImgUrl =
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
     return (
@@ -21,7 +20,7 @@ const SummaryItem = ({ i, item, offset, limit, isLoading }: Props) => {
             <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
                 <div className="flex sm:w-1/2">
                     <div className="text-spotify-green mr-2 flex font-bold">
-                        {i + offset * limit + 1}
+                        {i + offset + 1}
                         {"."}
                     </div>
                     <div>{isLoading ? "Loading..." : item.Name}</div>

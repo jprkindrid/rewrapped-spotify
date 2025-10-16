@@ -103,7 +103,6 @@ const SummaryBlock = ({
                                     i={i}
                                     item={item}
                                     offset={offset}
-                                    limit={limit}
                                     isLoading={false}
                                 />
                             </div>

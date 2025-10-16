@@ -25,7 +25,8 @@ const SummaryPageButtons = ({
         return Math.ceil(itemCount / offsetLimit.limit);
     };
 
-    const getCurrentPage = (offset: number) => Math.floor(offset) + 1;
+    const getCurrentPage = (offset: number) =>
+        Math.floor(offset / offsetLimit.limit) + 1;
 
     const adjustOffset = useCallback(
         (amount: number) => {
@@ -48,9 +49,9 @@ const SummaryPageButtons = ({
                     Math.max(currentOffset + amount, 0),
                     lastValidOffset
                 );
+                console.log(nextOffset);
 
                 if (nextOffset < 0 || nextOffset > lastValidOffset) {
-                    console.log("⚠️ Offset out of range, no action taken");
                     return prev;
                 }
 
@@ -85,7 +86,7 @@ const SummaryPageButtons = ({
                     <button
                         key={n}
                         className="mx-1 w-14 rounded-md border bg-stone-200 py-1 text-center text-xs transition hover:brightness-105 dark:bg-stone-700/50"
-                        onClick={() => adjustOffset(n)}
+                        onClick={() => adjustOffset(n * offsetLimit.limit)}
                     >
                         {n < 0 ? n : `+${n}`}
                     </button>
@@ -101,7 +102,7 @@ const SummaryPageButtons = ({
                     <button
                         key={n}
                         className="mx-1 w-14 rounded-md border bg-stone-200 py-1 text-center text-xs transition hover:brightness-105 dark:bg-stone-700/50"
-                        onClick={() => adjustOffset(n)}
+                        onClick={() => adjustOffset(n * offsetLimit.limit)}
                     >
                         +{n}
                     </button>
