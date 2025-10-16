@@ -38,3 +38,4 @@ export type SummaryFilters = {
 };
 
 export type SummarySortBy = "time" | "count";
+export type SummaryDisplay = "artists" | "tracks";

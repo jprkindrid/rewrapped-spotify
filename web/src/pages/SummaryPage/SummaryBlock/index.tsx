@@ -1,6 +1,8 @@
 import type {
     OffsetLimit,
+    SummaryDisplay,
     SummaryEntry,
+    SummaryFilters,
     SummmaryResponse,
 } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
@@ -8,11 +10,13 @@ import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
 import SkeletonSummaryItem from "./SkeletonSummaryItem";
+import SummaryPageButtons from "./SummaryPageButtons";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
     setDisplayType: Setter<"artists" | "tracks">;
-    displayType: "artists" | "tracks";
+    setFilters: Setter<SummaryFilters>;
+    displayType: SummaryDisplay;
     summaryData: SummmaryResponse | undefined;
     isLoading: boolean;
     error: Error | null;
@@ -21,6 +25,7 @@ type SummaryBlockProps = {
 const SummaryBlock = ({
     offsetLimit,
     setDisplayType,
+    setFilters,
     displayType,
     summaryData,
     isLoading,
@@ -49,7 +54,7 @@ const SummaryBlock = ({
                     <div className="text-sm">{error.message}</div>
                 </div>
             )}
-            <div className="bg-spotify-black flex w-full justify-center border-b border-white/50 px-5 py-2">
+            <div className="bg-spotify-black flex w-full justify-around border-b border-white/50 px-5 py-2">
                 <div className="bg-spotify-green flex overflow-clip rounded-md font-bold">
                     <button
                         className={clsx(
@@ -112,6 +117,14 @@ const SummaryBlock = ({
                         No Data To Display For Current Selection
                     </div>
                 )}
+            </div>
+            <div className="border-spotify-black w-full border-t py-2 dark:border-white/50">
+                <SummaryPageButtons
+                    summaryData={summaryData}
+                    displayType={displayType}
+                    offsetLimit={offsetLimit}
+                    setFilters={setFilters}
+                />
             </div>
         </div>
     );

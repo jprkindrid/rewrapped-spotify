@@ -4,6 +4,7 @@ import NavBar from "@/shared-components/NavBar";
 import type { UserIdData } from "@/shared-components/UserIdData";
 import {
     type OffsetLimit,
+    type SummaryDisplay,
     type SummaryFilters,
 } from "@/shared-components/SummaryTypes";
 import { useState } from "react";
@@ -13,9 +14,7 @@ import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./FilterControls";
 
 export const SummaryPage = () => {
-    const [displayType, setDisplayType] = useState<"tracks" | "artists">(
-        "artists"
-    );
+    const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
 
     const initialRange: DateRange = {
         from: new Date(2011, 0, 1),
@@ -50,7 +49,13 @@ export const SummaryPage = () => {
         data: summaryData,
         isLoading: summaryIsLoading,
         error: summaryError,
-    } = useSummaryQuery(filters.range, filters.offsetLimit, filters.sortBy);
+    } = useSummaryQuery(
+        filters.range,
+        filters.offsetLimit.offsetTracks,
+        filters.offsetLimit.offsetArtists,
+        filters.offsetLimit.limit,
+        filters.sortBy
+    );
 
     return (
         <div className="flex w-full flex-col">
@@ -74,6 +79,7 @@ export const SummaryPage = () => {
                             offsetLimit={filters.offsetLimit}
                             isLoading={summaryIsLoading}
                             error={summaryError}
+                            setFilters={setFilters}
                         />
                     </div>
                 </div>

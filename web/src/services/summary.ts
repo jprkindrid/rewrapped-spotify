@@ -7,9 +7,9 @@ import { apiFetch } from "./apiFetch";
 export async function getUserSummary({
     start,
     end,
-    offsetArtists = 0,
-    offsetTracks = 0,
-    limit = 10,
+    offsetArtists,
+    offsetTracks,
+    limit,
     sortBy = "count",
 }: SummaryParams): Promise<SummmaryResponse> {
     const params = new URLSearchParams({
