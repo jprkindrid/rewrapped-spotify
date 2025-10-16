@@ -29,9 +29,9 @@ const YearRangeDropown = ({ setBufferFilters }: Props) => {
         }));
     };
     return (
-        <div className="flex items-center gap-2">
-            <label className="text-muted-foreground w-24 shrink-0 text-sm">
-                By Year:
+        <div className="flex items-center gap-2 sm:mx-3 sm:flex-col sm:text-center">
+            <label className="text-muted-foreground w-24 shrink-0 text-sm sm:w-auto">
+                By Year
             </label>
             <Popover open={yearDropOpen} onOpenChange={setYearDropOpen}>
                 <PopoverTrigger asChild>
