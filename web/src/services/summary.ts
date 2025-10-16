@@ -10,18 +10,22 @@ export async function getUserSummary({
     offsetArtists,
     offsetTracks,
     limit,
-    sortBy = "count",
+    sortBy,
 }: SummaryParams): Promise<SummmaryResponse> {
     const params = new URLSearchParams({
         start: start.toISOString(),
         end: end.toISOString(),
-        offsetTracks: offsetTracks.toString(),
-        offsetArtists: offsetArtists.toString(),
+        offset_tracks: offsetTracks.toString(),
+        offset_artists: offsetArtists.toString(),
         limit: limit.toString(),
         sortBy: sortBy.toString(),
     });
+
+    console.log("params", offsetArtists, offsetTracks);
     const reqString = `/api/summary?${params.toString()}`;
     const res = await apiFetch("GET", reqString);
     if (!res.ok) throw new Error(`Failed to fetch summary: ${res.statusText}`);
-    return res.json();
+    const data = await res.json();
+    console.log(data);
+    return data;
 }
