@@ -54,6 +54,7 @@ export const SummaryPage = () => {
 
     return (
         <div className="flex w-full flex-col">
+            {/* <div className="absolute left-1/2 z-60 h-screen w-[2px] bg-red-500"></div> */}
             <NavBar userIdData={userIdData} includeUser={true} />
             <div className="text-spotify-black dark:bg-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:text-white">
                 <div className="relative h-full w-full max-w-5xl">

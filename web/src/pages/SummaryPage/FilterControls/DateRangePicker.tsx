@@ -33,9 +33,9 @@ const DateRangePicker: React.FC<Props> = ({
         }));
 
     return (
-        <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-                <label className="text-muted-foreground w-24 shrink-0 text-sm">
+        <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <div className="flex items-center gap-2 sm:flex-col">
+                <label className="text-muted-foreground w-24 shrink-0 text-sm sm:w-auto">
                     Start Date
                 </label>
 
@@ -69,8 +69,8 @@ const DateRangePicker: React.FC<Props> = ({
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className="flex items-center gap-2">
-                <label className="text-muted-foreground w-24 shrink-0 text-sm">
+            <div className="flex items-center gap-2 sm:flex-col">
+                <label className="text-muted-foreground w-24 shrink-0 text-sm sm:w-auto">
                     End Date
                 </label>
 
