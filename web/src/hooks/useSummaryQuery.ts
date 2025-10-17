@@ -34,7 +34,6 @@ export function useSummaryQuery(
         queryFn: ({ queryKey }: QueryFunctionContext<SummaryKey>) => {
             const [, range, offsetTracks, offsetArtists, limit, sortBy] =
                 queryKey;
-            console.log("in hook", offsetArtists, offsetTracks, limit);
 
             return summaryService.getUserSummary({
                 start: range.from!,

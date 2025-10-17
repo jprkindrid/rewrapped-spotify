@@ -32,7 +32,6 @@ const SummaryPageButtons = ({
         (amount: number) => {
             setFilters((prev) => {
                 const isArtists = displayType === "artists";
-                console.log();
                 const total = isArtists
                     ? (summaryData?.total_artists_count ?? 0)
                     : (summaryData?.total_tracks_count ?? 0);
@@ -49,7 +48,6 @@ const SummaryPageButtons = ({
                     Math.max(currentOffset + amount, 0),
                     lastValidOffset
                 );
-                console.log(nextOffset);
 
                 if (nextOffset < 0 || nextOffset > lastValidOffset) {
                     return prev;
