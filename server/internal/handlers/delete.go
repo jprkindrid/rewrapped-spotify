@@ -3,12 +3,13 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
-	session, err := gothic.Store.Get(r, gothic.SessionName)
+	session, err := gothic.Store.Get(r, constants.UserSession)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
 		return

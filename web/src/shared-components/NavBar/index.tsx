@@ -58,7 +58,7 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                     {showUserModal && (
                         <div
                             ref={userModalRef}
-                            className="absolute top-0 left-0 rounded-br-lg border-r border-b border-stone-500 bg-stone-300 p-6 transition dark:bg-stone-900"
+                            className="absolute top-0 left-0 rounded-br-lg border-r border-b border-slate-500 bg-slate-300 p-6 transition dark:bg-slate-900"
                         >
                             <UserModal />
                         </div>

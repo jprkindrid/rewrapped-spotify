@@ -14,6 +14,13 @@ import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./FilterControls";
 
 export const SummaryPage = () => {
+    const { data: userIdData } = useQuery<UserIdData>({
+        queryKey: ["userIDs"],
+        queryFn: userService.fetchUserIDs,
+        retry: false,
+        staleTime: 60_000,
+    });
+
     const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
 
     const initialRange: DateRange = {
@@ -37,13 +44,6 @@ export const SummaryPage = () => {
 
     const handleApply = () => setFilters(bufferFilters);
     const handleReset = () => setBufferFilters(filters);
-
-    const { data: userIdData } = useQuery<UserIdData>({
-        queryKey: ["userIDs"],
-        queryFn: userService.fetchUserIDs,
-        retry: false,
-        staleTime: 60_000,
-    });
 
     const {
         data: summaryData,
