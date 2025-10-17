@@ -26,7 +26,7 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, "File parsing error", err)
 		return
 	}
-	files := r.MultipartForm.File["file"]
+	files := r.MultipartForm.File[constants.FileFormHeader]
 	var userSongData []parser.MinifiedSongData
 
 	for _, fileheader := range files {
@@ -114,16 +114,14 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 	}
 
-	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{
-		"message": "Files uploaded and processed succesfully",
-	})
+	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{})
 
 }
 
 func storeDataInDB(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
 	ctx := r.Context()
 
-	sess, err := gothic.Store.Get(r, gothic.SessionName)
+	sess, err := gothic.Store.Get(r, constants.UserSession)
 	if err != nil {
 		log.Printf("[storeDataInDB] Session error: %v", err)
 		return database.User{}, err

@@ -33,3 +33,4 @@ const (
 )
 
 const UserSession = "user_session"
+const FileFormHeader = "files"
