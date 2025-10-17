@@ -1,8 +1,8 @@
 # ReWrapped Spotify
 
-#  See the demo at [https://rewrapped-spotify.pages.dev/](https://rewrapped-spotify.pages.dev/)
+See the demo at: https://rewrapped-spotify.pages.dev/ (frontend hosting)
 
-**ReWrapped Spotify** is a web application that helps you explore and visualize your Spotify listening history. Upload your Spotify data and discover your top tracks, artists, and listening patterns over time.
+ReWrapped Spotify is a web application that helps you explore and visualize your Spotify listening history. Upload your Spotify data (the Streaming History you can request from Spotify’s privacy portal) and discover your top tracks, artists, and listening patterns over time.
 
 ## 🚀 What is ReWrapped Spotify?
 
@@ -15,113 +15,115 @@ ReWrapped Spotify lets you securely upload your Spotify streaming history (downl
 
 ## ✨ Features
 
-- **Spotify OAuth Login:** Secure authentication using your Spotify account.
-- **Data Upload:** Supports both JSON and ZIP files from Spotify’s data export.
-- **Personalized Stats:** See your most played tracks, artists, and total listening time.
-- **Filtering & Pagination:** Filter results by date range and browse large histories.
-- **Interactive Charts:** Visualize your listening activity and trends.
-- **Privacy:** All data is stored locally in a SQLite database; nothing is shared externally.
+- Spotify OAuth login (backend handles OAuth flow).
+- Upload Spotify Streaming History (JSON or ZIP) and parse it server-side.
+- Personalized stats: top tracks, top artists, total listening time.
+- Date-range filtering, pagination, and interactive summary pages.
+- Modern React + Vite frontend with TypeScript and Tailwind CSS.
+- Local storage of user data in SQLite (backend).
 
 ## 🛠️ Technology Stack
 
-- **Backend:** Go (Golang), net/http, SQLite, sqlc, Goth (Spotify OAuth)
-- *Frontend:** React, Typescript, Tailwind CSS, React Query, Vite
-- **Hosting:** Fly.io (API) · Cloudflare Pages (Frontend)
-- **Tooling:** Docker, GitHub Actions (CI/CD)
+- Backend: Go (go 1.25), net/http, SQLite, sqlc, Goth for Spotify OAuth
+- Frontend: React 19 (TypeScript), Vite, Tailwind CSS, @tanstack/react-query, @tanstack/react-router
+- Tooling: Docker, pnpm (package manager used in `web/`), Vite dev server
+- Hosting used by the project: Fly.io for API and Cloudflare Pages for frontend (example)
 
 ## 📦 Prerequisites
 
-- Go 1.25+
-- React 19.2
-- SQLite
+- Go (1.25+ recommended for the server) — see `server/go.mod`
+- Node.js (16+ recommended) and bun (or npm/pnpm/yarn) for the frontend
+- SQLite (for local DB storage)
 - Docker (optional, for containerized deployment)
-- Spotify account (for OAuth login)
+- A Spotify developer account (to create a Client ID/Secret and set redirect URI)
 
-## ⚡ Setup & Installation
+## ⚡ Setup & Development
 
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/kindiregg/spotify-data-analyzer.git
-   cd spotify-data-analyzer
-   ```
+The project contains two main parts: the backend server (in `server/`) and the frontend (in `web/`). You can run them separately during development.
 
-2. **Download Go dependencies:**
-   ```sh
-   go mod download
-   ```
+1. Clone the repository:
 
-3. **Install Goose (database migration tool):**
-   ```sh
-   go install github.com/pressly/goose/v3/cmd/goose@latest
-   ```
-   Make sure `$GOPATH/bin` (or `$HOME/go/bin`) is in your PATH.
+```bash
+git clone https://github.com/jprkindrid/rewrapped-spotify.git
+cd rewrapped-spotify
+```
 
-4. **Configure environment variables:**
-   - Copy `.env` and fill in your Spotify API credentials
-   - Required fields:
-   ```
-    SPOTIFY_CLIENT_ID = "" (from your spotify dev dashboard)
-    SPOTIFY_CLIENT_SECRET = "" (from your spotify dev dashboard)
-    SPOTIFY_REDIRECT_URI = "" (set this in your spotify dev dashboard)
-    PORT = "8080"
-    DB_PATH = "data/userdata.sqlite"
-    DB_PATH_DOCKER = "/data/userdata.sqlite" (absolute path for persistent db in docker)
-    URL_ADDR = "127.0.0.1" (for local dev(spotify requires 127.0.0.1 instead of localhost))
-    ```
+2. Backend (server):
 
-5. **Run database migrations:**
-   ```sh
-   ./scripts/gsup.sh
-   ```
+- Install Go dependencies and build:
 
-6. **Start the server:**
-   ```sh
-   go build -o out ./cmd && ./out
-   ```
-   Or with Docker:
-   ```sh
-   docker-compose up --build
-   ```
+```bash
+cd server
+go mod download
+go build -o out ./cmd
+```
 
-7. **Access the app:**
-   - Open [http://127.0.0.1:8080](http://127.0.0.1:8080) in your browser.
+- Create a `.env` (or set env vars) with your Spotify credentials. Typical vars used by the server:
+
+```text
+SPOTIFY_CLIENT_ID=""
+SPOTIFY_CLIENT_SECRET=""
+SPOTIFY_REDIRECT_URI="http://127.0.0.1:8080/auth/spotify/callback"
+PORT=8080
+DB_PATH=data/userdata.sqlite
+URL_ADDR=127.0.0.1
+```
+
+- Run migrations (the repo includes `scripts/gsup.sh` which wraps goose):
+
+```bash
+./scripts/gsup.sh
+```
+
+- Start the server:
+
+```bash
+./out
+```
+
+Or use Docker Compose from the repository root:
+
+```bash
+docker-compose -f server/docker-compose.yml up --build
+```
+
+3. Frontend (web):
+
+The frontend uses Vite + React + TypeScript and is located in `web/`. The project uses bun as the package manager (see `web/package.json`), but npm, yarn, or pnpm will also work.
+
+Install dependencies and run the dev server:
+
+```bash
+cd web
+bun install   # or `npm/pnpm install` / `yarn`
+npm run dev   # starts Vite on http://127.0.0.1:5173
+```
+
+Vite's dev server proxies `/api` and `/auth` requests to the backend at http://127.0.0.1:8080 (see `web/vite.config.ts`). Run the backend first so the frontend can reach the API routes.
 
 ## 🛠️ API Overview
 
-The backend provides the following main RESTful endpoints:
+The backend exposes a small REST API to upload and summarize streaming history. Main endpoints used by the frontend include:
 
-- `POST /api/upload` — Upload your Spotify data (JSON or ZIP)
-- `GET /api/summary` — Get your listening summary (supports filtering by date, pagination)
-- `GET /auth/spotify` — Start Spotify OAuth login
-- `GET /auth/spotify/callback` — Spotify OAuth callback
-- `POST /auth/logout` — Log out of your session
+- POST /api/upload — Upload streaming history JSON or ZIP
+- GET /api/summary — Retrieve a listening summary (supports start/end filters, offset, limit)
+- GET /auth/spotify — Begin Spotify OAuth login
+- GET /auth/spotify/callback — OAuth callback redirect for Spotify
+- POST /auth/logout — Log out
 
-### Example: Get Listening Summary
+Example request:
 
-```
 GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset=0&limit=10
-```
 
-**Query Parameters:**
-- `start` (optional, RFC3339): Start date for filtering
-- `end` (optional, RFC3339): End date for filtering
-- `offset` (optional): Pagination offset
-- `limit` (optional): Pagination limit (default 10)
+Query parameters:
+- start (optional, RFC3339)
+- end (optional, RFC3339)
+- offset (optional)
+- limit (optional, default 10)
 
-**Response:**
-```json
-{
-  "offset": 0,
-  "limit": 10,
-  "total_artists_count": 42,
-  "total_tracks_count": 100,
-  "top_artists": [ ... ],
-  "top_tracks": [ ... ],
-  "total_time_listening": 12345678
-}
-```
+Responses are JSON objects containing counts, top artists/tracks, and aggregated listening time.
 
-Authentication is required for all endpoints except the homepage and login.
+Authentication (Spotify OAuth) is required for the endpoints that read or write user data.
 
 ## 🤝 Contributing
 
@@ -137,18 +139,38 @@ If you would like to contribute please fork the repo and create a pull request t
 
 ## 🗺️ Project Structure
 
-- `cmd/` – Main application entrypoint
-- `internal/` – Backend logic (auth, handlers, database, parsing, summary)
-- `web/static/` – Frontend assets (HTML, CSS, JS)
-- `sql/` – Database schema and queries
-- `scripts/` – Helper scripts for build and migration
+Backend (`server/`):
+
+`server/` – Go module, Dockerfile, and server-related config
+`server/cmd/` – Backend entrypoint
+`server/internal/` – Backend packages (auth, handlers, database, parser, spotify clients, summary)
+`server/sql/` – Database schema and queries
+`server/scripts/` – Helper scripts (db migrations, docker helpers)
+
+Frontend (`web/`):
+
+`web/package.json` — frontend scripts and dependencies (pnpm recommended)
+`web/vite.config.ts` — Vite dev server and proxy config
+`web/index.html` — frontend HTML entry
+`web/src/main.tsx` — React entry, router + query client, AuthProvider
+`web/src/routes.tsx` — route definitions
+`web/src/index.css` — Tailwind and global styles
+`web/src/pages/` — top-level pages
+  - `HomePage/` — homepage components
+  - `SummaryPage/` — app summary UI, includes `FilterControls/` and `SummaryBlock/`
+  - `UploadPage/` — upload UI and file upload section
+`web/src/components/ui/` — shared UI primitives (buttons, popovers, calendar)
+`web/src/context/` — `AuthProvider` and context utilities
+`web/src/hooks/` — React hooks (`useAuth`, `useSummaryQuery`, `useLogout`)
+`web/src/services/` — API wrappers (`apiFetch`, `auth`, `summary`)
+`web/src/shared-components/` — reusable UI (NavBar, Explanation, etc.)
+`web/src/utils/` — helper utilities and types
 
 ## 🚧 Future Enhancements
 
 - Artist images and richer metadata
-- More advanced analytics (e.g., genre trends)
-- Exportable reports
-- Mobile-friendly UI
+- More advanced analytics (genre, time series, clustering)
+- Exportable CSV/JSON reports and shareable summaries
 
 ## 📄 License
 
