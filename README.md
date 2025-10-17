@@ -25,13 +25,14 @@ ReWrapped Spotify lets you securely upload your Spotify streaming history (downl
 ## 🛠️ Technology Stack
 
 - **Backend:** Go (Golang), net/http, SQLite, sqlc, Goth (Spotify OAuth)
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript
-- **Database:** SQLite (local file)
-- **Containerization:** Docker, Docker Compose
+- *Frontend:** React, Typescript, Tailwind CSS, React Query, Vite
+- **Hosting:** Fly.io (API) · Cloudflare Pages (Frontend)
+- **Tooling:** Docker, GitHub Actions (CI/CD)
 
 ## 📦 Prerequisites
 
-- Go 1.24+
+- Go 1.25+
+- React 19.2
 - SQLite
 - Docker (optional, for containerized deployment)
 - Spotify account (for OAuth login)
