@@ -29,10 +29,10 @@ const UploadPage = () => {
                         </div>
                         <div className="py-2">
                             <div className="mb-4">
-                                <button className="bg-spotify-green dark:text-spotify-black mx-2 rounded-full px-4 py-2 text-stone-100 hover:bg-green-700">
+                                <button className="bg-spotify-green dark:text-spotify-black mx-2 rounded-md px-4 py-2 font-bold text-stone-100 hover:bg-green-700">
                                     Choose Files
                                 </button>
-                                <button className="bg-spotify-green dark:text-spotify-black mx-2 rounded-full px-4 py-2 text-stone-100 hover:bg-green-700">
+                                <button className="bg-spotify-green dark:text-spotify-black mx-2 rounded-md px-4 py-2 font-bold text-stone-100 hover:bg-green-700">
                                     Analyze Data
                                 </button>
                             </div>
