@@ -2,10 +2,12 @@ import { apiFetch } from "@/services/apiFetch";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import clsx from "clsx";
+import { useAuth } from "@/hooks/useAuth";
 
 const FileUploadSection = () => {
     const [files, setFiles] = useState<FileList | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const { token: token } = useAuth();
 
     const uploadMutation = useMutation({
         mutationFn: async (files: FileList) => {
@@ -14,7 +16,7 @@ const FileUploadSection = () => {
             const formData = new FormData();
             Array.from(files).forEach((file) => formData.append("files", file));
 
-            const res = await apiFetch("POST", "/api/upload", {
+            const res = await apiFetch("POST", "/api/upload", token!, {
                 body: formData,
             });
             if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);

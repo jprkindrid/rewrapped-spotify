@@ -1,21 +1,55 @@
-import { useQuery } from "@tanstack/react-query";
 import Explanation from "@/shared-components/Explanation";
 import NavBar from "@/shared-components/NavBar";
-import * as userService from "@/services/user";
-import type { UserIdData } from "@/shared-components/UserIdData";
 import FileUploadSection from "./FileUploadSection";
+import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
+import { useCallback, useEffect, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import * as authService from "@/services/auth";
 
 const UploadPage = () => {
-    const { data: userIdData } = useQuery<UserIdData>({
-        queryKey: ["userIDs"],
-        queryFn: userService.fetchUserIDs,
-        retry: false,
-        staleTime: 60_000,
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const ranOnce = useRef(false);
+
+    const exchangeMutation = useMutation({
+        mutationFn: authService.exchangeAuthCode,
+        onSuccess: (data) => {
+            login(data.token);
+            window.history.replaceState({}, "", "/upload");
+        },
+        onError: (err) => {
+            console.error("[Exchange Error]", err);
+            navigate({ to: "/" });
+        },
     });
+
+    const handleExchange = useCallback(
+        (code: string) => {
+            if (exchangeMutation.isPending || exchangeMutation.isSuccess)
+                return;
+            exchangeMutation.mutate(code);
+        },
+        [exchangeMutation]
+    );
+
+    useEffect(() => {
+        if (ranOnce.current) return;
+        ranOnce.current = true;
+
+        const url = new URL(window.location.href);
+        const authCode = url.searchParams.get("auth_code");
+
+        if (!authCode) {
+            navigate({ to: "/" });
+        }
+
+        handleExchange(authCode!);
+    }, [handleExchange, navigate]);
 
     return (
         <div className="flex flex-col">
-            <NavBar userIdData={userIdData} includeUser={true} />
+            <NavBar includeUser={true} />
             <div className="dark:bg-spotify-black text-spotify-black flex w-full justify-center pt-4 transition dark:text-white">
                 <div className="mx-2 h-screen w-full max-w-5xl">
                     <section className="flex flex-col items-center rounded-xl border-2 border-stone-500/10 text-center shadow-md dark:border-white/20">

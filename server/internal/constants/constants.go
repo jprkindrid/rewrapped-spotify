@@ -32,5 +32,8 @@ const (
 	DefaultSortBy = SortByCount
 )
 
-const UserSession = "user_session"
 const FileFormHeader = "files"
+
+type contextKey string
+
+const UserIDKey contextKey = "user_id"

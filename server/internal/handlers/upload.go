@@ -17,7 +17,6 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
-	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
@@ -121,15 +120,9 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 func storeDataInDB(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
 	ctx := r.Context()
 
-	sess, err := gothic.Store.Get(r, constants.UserSession)
-	if err != nil {
-		log.Printf("[storeDataInDB] Session error: %v", err)
-		return database.User{}, err
-	}
-
-	spotifyID, ok := sess.Values["user_id"].(string)
-	if !ok || spotifyID == "" {
-		log.Printf("[storeDataInDB] No valid user_id in session! Values: %+v", sess.Values)
+	spotifyID := ctx.Value(constants.UserIDKey).(string)
+	if spotifyID == "" {
+		log.Printf("[storeDataInDB] No valid user_id in session!")
 		return database.User{}, errors.New("no user ID in session")
 	}
 

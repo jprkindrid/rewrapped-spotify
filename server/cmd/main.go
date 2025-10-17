@@ -9,9 +9,11 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
+	"github.com/jprkindrid/rewrapped-spotify/internal/authcode"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
+	"github.com/jprkindrid/rewrapped-spotify/internal/middleware"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/cors"
@@ -57,7 +59,8 @@ func main() {
 	dbQueries := database.New(dbConn)
 
 	cfg := &handlers.ApiConfig{
-		DB: dbQueries,
+		DB:        dbQueries,
+		AuthCodes: authcode.NewStore(60 * time.Second),
 	}
 
 	port := os.Getenv("PORT")
@@ -78,14 +81,13 @@ func main() {
 
 	//api
 	mux.HandleFunc("GET /health", cfg.HandlerHealth)
-	mux.HandleFunc("POST /api/upload", cfg.HandlerUpload)
-	mux.HandleFunc("GET /api/summary", cfg.HandlerSummary)
 	mux.HandleFunc("GET /auth/spotify/login", cfg.HandlerLogin)
 	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
-	mux.HandleFunc("POST /auth/logout", cfg.HandlerLogout)
-	mux.HandleFunc("GET /api/user", cfg.HandlerUser)
-	mux.HandleFunc("GET /callback", cfg.HandlerCallback)
-	mux.HandleFunc("DELETE /api/delete", cfg.HandlerDelete)
+	mux.HandleFunc("POST /auth/exchange", cfg.HandlerExchange)
+	mux.Handle("POST /api/upload", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerUpload)))
+	mux.Handle("GET /api/summary", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerSummary)))
+	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
+	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerDelete)))
 
 	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", "http://127.0.0.1:4173", " https://127.0.0.1:4173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
 

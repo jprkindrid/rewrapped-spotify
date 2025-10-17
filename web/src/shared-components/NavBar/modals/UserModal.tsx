@@ -1,7 +1,10 @@
+import { useAuth } from "@/hooks/useAuth";
 import { useLogout } from "@/hooks/useLogout";
+import { deleteData } from "@/services/summary";
 
 const UserModal = () => {
     const { mutate: logout, isPending } = useLogout();
+    const { token: token } = useAuth();
     return (
         <div className="text-spotify-black flex flex-col dark:text-white">
             <button
@@ -27,7 +30,15 @@ const UserModal = () => {
                 </svg>
                 Logout
             </button>
-            <button className="flex p-2 transition hover:text-red-500">
+            <button
+                className="flex p-2 transition hover:text-red-500"
+                onClick={async () => {
+                    const res = await deleteData(token!);
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                }}
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

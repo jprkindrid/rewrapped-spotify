@@ -11,7 +11,8 @@ export function useSummaryQuery(
     offsetTracks: number,
     offsetArtists: number,
     limit: number,
-    sortBy: SummarySortBy
+    sortBy: SummarySortBy,
+    token: string
 ) {
     type SummaryKey = [
         string,
@@ -20,6 +21,7 @@ export function useSummaryQuery(
         number,
         number,
         SummarySortBy,
+        string,
     ];
 
     return useQuery<SummmaryResponse, Error, SummmaryResponse, SummaryKey>({
@@ -30,6 +32,7 @@ export function useSummaryQuery(
             offsetArtists,
             limit,
             sortBy,
+            token,
         ] as SummaryKey,
         queryFn: ({ queryKey }: QueryFunctionContext<SummaryKey>) => {
             const [, range, offsetTracks, offsetArtists, limit, sortBy] =
@@ -43,6 +46,7 @@ export function useSummaryQuery(
                 offsetTracks: offsetTracks,
                 limit: limit,
                 sortBy: sortBy,
+                token: token,
             });
         },
         retry: false,
