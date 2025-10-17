@@ -40,34 +40,26 @@ func NewAuth() {
 
 	sessionKey := []byte(secret)
 	store := sessions.NewCookieStore(sessionKey)
-	// if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
-	// 	store.Options = &sessions.Options{
-	// 		Path:     "/",
-	// 		Domain:   "",
-	// 		MaxAge:   86400,
-	// 		HttpOnly: true,
-	// 		Secure:   true,
-	// 		SameSite: http.SameSiteNoneMode,
-	// 	}
-	// } else {
-	// 	store.Options = &sessions.Options{
-	// 		Path:     "/",
-	// 		Domain:   "127.0.0.1",
-	// 		MaxAge:   86400,
-	// 		HttpOnly: true,
-	// 		Secure:   false,
-	// 		SameSite: http.SameSiteLaxMode,
-	// 	}
-	// }
-
-	store.Options = &sessions.Options{
-		Path:     "/",
-		Domain:   "127.0.0.1",
-		MaxAge:   86400,
-		HttpOnly: true,
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
+	if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
+		store.Options = &sessions.Options{
+			Path:     "/",
+			Domain:   "api-rewrapped-spotify.fly.dev",
+			MaxAge:   86400,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
+		}
+	} else {
+		store.Options = &sessions.Options{
+			Path:     "/",
+			Domain:   "127.0.0.1",
+			MaxAge:   86400,
+			HttpOnly: true,
+			Secure:   false,
+			SameSite: http.SameSiteLaxMode,
+		}
 	}
+
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 	gob.Register("")
