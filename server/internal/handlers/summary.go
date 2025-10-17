@@ -9,20 +9,13 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
-	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	sess, err := gothic.Store.Get(r, constants.UserSession)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
-		return
-	}
-
-	userID, ok := sess.Values["user_id"].(string)
-	if !ok || userID == "" {
+	userID := ctx.Value(constants.UserIDKey).(string)
+	if userID == "" {
 		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", nil)
 		return
 	}

@@ -5,31 +5,20 @@ import (
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
-	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
-	session, err := gothic.Store.Get(r, constants.UserSession)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session", err)
-		return
-	}
 
-	userID, ok := session.Values["user_id"].(string)
-	if !ok || userID == "" {
+	ctx := r.Context()
+	userID := ctx.Value(constants.UserIDKey).(string)
+	if userID == "" {
 		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", nil)
 		return
 	}
 
-	err = cfg.DB.DeleteUser(r.Context(), userID)
+	err := cfg.DB.DeleteUser(r.Context(), userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data", err)
-		return
-	}
-
-	session.Options.MaxAge = -1
-	if err := session.Save(r, w); err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "error clearing session", err)
 		return
 	}
 

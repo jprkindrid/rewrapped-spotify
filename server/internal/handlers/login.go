@@ -1,16 +1,18 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
+
 	"github.com/markbates/goth/gothic"
 )
 
 func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
+	log.Printf("[LOGIN] AuthStore pointer: %p", cfg.AuthCodes)
 
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
@@ -20,9 +22,12 @@ func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
+	log.Printf("[CALLBACK] AuthStore pointer: %p", cfg.AuthCodes)
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
+
+	defer gothic.Logout(w, r)
 
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
@@ -31,36 +36,38 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	appSession, err := gothic.Store.Get(r, constants.UserSession)
+	authCode, err := cfg.AuthCodes.GenerateCodes(user.UserID, user.Name)
 	if err != nil {
-		log.Printf("[Callback] User Session error: %v", err)
-		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] Auth Error: "+err.Error(), err)
+		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] failed to generate auth code", err)
+		return
+
+	}
+
+	redirectBase := os.Getenv("FRONTEND_REDIRECT_URL")
+	if redirectBase == "" {
+		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] missing redirect url to client", fmt.Errorf("missing redirect url to client in environment variables"))
 		return
 	}
 
-	appSession.Values["user_id"] = user.UserID
-	appSession.Values["display_name"] = user.Name
-	appSession.Values["spotify_access_token"] = user.AccessToken
-	appSession.Save(r, w)
-
-	gothic.Logout(w, r)
-
-	frontendURL := os.Getenv("FRONTEND_REDIRECT_URL")
-	http.Redirect(w, r, frontendURL, http.StatusSeeOther)
+	redirectUrl := fmt.Sprintf("%s?auth_code=%s", redirectBase, authCode)
+	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
 
-func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
+// func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
 
-	appSession, err := gothic.Store.Get(r, constants.UserSession)
-	if err != nil {
-		log.Printf(("[Logout] Error getting user session"))
-		utils.RespondWithError(w, http.StatusInternalServerError, "[Logout] Auth Error: "+err.Error(), err)
+// 	ctx := r.Context()
 
-	}
-	appSession.Options.MaxAge = -1
-	appSession.Save(r, w)
-	gothic.Logout(w, r)
+// 	appSession, err := gothic.Store.Get(r, constants.UserSession)
+// 	if err != nil {
+// 		log.Printf(("[Logout] Error getting user session"))
+// 		utils.RespondWithError(w, http.StatusInternalServerError, "[Logout] Auth Error: "+err.Error(), err)
 
-	log.Println("[Logout] Logging out user")
-	utils.RespondWithJSON(w, http.StatusNoContent, "logout successful")
-}
+// 	}
+// 	appSession.Options.MaxAge = -1
+// 	appSession.Save(r, w)
+// 	gothic.Logout(w, r)
+
+// 	log.Println("[Logout] Logging out user")
+// 	utils.RespondWithJSON(w, http.StatusNoContent, "logout successful")
+// }
+// We no longer need this since switching to JWT

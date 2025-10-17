@@ -1,7 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import * as userService from "@/services/user";
 import NavBar from "@/shared-components/NavBar";
-import type { UserIdData } from "@/shared-components/UserIdData";
 import {
     type OffsetLimit,
     type SummaryDisplay,
@@ -12,16 +9,12 @@ import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
 import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./FilterControls";
+import { useAuth } from "@/hooks/useAuth";
 
 export const SummaryPage = () => {
-    const { data: userIdData } = useQuery<UserIdData>({
-        queryKey: ["userIDs"],
-        queryFn: userService.fetchUserIDs,
-        retry: false,
-        staleTime: 60_000,
-    });
-
     const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
+
+    const { token: token } = useAuth();
 
     const initialRange: DateRange = {
         from: new Date(2011, 0, 1),
@@ -54,13 +47,14 @@ export const SummaryPage = () => {
         filters.offsetLimit.offsetTracks,
         filters.offsetLimit.offsetArtists,
         filters.offsetLimit.limit,
-        filters.sortBy
+        filters.sortBy,
+        token!
     );
 
     return (
         <div className="flex w-full flex-col">
             {/* <div className="absolute left-1/2 z-60 h-screen w-[2px] bg-red-500"></div> */}
-            <NavBar userIdData={userIdData} includeUser={true} />
+            <NavBar includeUser={true} />
             <div className="text-spotify-black dark:bg-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:text-white">
                 <div className="relative h-full w-full max-w-5xl">
                     <div className="shadow:md mx-2 mb-4 flex justify-center rounded-md border border-stone-500/10 pb-2 shadow-md dark:border-white/50">

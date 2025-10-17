@@ -1,13 +1,13 @@
 import type { Setter } from "@/utils/types";
-import type { UserIdData } from "../UserIdData";
+import { useAuth } from "@/hooks/useAuth";
 
 type Props = {
     setShowUserModal: Setter<boolean>;
     includeUser: boolean;
-    userIdData: UserIdData | undefined;
 };
 
-const UserButton = ({ setShowUserModal, includeUser, userIdData }: Props) => {
+const UserButton = ({ setShowUserModal, includeUser }: Props) => {
+    const { displayName: displayName } = useAuth();
     return (
         <div className="text-spotify-black space-x-4 dark:text-white">
             <button
@@ -34,8 +34,8 @@ const UserButton = ({ setShowUserModal, includeUser, userIdData }: Props) => {
                 )}
                 <span className="pl-1">
                     {includeUser
-                        ? userIdData
-                            ? userIdData.display_name
+                        ? displayName
+                            ? displayName
                             : "Loading..."
                         : ""}
                 </span>

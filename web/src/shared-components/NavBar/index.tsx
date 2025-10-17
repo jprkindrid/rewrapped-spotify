@@ -1,16 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import DarkModeButtons from "./DarkModeButtons";
-import type { UserIdData } from "../UserIdData";
 import UserModal from "./modals/UserModal";
 import { useRef, useState, useEffect } from "react";
 import UserButton from "./UserButton";
 
 type NavBarProps = {
-    userIdData: UserIdData | undefined;
     includeUser: boolean;
 };
 
-const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
+const NavBar = ({ includeUser }: NavBarProps) => {
     const [showUserModal, setShowUserModal] = useState(false);
     const userModalRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +28,8 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
             document.removeEventListener("mousedown", handleClickOutside);
     }, [showUserModal]);
 
+    // TODO: GET USER ID DATA HERE FROM CONTEXT
+
     return (
         <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center px-8 shadow-lg transition sm:py-6">
             <div className="flex w-full flex-col justify-center py-4 sm:flex-row sm:justify-between sm:py-0">
@@ -38,7 +38,6 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                         <UserButton
                             setShowUserModal={setShowUserModal}
                             includeUser={includeUser}
-                            userIdData={userIdData}
                         />
                     </div>
                     <div className="sm:hidden">
@@ -51,7 +50,6 @@ const NavBar = ({ userIdData, includeUser }: NavBarProps) => {
                         <UserButton
                             setShowUserModal={setShowUserModal}
                             includeUser={includeUser}
-                            userIdData={userIdData}
                         />
                     </div>
 
