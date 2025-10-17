@@ -1,6 +1,6 @@
 # ReWrapped Spotify
 
-#  ⚠️UNDER RECONSTRUCTION⚠️
+#  See the demo at [https://rewrapped-spotify.pages.dev/](https://rewrapped-spotify.pages.dev/)
 
 **ReWrapped Spotify** is a web application that helps you explore and visualize your Spotify listening history. Upload your Spotify data and discover your top tracks, artists, and listening patterns over time.
 
