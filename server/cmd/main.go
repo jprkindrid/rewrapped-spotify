@@ -20,7 +20,7 @@ import (
 func main() {
 
 	if os.Getenv("DOCKER") == "" {
-		_ = godotenv.Load("../.env")
+		_ = godotenv.Load("./.env")
 	}
 
 	spotifyClientID := os.Getenv("SPOTIFY_CLIENT_ID")
