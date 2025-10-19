@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -21,18 +22,14 @@ import (
 
 func main() {
 
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+
+	slog.SetDefault(logger)
+
 	if os.Getenv("DOCKER") == "" {
 		_ = godotenv.Load("./.env")
-	}
-
-	spotifyClientID := os.Getenv("SPOTIFY_CLIENT_ID")
-	if spotifyClientID == "" {
-		log.Fatal("SPOTIFY_CLIENT_ID must be set")
-	}
-
-	spotifyClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
-	if spotifyClientSecret == "" {
-		log.Fatal("SPOTIFY_CLIENT_SECRET must be set")
 	}
 
 	dbPath := os.Getenv("DB_PATH")
@@ -51,9 +48,9 @@ func main() {
 		log.Fatalf("Error opening database: %s", err)
 	}
 
-	_, err = spotify.GetValidToken()
+	err = spotify.Init()
 	if err != nil {
-		log.Fatalf("Error getting valid spotify API token: %v", err)
+		log.Fatalf("error initializing spotify client: %v", err)
 	}
 
 	dbQueries := database.New(dbConn)
