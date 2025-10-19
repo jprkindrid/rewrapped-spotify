@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -27,14 +28,51 @@ type CachedToken struct {
 	ExpiresAt   time.Time `json:"expires_at"`
 }
 
+type SpotifyClient struct {
+	clientID     string
+	clientSecret string
+	mu           sync.RWMutex
+	appToken     *CachedToken
+}
+
 var (
-	appToken   *CachedToken
-	appTokenMU sync.RWMutex
+	spotifyClient *SpotifyClient
 )
 
-// I dont know why i did this firstbut this and fetch.go are for later when I implement artist images and such into the pages
+func Init() error {
+	clientID := os.Getenv("SPOTIFY_CLIENT_ID")
+	clientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
+	if clientID == "" || clientSecret == "" {
+		return fmt.Errorf("missing client credentials")
+	}
+
+	slog.Info("initializing spotify client")
+	spotifyClient = &SpotifyClient{
+		clientID:     clientID,
+		clientSecret: clientSecret,
+	}
+
+	return nil
+}
 
 func GetValidToken() (string, error) {
+	if spotifyClient == nil {
+		slog.Error("spotify client not initialized")
+		return "", fmt.Errorf("spotify client not initialized")
+	}
+	return spotifyClient.getValidToken()
+}
+
+func (c *SpotifyClient) getValidToken() (string, error) {
+	c.mu.RLock()
+	token := c.appToken
+	c.mu.RUnlock()
+
+	if token != nil && time.Now().After(token.ExpiresAt.Add(-1*time.Minute)) {
+		fmt.Println("using cached token")
+		return token.AccessToken, nil
+	}
+
 	if os.Getenv("DOCKER") == "" {
 		_ = godotenv.Load()
 	}
@@ -43,17 +81,9 @@ func GetValidToken() (string, error) {
 	if devClientID == "" || devClientSecret == "" {
 		return "", fmt.Errorf("missing client credentials")
 	}
-	appTokenMU.RLock()
-	token := appToken
-	appTokenMU.RUnlock()
 
-	if token != nil && time.Now().After(token.ExpiresAt.Add(-1*time.Minute)) {
-		fmt.Println("using cached token")
-		return token.AccessToken, nil
-	}
-
-	fmt.Println("No valid access token found, fetching new token...")
-	newToken, err := GetAccessToken(devClientID, devClientSecret)
+	slog.Info("No valid access token found, fetching new token...")
+	newToken, err := c.getAccessToken(devClientID, devClientSecret)
 	if err != nil {
 		log.Fatalf("Failed to get access token: %v", err)
 		return "", err
@@ -63,14 +93,14 @@ func GetValidToken() (string, error) {
 		return "", fmt.Errorf("received empty access token")
 	}
 
-	appTokenMU.Lock()
-	appToken = newToken
-	appTokenMU.Unlock()
+	c.mu.Lock()
+	c.appToken = newToken
+	c.mu.Unlock()
 
 	return newToken.AccessToken, nil
 }
 
-func GetAccessToken(clientID, clientSecret string) (*CachedToken, error) {
+func (c *SpotifyClient) getAccessToken(clientID, clientSecret string) (*CachedToken, error) {
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
 
