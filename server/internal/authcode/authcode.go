@@ -3,7 +3,6 @@ package authcode
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"log"
 	"sync"
 	"time"
 )
@@ -42,7 +41,6 @@ func (s *Store) GenerateCodes(userID, displayName string) (string, error) {
 		Name:   displayName,
 		Expiry: time.Now().Add(s.expiry),
 	}
-	log.Printf("[AuthCode] Created code=%s expires=%v (in %v)", code, time.Now().Add(s.expiry), s.expiry)
 	return code, nil
 }
 
@@ -51,8 +49,6 @@ func (s *Store) ValidateAndDeleteCode(code string) (string, string, bool) {
 	defer s.mu.Unlock()
 
 	e, ok := s.codes[code]
-	log.Printf("[AuthCode] Checking code=%s now=%v expiry=%v exists=%v",
-		code, time.Now(), e.Expiry, ok)
 
 	if !ok {
 		return "", "", false
@@ -62,7 +58,6 @@ func (s *Store) ValidateAndDeleteCode(code string) (string, string, bool) {
 		delete(s.codes, code)
 		return "", "", false
 	}
-	log.Printf("[AuthCode] Checking code=%s now=%v expiry=%v exists=%v", code, time.Now(), e.Expiry, ok)
 
 	delete(s.codes, code)
 	return e.UserID, e.Name, true
