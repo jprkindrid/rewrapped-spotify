@@ -55,20 +55,19 @@ func Init() error {
 	return nil
 }
 
-func GetValidToken() (string, error) {
+func GetClient() *SpotifyClient {
 	if spotifyClient == nil {
-		slog.Error("spotify client not initialized")
-		return "", fmt.Errorf("spotify client not initialized")
+		Init()
 	}
-	return spotifyClient.getValidToken()
+	return spotifyClient
 }
 
-func (c *SpotifyClient) getValidToken() (string, error) {
+func (c *SpotifyClient) GetValidToken() (string, error) {
 	c.mu.RLock()
 	token := c.appToken
 	c.mu.RUnlock()
 
-	if token != nil && time.Now().After(token.ExpiresAt.Add(-1*time.Minute)) {
+	if token != nil && time.Now().Before(token.ExpiresAt.Add(-1*time.Minute)) {
 		fmt.Println("using cached token")
 		return token.AccessToken, nil
 	}
