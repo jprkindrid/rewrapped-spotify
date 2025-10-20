@@ -5,4 +5,4 @@ sql:
     engine: "sqlite"
     gen:
       go:
-        out: "internal/database"
+        out: "internal/store"
