@@ -40,7 +40,7 @@ func main() {
 		}
 	}
 	if dbPath == "" {
-		log.Fatal("DB_PATH or DB_PATH_DOCKER must be set")
+		log.Fatal("DB_PATH or DB_PATH_DOCKER environment variables must be set")
 	}
 
 	dbConn, err := sql.Open("sqlite3", dbPath)
@@ -52,6 +52,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("error initializing spotify client: %v", err)
 	}
+	sClient := spotify.GetClient()
+	token, err := sClient.GetValidToken()
+	if err != nil {
+		log.Fatalf("error initializing getting token: %v", err)
+	}
+
+	log.Println(token)
 
 	dbQueries := database.New(dbConn)
 

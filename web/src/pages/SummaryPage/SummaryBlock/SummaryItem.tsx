@@ -22,6 +22,8 @@ const SummaryItem = ({ i, item, offset, isLoading }: Props) => {
                     <div className="text-spotify-green mr-2 flex font-bold">
                         {i + offset + 1}
                         {"."}
+                        {/* <div className="text-xl text-red-500">{item.URI}</div> */}
+                        <div> </div>
                     </div>
                     <div>{isLoading ? "Loading..." : item.Name}</div>
                 </div>

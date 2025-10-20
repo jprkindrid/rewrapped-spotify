@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -33,6 +34,7 @@ type SpotifyClient struct {
 	clientSecret string
 	mu           sync.RWMutex
 	appToken     *CachedToken
+	HTTP         *http.Client
 }
 
 var (
@@ -50,6 +52,7 @@ func Init() error {
 	spotifyClient = &SpotifyClient{
 		clientID:     clientID,
 		clientSecret: clientSecret,
+		HTTP:         &http.Client{},
 	}
 
 	return nil
@@ -68,7 +71,6 @@ func (c *SpotifyClient) GetValidToken() (string, error) {
 	c.mu.RUnlock()
 
 	if token != nil && time.Now().Before(token.ExpiresAt.Add(-1*time.Minute)) {
-		fmt.Println("using cached token")
 		return token.AccessToken, nil
 	}
 
@@ -114,9 +116,7 @@ func (c *SpotifyClient) getAccessToken(clientID, clientSecret string) (*CachedTo
 	encodedAuthStr := base64.StdEncoding.EncodeToString([]byte(authStr))
 	req.Header.Set("Authorization", "Basic "+encodedAuthStr)
 
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
+	resp, err := c.HTTP.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -144,4 +144,34 @@ func (c *SpotifyClient) getAccessToken(clientID, clientSecret string) (*CachedTo
 	}
 
 	return &cachedToken, nil
+}
+
+func (c *SpotifyClient) doWithRetry(req *http.Request) (*http.Response, error) {
+	client := c.HTTP
+	if client == nil {
+		client = &http.Client{}
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retryAfter := 5 * time.Second
+		if v := resp.Header.Get("Retry-After"); v != "" {
+			if secs, err := strconv.Atoi(v); err == nil {
+				retryAfter = time.Duration(secs) * time.Second
+			}
+		}
+		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		fmt.Printf("Rate limited by Spotify — retrying in %v (body: %s)\n", retryAfter, string(body))
+		time.Sleep(retryAfter)
+
+		return client.Do(req)
+	}
+
+	return resp, nil
 }

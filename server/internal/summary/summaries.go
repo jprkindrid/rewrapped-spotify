@@ -2,18 +2,16 @@ package summary
 
 import (
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 )
 
 type ScoredEntry struct {
-	Name     string
-	TotalMs  int
-	Count    int
-	id       string
-	imageUrl string
+	Name    string
+	TotalMs int
+	Count   int
+	URI     string
 }
 
 func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sortBy string) []ScoredEntry {
@@ -29,6 +27,7 @@ func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sor
 
 			counts[name] = &ScoredEntry{
 				Name: name,
+				URI:  entry.SpotifyArtistURI,
 			}
 		}
 
@@ -68,7 +67,7 @@ func TopTracksInRange(data []parser.MinifiedSongData, start, end time.Time, sort
 		}
 		key := entry.TrackName + " - " + entry.ArtistName
 		if counts[key] == nil {
-			counts[key] = &ScoredEntry{Name: key, id: getItemId(entry.SpotifyTrackURI)}
+			counts[key] = &ScoredEntry{Name: key, URI: entry.SpotifyTrackURI}
 		}
 		counts[key].TotalMs += entry.MsPlayed
 		counts[key].Count++
@@ -106,9 +105,4 @@ func GroupByYear(data []parser.UserSongData) map[int][]parser.UserSongData {
 		byYear[year] = append(byYear[year], entry)
 	}
 	return byYear
-}
-
-func getItemId(uri string) string {
-	uriParts := strings.Split(uri, ":")
-	return uriParts[2]
 }

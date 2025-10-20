@@ -108,6 +108,8 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	err = parser.VerifyTrackArtistIDRelations(userSongData, cfg.DB)
+
 	_, err = storeDataInDB(r, userSongData, cfg.DB)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)

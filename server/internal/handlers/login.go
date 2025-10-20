@@ -12,8 +12,6 @@ import (
 )
 
 func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[LOGIN] AuthStore pointer: %p", cfg.AuthCodes)
-
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
@@ -22,7 +20,6 @@ func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[CALLBACK] AuthStore pointer: %p", cfg.AuthCodes)
 	q := r.URL.Query()
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
