@@ -3,7 +3,7 @@ set -e
 
 cd /app
 
-if [ "$PRODUCTION" = "true" ]; then
+if [ "$PRODUCTION_BUILD" = "TRUE" ]; then
     echo "Production mode detected — using Turso remote database."
 
     if [ -z "$DATABASE_URL" ] || [ -z "$DATABASE_AUTH_TOKEN" ]; then
