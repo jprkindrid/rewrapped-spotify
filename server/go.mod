@@ -17,5 +17,6 @@ require (
 	github.com/go-chi/chi/v5 v5.2.3 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
+	github.com/tursodatabase/libsql-client-go v0.0.0-20240902231107-85af5b9d094d // indirect
 	golang.org/x/oauth2 v0.32.0 // indirect
 )

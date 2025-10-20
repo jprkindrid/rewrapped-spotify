@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"log/slog"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/authcode"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
+	db "github.com/jprkindrid/rewrapped-spotify/internal/dbConn"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
 	"github.com/jprkindrid/rewrapped-spotify/internal/middleware"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
@@ -32,23 +32,20 @@ func main() {
 		_ = godotenv.Load("./.env")
 	}
 
-	dbPath := os.Getenv("DB_PATH")
-	if os.Getenv("DOCKER") != "" {
-		dockerDBPath := os.Getenv("DB_PATH_DOCKER")
-		if dockerDBPath != "" {
-			dbPath = dockerDBPath
-		}
-	}
-	if dbPath == "" {
-		log.Fatal("DB_PATH or DB_PATH_DOCKER environment variables must be set")
+	conn := db.Open()
+
+	if err := conn.Ping(); err != nil {
+		log.Fatalf("DB connection failed: %v", err)
 	}
 
-	dbConn, err := sql.Open("sqlite3", dbPath)
-	if err != nil {
-		log.Fatalf("Error opening database: %s", err)
+	dbQueries := database.New(conn)
+
+	cfg := &handlers.ApiConfig{
+		DB:        dbQueries,
+		AuthCodes: authcode.NewStore(60 * time.Second),
 	}
 
-	err = spotify.Init()
+	err := spotify.Init()
 	if err != nil {
 		log.Fatalf("error initializing spotify client: %v", err)
 	}
@@ -59,13 +56,6 @@ func main() {
 	}
 
 	log.Println(token)
-
-	dbQueries := database.New(dbConn)
-
-	cfg := &handlers.ApiConfig{
-		DB:        dbQueries,
-		AuthCodes: authcode.NewStore(60 * time.Second),
-	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
