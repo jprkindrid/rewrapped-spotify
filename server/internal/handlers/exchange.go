@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
@@ -11,7 +10,6 @@ import (
 )
 
 func (cfg *ApiConfig) HandlerExchange(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[EXCHANGE] AuthStore pointer: %p", cfg.AuthCodes)
 	var body struct {
 		AuthCode string `json:"auth_code"`
 	}

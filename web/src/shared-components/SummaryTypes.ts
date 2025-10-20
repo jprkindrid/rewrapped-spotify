@@ -28,8 +28,7 @@ export interface SummaryEntry {
     Name: string;
     TotalMs: number;
     Count: number;
-    id: string;
-    imageUrl: string;
+    URI: string;
 }
 
 export type SummaryFilters = {
