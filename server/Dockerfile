@@ -11,8 +11,7 @@ RUN go mod download
 COPY . .
 RUN go build -o app ./cmd
 
-ENV CGO_ENABLED=0
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+RUN CGO_ENABLED=0 go install github.com/pressly/goose/v3/cmd/goose@latest
 
 FROM debian:bookworm-slim
 
@@ -24,6 +23,7 @@ COPY --from=builder /app/sql ./sql
 COPY --from=builder /go/bin/goose /usr/local/bin/goose
 COPY scripts/entrypoint.sh /entrypoint.sh
 
+RUN curl -sSfL https://get.tur.so/install.sh | bash
 RUN chmod +x /entrypoint.sh
 EXPOSE 8080
 
