@@ -50,12 +50,10 @@ func main() {
 		log.Fatalf("error initializing spotify client: %v", err)
 	}
 	sClient := spotify.GetClient()
-	token, err := sClient.GetValidToken()
+	_, err = sClient.GetValidToken()
 	if err != nil {
 		log.Fatalf("error initializing getting token: %v", err)
 	}
-
-	log.Println(token)
 
 	port := os.Getenv("PORT")
 	if port == "" {
