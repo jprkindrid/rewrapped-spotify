@@ -4,32 +4,29 @@ import (
 	"database/sql"
 	"log"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 func Open() *sql.DB {
 	isProd := os.Getenv("PRODUCTION_BUILD") == "TRUE"
 
 	if isProd {
-		dbURL := os.Getenv("DATABASE_URL")
-		dbToken := os.Getenv("DATABASE_AUTH_TOKEN")
+		dbURL := os.Getenv("TURSO_DATABASE_URL")
+		dbToken := os.Getenv("TURSO_AUTH_TOKEN")
 
 		if dbURL == "" {
-			log.Fatal("DATABASE_URL must be set in production")
+			log.Fatal("TURSO_DATABASE_URL must be set in production")
 		}
 
-		dsn := dbURL
-		if dbToken != "" {
-			dsn += "?authToken=" + dbToken
-		}
-
-		dbConn, err := sql.Open("libsql", dsn)
+		dbConn, err := sql.Open("libsql", dbURL+"?authToken="+dbToken)
 		if err != nil {
 			log.Fatalf("Error opening production DB: %v", err)
 		}
 		return dbConn
 	}
 
-	// Local SQLite config
 	dbPath := os.Getenv("DB_PATH")
 	if os.Getenv("DOCKER") != "" {
 		if dockerPath := os.Getenv("DB_PATH_DOCKER"); dockerPath != "" {
