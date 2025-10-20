@@ -108,7 +108,7 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// TODO: RE-ENABLE THIS
+	// TODO: Fix calling spotify api to call this properly
 	// err = parser.VerifyTrackArtistIDRelations(userSongData, cfg.DB)
 
 	_, err = storeDataInDB(r, userSongData, cfg.DB)

@@ -1,8 +1,10 @@
+import { usePingApi } from "@/hooks/usePingAPi";
 import Explanation from "@/shared-components/Explanation";
 import NavBar from "@/shared-components/NavBar";
 import { API_URL } from "@/utils/constants";
 
 const HomePage = () => {
+    usePingApi();
     return (
         <>
             <NavBar includeUser={false} />
