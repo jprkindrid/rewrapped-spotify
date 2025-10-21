@@ -3,7 +3,7 @@ set -e
 
 cd /app
 
-if [ "$PRODUCTION_BUILD" = "FALSE" ]; then
+# if [ "$PRODUCTION_BUILD" = "FALSE" ]; then
     echo "Local mode detected — using SQLite database file."
     mkdir -p /data
 
@@ -15,7 +15,7 @@ if [ "$PRODUCTION_BUILD" = "FALSE" ]; then
 
     echo "Running goose migrations locally..."
     goose -dir sql/schema sqlite3 /data/userdata.sqlite up
-fi
+# fi
 
 echo "Starting application..."
 exec "$@"
