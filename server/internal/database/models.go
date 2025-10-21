@@ -5,17 +5,8 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 )
-
-type TrackArtistPairing struct {
-	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	TrackUri  string
-	ArtistUri sql.NullString
-}
 
 type User struct {
 	ID         string

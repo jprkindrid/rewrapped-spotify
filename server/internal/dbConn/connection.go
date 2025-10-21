@@ -11,7 +11,7 @@ import (
 )
 
 func Open() *sql.DB {
-	isProd := os.Getenv("PRODUCTION_BUILD") == "TRUE"
+	isProd := os.Getenv("PRODUCTION_BUILD") == "FALSE"
 
 	if isProd {
 		dbURL := os.Getenv("TURSO_DATABASE_URL")
