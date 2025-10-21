@@ -3,6 +3,7 @@ package dbConn
 import (
 	"database/sql"
 	"log"
+	"log/slog"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -10,7 +11,7 @@ import (
 )
 
 func Open() *sql.DB {
-	isProd := os.Getenv("PRODUCTION_BUILD") == "TRUE"
+	isProd := os.Getenv("PRODUCTION_BUILD") == "FALSE"
 
 	if isProd {
 		dbURL := os.Getenv("TURSO_DATABASE_URL")
@@ -24,6 +25,7 @@ func Open() *sql.DB {
 		if err != nil {
 			log.Fatalf("Error opening production DB: %v", err)
 		}
+		slog.Info("[Connection] connected to db", "db_url", dbURL)
 		return dbConn
 	}
 
@@ -41,6 +43,8 @@ func Open() *sql.DB {
 	if err != nil {
 		log.Fatalf("Error opening local DB: %v", err)
 	}
+
+	slog.Info("[Connection] connected to db", "db_url", dbPath)
 
 	return dbConn
 }
