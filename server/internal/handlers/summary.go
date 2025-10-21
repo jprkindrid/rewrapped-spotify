@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
+	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
@@ -26,9 +26,11 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cfClient := storage.GetClient()
+
 	var data []parser.MinifiedSongData
-	if err := json.Unmarshal([]byte(dbUser.Data), &data); err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to parse user data from database", err)
+	if err := cfClient.GetJSON(ctx, dbUser.StorageKey, &data); err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "failed to parse user data from database", err)
 		return
 	}
 

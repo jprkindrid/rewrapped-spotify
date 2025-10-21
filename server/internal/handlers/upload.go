@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -16,6 +15,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
+	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
@@ -111,7 +111,7 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fix calling spotify api to call this properly
 	// err = parser.VerifyTrackArtistIDRelations(userSongData, cfg.DB)
 
-	_, err = storeDataInDB(r, userSongData, cfg.DB)
+	_, err = storeData(r, userSongData, cfg.DB)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 	}
@@ -120,8 +120,10 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func storeDataInDB(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
+func storeData(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
 	ctx := r.Context()
+
+	cfClient := storage.GetClient()
 
 	spotifyID := ctx.Value(constants.UserIDKey).(string)
 	if spotifyID == "" {
@@ -129,20 +131,19 @@ func storeDataInDB(r *http.Request, data []parser.MinifiedSongData, db *database
 		return database.User{}, errors.New("no user ID in session")
 	}
 
-	blob, err := json.Marshal(data)
+	objKey, err := cfClient.UploadJSON(ctx, data, spotifyID)
 	if err != nil {
 		return database.User{}, err
 	}
-	blobText := string(blob)
 
 	existing, err := db.GetUserData(ctx, spotifyID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			newID := uuid.New().String()
 			newUser, err := db.CreateUser(ctx, database.CreateUserParams{
-				ID:        newID,
-				SpotifyID: spotifyID,
-				Data:      blobText,
+				ID:         newID,
+				SpotifyID:  spotifyID,
+				StorageKey: objKey,
 			})
 			if err != nil {
 				return database.User{}, fmt.Errorf("error creating new user: %w", err)
@@ -152,9 +153,11 @@ func storeDataInDB(r *http.Request, data []parser.MinifiedSongData, db *database
 		return database.User{}, fmt.Errorf("error checking for existing user: %w", err)
 	}
 
+	_ = cfClient.DeleteExistingBlob(ctx, existing.StorageKey)
+
 	updatedUser, err := db.UpdateUser(ctx, database.UpdateUserParams{
-		ID:   existing.ID,
-		Data: blobText,
+		ID:         existing.ID,
+		StorageKey: objKey,
 	})
 	if err != nil {
 		return database.User{}, fmt.Errorf("error updating user: %w", err)

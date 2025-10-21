@@ -26,6 +26,14 @@ var (
 	cloudflareClient *CloudflareClient
 )
 
+func GetClient() *CloudflareClient {
+	if cloudflareClient == nil {
+		Init()
+	}
+
+	return cloudflareClient
+}
+
 func Init() {
 	ctx := context.Background()
 	bucketName := os.Getenv("CLOUDFLARE_BUCKET_NAME")
