@@ -28,16 +28,14 @@ func VerifyTrackArtistIDRelations(userSongData []MinifiedSongData, db *database.
 			continue
 		}
 
-		if len(trackBuffer) > 45 {
-			flushVerificationBuffer(&trackBuffer, bufferSet, spotifyClient, userSongData, db, pairCache)
-		}
-
-		if artistUri == "" {
-			// added to request buffer
+		if artistUri != "" {
+			// pairing exists
 			continue
 		}
 
-		userSongData[i].SpotifyArtistURI = artistUri
+		if len(trackBuffer) > 45 {
+			flushVerificationBuffer(&trackBuffer, bufferSet, spotifyClient, userSongData, db, pairCache)
+		}
 
 	}
 
@@ -119,7 +117,7 @@ func checkTrackArtistID(
 		if song.SpotifyTrackURI == track.URI {
 			for _, artist := range track.Artists {
 				if artist.Name == song.ArtistName {
-					artistUri = song.SpotifyArtistURI
+					artistUri = artist.URI
 				}
 			}
 		}
