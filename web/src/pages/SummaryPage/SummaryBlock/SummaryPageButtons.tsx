@@ -5,7 +5,7 @@ import type {
     SummmaryResponse,
 } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
     summaryData: SummmaryResponse | undefined;
@@ -20,6 +20,8 @@ const SummaryPageButtons = ({
     offsetLimit,
     setFilters,
 }: Props) => {
+    const [pageCount, setPageCount] = useState(0);
+
     const getPageCount = (itemCount: number | undefined) => {
         if (!itemCount) return 0;
         return Math.ceil(itemCount / offsetLimit.limit);
@@ -72,10 +74,27 @@ const SummaryPageButtons = ({
             ? offsetLimit.offsetArtists
             : offsetLimit.offsetTracks;
 
-    const totalPages =
-        displayType === "artists"
-            ? getPageCount(summaryData?.total_artists_count)
-            : getPageCount(summaryData?.total_tracks_count);
+    const lastTotalRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (!summaryData) return;
+
+        const currentTotal =
+            displayType === "artists"
+                ? summaryData.total_artists_count
+                : summaryData.total_tracks_count;
+
+        if (lastTotalRef.current !== currentTotal) {
+            lastTotalRef.current = currentTotal;
+            setPageCount(getPageCount(currentTotal));
+        }
+    }, [
+        lastTotalRef,
+        getPageCount,
+        summaryData,
+        displayType,
+        offsetLimit.limit,
+    ]);
 
     return (
         <div className="flex w-full items-center justify-center px-4">
@@ -92,7 +111,7 @@ const SummaryPageButtons = ({
             </div>
 
             <div className="w-32 px-8 text-center text-wrap sm:w-max">
-                Page {getCurrentPage(currentOffset)} of {totalPages}
+                Page {getCurrentPage(currentOffset)} of {pageCount}
             </div>
 
             <div className="flex flex-col items-center gap-2 sm:flex-row">
