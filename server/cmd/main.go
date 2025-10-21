@@ -16,6 +16,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
 	"github.com/jprkindrid/rewrapped-spotify/internal/middleware"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
+	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/cors"
 )
@@ -68,6 +69,7 @@ func main() {
 		addr = "127.0.0.1:8080"
 	}
 	auth.NewAuth()
+	storage.Init()
 
 	mux := http.NewServeMux()
 
