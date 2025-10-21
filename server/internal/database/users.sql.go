@@ -10,28 +10,28 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, created_at, updated_at, spotify_id, data)
+INSERT INTO users (id, created_at, updated_at, spotify_id, storage_key)
 VALUES (
    ?1 ,datetime('now'), datetime('now'), ?2, ?3
 )
-RETURNING id, created_at, updated_at, spotify_id, data
+RETURNING id, created_at, updated_at, spotify_id, storage_key
 `
 
 type CreateUserParams struct {
-	ID        string
-	SpotifyID string
-	Data      string
+	ID         string
+	SpotifyID  string
+	StorageKey string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.SpotifyID, arg.Data)
+	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.SpotifyID, arg.StorageKey)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.SpotifyID,
-		&i.Data,
+		&i.StorageKey,
 	)
 	return i, err
 }
@@ -47,7 +47,7 @@ func (q *Queries) DeleteUser(ctx context.Context, spotifyID string) error {
 }
 
 const getUserData = `-- name: GetUserData :one
-SELECT id, created_at, updated_at, spotify_id, data FROM users
+SELECT id, created_at, updated_at, spotify_id, storage_key FROM users
 WHERE spotify_id = ?1
 `
 
@@ -59,7 +59,7 @@ func (q *Queries) GetUserData(ctx context.Context, spotifyID string) (User, erro
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.SpotifyID,
-		&i.Data,
+		&i.StorageKey,
 	)
 	return i, err
 }
@@ -75,25 +75,25 @@ func (q *Queries) ResetUsers(ctx context.Context) error {
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users 
-SET data = ?2, updated_at = datetime('now')
+SET storage_key = ?2, updated_at = datetime('now')
 WHERE id = ?1
-RETURNING id, created_at, updated_at, spotify_id, data
+RETURNING id, created_at, updated_at, spotify_id, storage_key
 `
 
 type UpdateUserParams struct {
-	ID   string
-	Data string
+	ID         string
+	StorageKey string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser, arg.ID, arg.Data)
+	row := q.db.QueryRowContext(ctx, updateUser, arg.ID, arg.StorageKey)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.SpotifyID,
-		&i.Data,
+		&i.StorageKey,
 	)
 	return i, err
 }

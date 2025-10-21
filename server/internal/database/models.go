@@ -18,9 +18,9 @@ type TrackArtistPairing struct {
 }
 
 type User struct {
-	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	SpotifyID string
-	Data      string
+	ID         string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	SpotifyID  string
+	StorageKey string
 }

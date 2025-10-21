@@ -1,5 +1,5 @@
 -- name: CreateUser :one
-INSERT INTO users (id, created_at, updated_at, spotify_id, data)
+INSERT INTO users (id, created_at, updated_at, spotify_id, storage_key)
 VALUES (
    ?1 ,datetime('now'), datetime('now'), ?2, ?3
 )
@@ -14,7 +14,7 @@ DELETE FROM users;
 
 -- name: UpdateUser :one
 UPDATE users 
-SET data = ?2, updated_at = datetime('now')
+SET storage_key = ?2, updated_at = datetime('now')
 WHERE id = ?1
 RETURNING *;
 

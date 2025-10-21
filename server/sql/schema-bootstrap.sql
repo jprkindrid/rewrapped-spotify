@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at  DATETIME  NOT NULL DEFAULT (datetime('now')),
     updated_at  DATETIME  NOT NULL DEFAULT (datetime('now')),
     spotify_id  TEXT      UNIQUE  NOT NULL,
-    data        TEXT      NOT NULL                          
+    storage_key TEXT      NOT NULL                          
 );
 
 -- 002_track_artist_pairings
