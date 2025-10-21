@@ -16,6 +16,7 @@ type ScoredEntry struct {
 
 func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sortBy string) []ScoredEntry {
 	counts := make(map[string]*ScoredEntry)
+	reps := make(map[string]string) // artist name -> first found track
 
 	for _, entry := range data {
 		if entry.Ts.Before(start) || entry.Ts.After(end) {
@@ -24,10 +25,13 @@ func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sor
 		name := entry.ArtistName
 
 		if counts[name] == nil {
-
 			counts[name] = &ScoredEntry{
 				Name: name,
-				URI:  entry.SpotifyArtistURI,
+				URI:  entry.SpotifyTrackURI,
+			}
+
+			if reps[name] == "" {
+				reps[name] = entry.SpotifyTrackURI
 			}
 		}
 

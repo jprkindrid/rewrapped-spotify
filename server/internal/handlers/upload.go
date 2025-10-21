@@ -108,15 +108,18 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// TODO: Fix calling spotify api to call this properly
-	// err = parser.VerifyTrackArtistIDRelations(userSongData, cfg.DB)
-
 	_, err = storeData(r, userSongData, cfg.DB)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 	}
 
 	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{})
+
+	// go func(data []parser.MinifiedSongData) {
+	// 	if err := parser.VerifyTrackArtistIDRelations(data, cfg.DB, nil, context.Background()); err != nil {
+	// 		slog.Error("async track-artist verification failed", "err", err)
+	// 	}
+	// }(userSongData)
 
 }
 
