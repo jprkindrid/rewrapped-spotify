@@ -3,20 +3,7 @@ set -e
 
 cd /app
 
-if [ "$PRODUCTION_BUILD" = "TRUE" ]; then
-    echo "Production mode detected — using Turso remote database."
-
-    if [ -z "$TURSO_DATABASE_URL" ] || [ -z "$TURSO_AUTH_TOKEN" ]; then
-        echo "Error: TURSO_DATABASE_URL and TURSO_AUTH_TOKEN must be set in production."
-        exit 1
-    fi
-
-    echo "Authenticating with Turso..."
-    turso auth login --token "$TURSO_AUTH_TOKEN"
-
-    echo "Running goose migrations on Turso..."
-    turso db push --url "$TURSO_DATABASE_URL" --dir sql/schema "$TURSO_DATABASE_NAME"
-else
+if [ "$PRODUCTION_BUILD" = "FALSE" ]; then
     echo "Local mode detected — using SQLite database file."
     mkdir -p /data
 
