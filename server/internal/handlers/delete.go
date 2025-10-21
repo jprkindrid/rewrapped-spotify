@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
+	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
@@ -16,9 +17,22 @@ func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := cfg.DB.DeleteUser(r.Context(), userID)
+	dbUser, err := cfg.DB.GetUserData(ctx, userID)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data", err)
+		utils.RespondWithError(w, http.StatusInternalServerError, "error getting user data for deletion", err)
+	}
+
+	cfClient := storage.GetClient()
+
+	err = cfClient.DeleteExistingBlob(ctx, dbUser.StorageKey)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data from bucket", err)
+
+	}
+
+	err = cfg.DB.DeleteUser(ctx, userID)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user entry from db", err)
 		return
 	}
 
