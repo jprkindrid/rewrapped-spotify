@@ -22,11 +22,6 @@ const SummaryPageButtons = ({
 }: Props) => {
     const [pageCount, setPageCount] = useState(0);
 
-    const getPageCount = (itemCount: number | undefined) => {
-        if (!itemCount) return 0;
-        return Math.ceil(itemCount / offsetLimit.limit);
-    };
-
     const getCurrentPage = (offset: number) =>
         Math.floor(offset / offsetLimit.limit) + 1;
 
@@ -84,17 +79,16 @@ const SummaryPageButtons = ({
                 ? summaryData.total_artists_count
                 : summaryData.total_tracks_count;
 
+        const getPageCount = (itemCount: number | undefined) => {
+            if (!itemCount) return 0;
+            return Math.ceil(itemCount / offsetLimit.limit);
+        };
+
         if (lastTotalRef.current !== currentTotal) {
             lastTotalRef.current = currentTotal;
             setPageCount(getPageCount(currentTotal));
         }
-    }, [
-        lastTotalRef,
-        getPageCount,
-        summaryData,
-        displayType,
-        offsetLimit.limit,
-    ]);
+    }, [lastTotalRef, summaryData, displayType, offsetLimit.limit]);
 
     return (
         <div className="flex w-full items-center justify-center px-4">

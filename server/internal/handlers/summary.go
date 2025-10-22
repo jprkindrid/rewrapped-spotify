@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
+	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
@@ -86,14 +88,26 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		pagedTracks = topTracks[startTracks:endTracks]
 	}
 
+	spotifyClient := spotify.GetClient()
+
+	hydratedTracks, err := spotifyClient.GetSummaryTrackArt(pagedTracks)
+	if err != nil {
+		slog.Error("[SUMMARY] Unable to hydrate album art and url for tracks")
+	}
+
+	hydratedArtists, err := spotifyClient.GetSummaryArtistArtAndID(pagedArtists)
+	if err != nil {
+		slog.Error("[SUMMARY] Unable to hydrate art and url for artists")
+	}
+
 	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
 		"offset_artists":       paginationParams.OffsetArtists,
 		"offset_tracks":        paginationParams.OffsetTracks,
 		"limit":                paginationParams.Limit,
 		"total_artists_count":  artistLen,
 		"total_tracks_count":   trackLen,
-		"top_artists":          pagedArtists,
-		"top_tracks":           pagedTracks,
+		"top_artists":          hydratedArtists,
+		"top_tracks":           hydratedTracks,
 		"total_time_listening": totalTimeListenedMS,
 	})
 }

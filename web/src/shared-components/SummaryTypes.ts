@@ -29,6 +29,8 @@ export interface SummaryEntry {
     TotalMs: number;
     Count: number;
     URI: string;
+    artworkURL: string;
+    spotifyURL: string;
 }
 
 export type SummaryFilters = {
