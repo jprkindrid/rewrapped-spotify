@@ -13,10 +13,21 @@ const SummaryItem = ({ i, item, offset, isLoading }: Props) => {
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
     return (
         <div className="mt-2 flex w-full items-center text-xl text-shadow-sm sm:text-2xl">
-            <img
-                src={placeHolderImgUrl} // TODO: REPLACE THIS
-                className="mr-4 h-auto max-h-[80px] object-contain"
-            />
+            <div className="dark:ring-spotify-green/50 mr-4 h-[80px] w-[80px] flex-shrink-0 overflow-hidden shadow-lg dark:ring">
+                {item.ArtworkURL != "" ? (
+                    <img
+                        src={item.ArtworkURL || placeHolderImgUrl}
+                        alt={item.Name}
+                        className="h-full w-full object-cover"
+                    />
+                ) : (
+                    <div className="bg-spotify-green flex h-full w-full items-center text-center">
+                        <div className="h-ful text-shadow-xl w-full text-base text-shadow-black">
+                            No Artwork Found
+                        </div>
+                    </div>
+                )}
+            </div>
             <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
                 <div className="flex sm:w-1/2">
                     <div className="text-spotify-green mr-2 flex font-bold">

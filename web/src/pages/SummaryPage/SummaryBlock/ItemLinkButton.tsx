@@ -1,6 +1,6 @@
 const ItemLinkButton = ({ link }: { link: string }) => {
     return (
-        <a href={link} className="text-spotify-green">
+        <a href={link} target="_blank" className="text-spotify-green">
             <svg
                 role="img"
                 fill="currentColor"

@@ -26,6 +26,7 @@ export async function getUserSummary({
     const res = await apiFetch("GET", reqString, token);
     if (!res.ok) throw new Error(`Failed to fetch summary: ${res.statusText}`);
     const data = await res.json();
+    console.log(data);
     return data;
 }
 
