@@ -9,51 +9,7 @@ import (
 	"strings"
 )
 
-// I dont know why i did this firstbut this and clientToken.go are for later when I implement artist images and such into the pages
-
-func (c *SpotifyClient) GetArtistData(artistURI string) (*Artist, error) {
-
-	token, err := c.GetValidToken()
-	if err != nil {
-		return nil, err
-	}
-
-	artistID := getID(artistURI)
-
-	url := fmt.Sprintf("https://api.spotify.com/v1/artists/%s", artistID)
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", "Bearer "+token)
-
-	slog.Info("making spotify request", "url", url)
-	resp, err := c.doWithRetry(req)
-	if err != nil {
-		return nil, fmt.Errorf("error getting artist data: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		slog.Error("spotify non-200 response",
-			"status", resp.StatusCode,
-			"body", string(body))
-		return nil, fmt.Errorf("spotify API error: %d - %s",
-			resp.StatusCode, string(body))
-	}
-
-	var artist Artist
-	err = json.Unmarshal(body, &artist)
-	if err != nil {
-		return nil, err
-	}
-
-	return &artist, nil
-}
-
-func (c *SpotifyClient) GetTrackData(trackURI string) (*Track, error) {
+func (c *SpotifyClient) getTrackData(trackURI string) (*Track, error) {
 
 	token, err := c.GetValidToken()
 	if err != nil {
@@ -95,7 +51,7 @@ func (c *SpotifyClient) GetTrackData(trackURI string) (*Track, error) {
 	return &track, nil
 }
 
-func (c *SpotifyClient) GetSeveralTracksData(trackURIs []string) ([]Track, error) {
+func (c *SpotifyClient) getSeveralTracksData(trackURIs []string) ([]Track, error) {
 
 	token, err := c.GetValidToken()
 	if err != nil {
@@ -143,14 +99,4 @@ func (c *SpotifyClient) GetSeveralTracksData(trackURIs []string) ([]Track, error
 	returnTracks := tracks.ToTracks()
 
 	return returnTracks, nil
-}
-
-func getID(itemURI string) string {
-	parts := strings.Split(itemURI, ":")
-	if len(parts) < 3 {
-		slog.Warn("unexpected spotify URI format", "uri", itemURI)
-		return itemURI
-	}
-	return parts[2]
-
 }
