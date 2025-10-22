@@ -43,9 +43,6 @@ const SummaryBlock = ({
 
     const limit: number = offsetLimit.limit;
 
-    const placeHolderImgUrl =
-        "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
-
     return (
         <div className="border-spotify-black/50 relative flex flex-1 flex-col items-center overflow-clip rounded-lg border dark:border-white/50">
             {error && (
@@ -107,7 +104,7 @@ const SummaryBlock = ({
                                 />
                             </div>
                             <div>
-                                <ItemLinkButton link={placeHolderImgUrl} />
+                                <ItemLinkButton link={item.SpotifyURL} />
                             </div>
                         </div>
                     ))
