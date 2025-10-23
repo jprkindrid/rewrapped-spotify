@@ -23,7 +23,7 @@ const FilterControls = ({
     return (
         <div className="flex w-full justify-center py-2">
             <div className="flex w-full flex-col items-center">
-                <div className="text-spotify-green text-2xl font-bold text-shadow-sm sm:mb-4">
+                <div className="text-2xl font-bold text-shadow-sm sm:mb-4">
                     Filter Controls
                 </div>
 
@@ -88,7 +88,7 @@ const FilterControls = ({
                 <div className="bg-spotify-green my-6 h-[1px] w-4/5 max-w-2xl"></div>
                 <div className="flex gap-2">
                     <button
-                        className="bg-spotify-green w-22 rounded-md px-4 py-2 font-bold text-black transition hover:brightness-110"
+                        className="bg-spotify-green w-22 rounded-md px-4 py-2 font-bold text-black transition hover:brightness-110 dark:text-white"
                         onClick={onApply}
                     >
                         Apply
