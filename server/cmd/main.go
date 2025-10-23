@@ -80,6 +80,7 @@ func main() {
 	mux.HandleFunc("POST /auth/exchange", cfg.HandlerExchange)
 	mux.Handle("POST /api/upload", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerUpload)))
 	mux.Handle("GET /api/summary", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerSummary)))
+	mux.Handle("GET /api/demo/summary", middleware.DemoMiddleware(http.HandlerFunc(cfg.HandlerSummary)))
 	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
 	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerDelete)))
 

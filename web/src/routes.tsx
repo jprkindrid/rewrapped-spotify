@@ -41,7 +41,13 @@ const signInRoute = createRoute({
 const summaryRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/summary",
-    component: SummaryPage,
+    component: () => <SummaryPage demo={false} />,
+});
+
+const demoRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/demo",
+    component: () => <SummaryPage demo={true} />,
 });
 
 const uploadRoute = createRoute({
@@ -55,6 +61,7 @@ const routeTree = rootRoute.addChildren([
     signInRoute,
     summaryRoute,
     uploadRoute,
+    demoRoute,
 ]);
 
 export const router = createRouter({ routeTree });

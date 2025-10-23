@@ -12,6 +12,7 @@ export async function getUserSummary({
     limit,
     sortBy,
     token,
+    demo,
 }: SummaryParams): Promise<SummmaryResponse> {
     const params = new URLSearchParams({
         start: start.toISOString(),
@@ -22,11 +23,11 @@ export async function getUserSummary({
         sort_by: sortBy.toString(),
     });
 
-    const reqString = `/api/summary?${params.toString()}`;
-    const res = await apiFetch("GET", reqString, token);
+    const reqURL = demo ? "/api/demo/summary" : "/api/summary";
+    const reqString = `${reqURL}?${params.toString()}`;
+    const res = await apiFetch("GET", reqString, token, {}, demo);
     if (!res.ok) throw new Error(`Failed to fetch summary: ${res.statusText}`);
     const data = await res.json();
-    console.log(data);
     return data;
 }
 

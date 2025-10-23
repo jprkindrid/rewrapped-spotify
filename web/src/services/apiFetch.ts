@@ -1,4 +1,4 @@
-import { API_URL } from "../utils/constants";
+import { API_URL, DEMO_KEY } from "@/utils/constants";
 
 type RestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -6,7 +6,8 @@ export async function apiFetch(
     method: RestMethod,
     path: string,
     token?: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    demo?: boolean
 ): Promise<Response> {
     const isFormData = options.body instanceof FormData;
 
@@ -14,6 +15,7 @@ export async function apiFetch(
         ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
+        ...(demo ? { "X-Demo-Key": DEMO_KEY } : {}),
     };
 
     const res = await fetch(`${API_URL}${path}`, {

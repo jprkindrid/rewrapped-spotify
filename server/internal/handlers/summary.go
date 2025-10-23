@@ -22,6 +22,8 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	slog.Info("GETTING SUMMARY", "user ID", userID)
+
 	dbUser, err := cfg.DB.GetUserData(ctx, userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)

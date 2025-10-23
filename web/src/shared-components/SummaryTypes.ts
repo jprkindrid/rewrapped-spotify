@@ -16,6 +16,7 @@ export interface SummaryParams extends OffsetLimit {
     end: Date;
     sortBy: SummarySortBy;
     token: string;
+    demo: boolean;
 }
 
 export interface OffsetLimit {
