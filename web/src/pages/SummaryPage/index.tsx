@@ -11,7 +11,7 @@ import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./FilterControls";
 import { useAuth } from "@/hooks/useAuth";
 
-export const SummaryPage = () => {
+export const SummaryPage = ({ demo = false }) => {
     const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
 
     const { token: token } = useAuth();
@@ -48,13 +48,14 @@ export const SummaryPage = () => {
         filters.offsetLimit.offsetArtists,
         filters.offsetLimit.limit,
         filters.sortBy,
-        token!
+        token!,
+        demo
     );
 
     return (
         <div className="flex w-full flex-col">
             {/* <div className="absolute left-1/2 z-60 h-screen w-[2px] bg-red-500"></div> */}
-            <NavBar includeUser={true} />
+            <NavBar includeUser={!demo} />
             <div className="text-spotify-black dark:bg-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:text-white">
                 <div className="relative h-full w-full max-w-5xl">
                     <div className="shadow:md mx-2 mb-4 flex justify-center rounded-md border border-stone-500/10 pb-2 shadow-md dark:border-white/50">
@@ -65,6 +66,20 @@ export const SummaryPage = () => {
                             onReset={handleReset}
                         />
                     </div>
+                    {demo && (
+                        <div className="dark:text-spotify-green text-spotify-black mb-4 flex w-full justify-center text-lg font-bold">
+                            <div>
+                                Demo Data Courtesy of
+                                <a
+                                    className="hover:text-spotify-green ml-2 underline dark:hover:text-white"
+                                    href="https://www.kindridmusic.com/"
+                                    target="_blank"
+                                >
+                                    Kindrid
+                                </a>
+                            </div>
+                        </div>
+                    )}
                     <div className="mx-2 flex flex-col">
                         <SummaryBlock
                             displayType={displayType}

@@ -71,6 +71,7 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                                 </Link>
                                 <Link to="/upload">Upload</Link>
                                 <Link to="/summary">Analyze</Link>
+                                <Link to="/demo">Demo</Link>
                             </nav>
                         </div>
                     </div>
