@@ -10,11 +10,17 @@ import { useSummaryQuery } from "@/hooks/useSummaryQuery";
 import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./FilterControls";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "@tanstack/react-router";
 
 export const SummaryPage = ({ demo = false }) => {
     const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
+    const navigate = useNavigate();
 
     const { token: token } = useAuth();
+
+    if (!token && !demo) {
+        navigate({ to: "/" });
+    }
 
     const initialRange: DateRange = {
         from: new Date(2011, 0, 1),
