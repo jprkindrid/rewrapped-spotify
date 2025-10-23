@@ -63,15 +63,45 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                     )}
 
                     <div className="flex w-full flex-col text-center sm:w-1/3">
-                        <div className="dark:text-spotify-green text-spotify-black dark:text-shadow-spotify-green text-4xl text-shadow-sm dark:text-shadow-xs">
+                        <div className="dark:text-spotify-green text-spotify-black text-4xl text-shadow-sm dark:text-shadow-xs">
                             <h1 className="font-bold">ReWrapped Spotify</h1>
-                            <nav className="font-base flex justify-around space-x-2 pt-4 text-xl">
-                                <Link to="/" className="">
+                            <nav className="font-base flex justify-around space-x-2 pt-4 text-xl transition-all">
+                                <Link
+                                    to="/"
+                                    className="transition"
+                                    activeProps={{
+                                        className: " font-bold underline",
+                                    }}
+                                >
                                     Home
                                 </Link>
-                                <Link to="/upload">Upload</Link>
-                                <Link to="/summary">Analyze</Link>
-                                <Link to="/demo">Demo</Link>
+                                <Link
+                                    to="/upload"
+                                    className="transition"
+                                    activeProps={{
+                                        className: " font-bold underline",
+                                    }}
+                                >
+                                    Upload
+                                </Link>
+                                <Link
+                                    to="/summary"
+                                    className="transition"
+                                    activeProps={{
+                                        className: " font-bold underline",
+                                    }}
+                                >
+                                    Analyze
+                                </Link>
+                                <Link
+                                    to="/demo"
+                                    className="transition"
+                                    activeProps={{
+                                        className: " font-bold underline",
+                                    }}
+                                >
+                                    Demo
+                                </Link>
                             </nav>
                         </div>
                     </div>
