@@ -8,7 +8,7 @@ const HomePage = () => {
     return (
         <>
             <NavBar includeUser={false} />
-            <div className="dark:bg-spotify-black text-spotify-black flex w-full justify-center pt-8 transition dark:text-white">
+            <div className="text-spotify-black flex w-full justify-center bg-stone-100 pt-8 transition dark:bg-black dark:text-white">
                 <div className="mx-2 h-screen w-full max-w-5xl">
                     <div className="mt-4 mb-8 flex flex-col items-center rounded-xl">
                         <button

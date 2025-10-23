@@ -44,18 +44,18 @@ const SummaryBlock = ({
     const limit: number = offsetLimit.limit;
 
     return (
-        <div className="border-spotify-black/50 relative flex flex-1 flex-col items-center overflow-clip rounded-lg border dark:border-white/50">
+        <div className="page-section relative flex flex-1 flex-col items-center overflow-clip rounded-lg">
             {error && (
                 <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center bg-stone-400/50 text-center text-2xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-stone-800/50">
                     <div>Error Getting Summary Data:</div>
                     <div className="text-sm">{error.message}</div>
                 </div>
             )}
-            <div className="bg-spotify-black flex w-full justify-around border-b border-white/50 px-5 py-2">
-                <div className="bg-spotify-green flex overflow-clip rounded-md font-bold">
+            <div className="bg-spotify-black flex w-full justify-around overflow-clip border-b border-white/50 px-5 py-2">
+                <div className="flex font-bold">
                     <button
                         className={clsx(
-                            "border-r border-black px-4 py-2 transition",
+                            "bg-spotify-green rounded-l-md border-r border-black px-4 py-2 transition",
                             displayType !== "artists" &&
                                 "text-spotify-green bg-stone-800 hover:cursor-pointer"
                         )}
@@ -67,7 +67,7 @@ const SummaryBlock = ({
                     </button>
                     <button
                         className={clsx(
-                            "border-r border-black px-4 py-2 transition",
+                            "bg-spotify-green rounded-r-md border-r border-black px-4 py-2 transition",
                             displayType !== "tracks" &&
                                 "text-spotify-green bg-stone-800 hover:cursor-pointer"
                         )}

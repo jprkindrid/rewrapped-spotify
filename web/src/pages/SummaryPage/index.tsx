@@ -62,31 +62,33 @@ export const SummaryPage = ({ demo = false }) => {
         <div className="flex w-full flex-col">
             {/* <div className="absolute left-1/2 z-60 h-screen w-[2px] bg-red-500"></div> */}
             <NavBar includeUser={!demo} />
-            <div className="text-spotify-black dark:bg-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:text-white">
+            <div className="text-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:bg-black dark:text-white">
                 <div className="relative h-full w-full max-w-5xl">
-                    <div className="shadow:md mx-2 mb-4 flex justify-center rounded-md border border-stone-500/10 pb-2 shadow-md dark:border-white/50">
+                    <section className="page-section mx-2 mb-4 flex justify-center rounded-md pb-2">
                         <FilterControls
                             bufferFilters={bufferFilters}
                             setBufferFilters={setBufferFilters}
                             onApply={handleApply}
                             onReset={handleReset}
                         />
-                    </div>
+                    </section>
                     {demo && (
-                        <div className="dark:text-spotify-green text-spotify-black mb-4 flex w-full justify-center text-lg font-bold">
-                            <div>
-                                Demo Data Courtesy of
-                                <a
-                                    className="hover:text-spotify-green ml-2 underline dark:hover:text-white"
-                                    href="https://www.kindridmusic.com/"
-                                    target="_blank"
-                                >
-                                    Kindrid
-                                </a>
+                        <div className="flex w-full justify-center text-center">
+                            <div className="dark:text-spotify-green page-section bg-spotify-black text-spotify-black mb-4 w-fit rounded-md px-4 py-2 text-lg font-bold">
+                                <div>
+                                    Demo Data Courtesy of{" "}
+                                    <a
+                                        className="hover:text-spotify-green underline dark:hover:text-white"
+                                        href="https://www.kindridmusic.com/"
+                                        target="_blank"
+                                    >
+                                        Kindrid
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     )}
-                    <div className="mx-2 flex flex-col">
+                    <section className="page-section mx-2 flex flex-col rounded-lg">
                         <SummaryBlock
                             displayType={displayType}
                             setDisplayType={setDisplayType}
@@ -96,7 +98,7 @@ export const SummaryPage = ({ demo = false }) => {
                             error={summaryError}
                             setFilters={setFilters}
                         />
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>

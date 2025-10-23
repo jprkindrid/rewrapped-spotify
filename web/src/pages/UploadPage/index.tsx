@@ -33,9 +33,13 @@ const UploadPage = () => {
         [exchangeMutation]
     );
 
+    const { token: token } = useAuth();
+
     useEffect(() => {
         if (ranOnce.current) return;
         ranOnce.current = true;
+
+        if (token) return;
 
         const url = new URL(window.location.href);
         const authCode = url.searchParams.get("auth_code");
@@ -45,14 +49,14 @@ const UploadPage = () => {
         }
 
         handleExchange(authCode!);
-    }, [handleExchange, navigate]);
+    }, [handleExchange, navigate, token]);
 
     return (
         <div className="flex flex-col">
             <NavBar includeUser={true} />
-            <div className="dark:bg-spotify-black text-spotify-black flex w-full justify-center pt-4 transition dark:text-white">
+            <div className="text-spotify-black flex w-full justify-center bg-stone-100 pt-4 transition dark:bg-black dark:text-white">
                 <div className="mx-2 h-screen w-full max-w-5xl">
-                    <section className="flex flex-col items-center rounded-xl border-2 border-stone-500/10 text-center shadow-md dark:border-white/20">
+                    <section className="page-section flex flex-col items-center rounded-xl text-center">
                         <h2 className="pt-4 text-3xl font-bold">
                             Upload Your Streaming History
                         </h2>
