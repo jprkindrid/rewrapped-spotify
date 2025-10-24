@@ -12,6 +12,7 @@ import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
 import SkeletonSummaryItem from "./SkeletonSummaryItem";
 import SummaryPageButtons from "./SummaryPageButtons";
+import { useEffect, useState } from "react";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
@@ -50,7 +51,17 @@ const SummaryBlock = ({
 
     const limit: number = offsetLimit.limit;
 
-    console.log(metaData);
+    const [showTransitions, setShowTransitions] = useState(false);
+    useEffect(() => {
+        if (!summaryIsLoading && displayData?.length) {
+            const t = setTimeout(() => {
+                setShowTransitions(true);
+            }, 50);
+            return () => clearTimeout(t);
+        } else {
+            setShowTransitions(false);
+        }
+    }, [summaryIsLoading, displayData]);
 
     return (
         <div className="page-section relative flex flex-1 flex-col items-center overflow-clip rounded-lg">
@@ -100,13 +111,21 @@ const SummaryBlock = ({
                         const meta = metaData?.[i];
                         const summaryKey = `${item.URI}-${meta?.ImageURL}`;
 
+                        const delay = i * 20;
+
                         return (
                             <div
                                 key={item.URI}
                                 className={clsx(
-                                    "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2",
-                                    i !== 0 && "border-t"
+                                    "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2 transition duration-300",
+                                    i !== 0 && "border-t",
+                                    showTransitions
+                                        ? "opactity-100 translate-y-0"
+                                        : "translate-y-4 opacity-0"
                                 )}
+                                style={{
+                                    transitionDelay: `${delay}ms`,
+                                }}
                             >
                                 <div className="flex flex-1 items-center gap-3">
                                     <SummaryItem
