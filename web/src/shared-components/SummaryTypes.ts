@@ -19,6 +19,13 @@ export interface SummaryParams extends OffsetLimit {
     demo: boolean;
 }
 
+export interface SummaryMetaParams {
+    type: string;
+    items: SummaryEntry[];
+    token: string;
+    demo: boolean;
+}
+
 export interface OffsetLimit {
     offsetTracks: number;
     offsetArtists: number;
@@ -30,8 +37,11 @@ export interface SummaryEntry {
     TotalMs: number;
     Count: number;
     URI: string;
-    ArtworkURL: string;
-    SpotifyURL: string;
+}
+
+export interface SummaryMetaEntry {
+    ItemURL: string;
+    ImageURL: string;
 }
 
 export type SummaryFilters = {

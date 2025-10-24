@@ -1,4 +1,10 @@
-const ItemLinkButton = ({ link }: { link: string }) => {
+const ItemLinkButton = ({
+    link,
+}: {
+    link: string;
+    metaIsLoading: boolean;
+    metaError: Error | null;
+}) => {
     return (
         <a href={link} target="_blank" className="text-spotify-green">
             <svg

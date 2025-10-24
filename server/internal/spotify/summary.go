@@ -2,16 +2,17 @@ package spotify
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 )
 
-type trackInfo struct {
-	URL     string
-	Artwork string
+type MetaInfo struct {
+	ItemURL  string
+	ImageURL string
 }
 
-func (c *SpotifyClient) GetSummaryTrackArt(pagedTracks []summary.ScoredEntry) ([]summary.ScoredEntry, error) {
+func (c *SpotifyClient) GetSummaryTrackMetaData(pagedTracks []summary.ScoredEntry) ([]MetaInfo, error) {
 
 	trackURIs := make([]string, len(pagedTracks))
 	for i, t := range pagedTracks {
@@ -20,126 +21,90 @@ func (c *SpotifyClient) GetSummaryTrackArt(pagedTracks []summary.ScoredEntry) ([
 
 	data, err := c.getSeveralTracksData(trackURIs)
 	if err != nil {
-		return pagedTracks, err
+		return nil, err
 	}
 
-	meta := make(map[string]trackInfo, len(data))
-	for _, item := range data {
+	meta := make([]MetaInfo, len(data))
+	for i, item := range data {
 		var artURL string
 		if len(item.Album.Images) > 0 {
 			artURL = item.Album.Images[0].URL
 		}
 
-		meta[item.URI] = trackInfo{
-			URL:     item.ExternalUrls.Spotify,
-			Artwork: artURL,
+		meta[i] = MetaInfo{
+			ItemURL:  item.ExternalUrls.Spotify,
+			ImageURL: artURL,
 		}
 	}
 
-	returnTracks := make([]summary.ScoredEntry, len(pagedTracks))
-	for i, entry := range pagedTracks {
-		info := meta[entry.URI]
-
-		returnTracks[i] = summary.ScoredEntry{
-			Name:       entry.Name,
-			TotalMs:    entry.TotalMs,
-			Count:      entry.Count,
-			URI:        entry.URI,
-			SpotifyURL: info.URL,
-			ArtworkURL: info.Artwork,
-		}
-	}
-
-	return returnTracks, nil
+	return meta, nil
 
 }
 
-func (c *SpotifyClient) GetSummaryArtistArtAndID(pagedArtists []summary.ScoredEntry) ([]summary.ScoredEntry, error) {
+func (c *SpotifyClient) GetSummaryArtistMetaData(pagedArtists []summary.ScoredEntry) ([]MetaInfo, error) {
 
 	trackURIs := make([]string, len(pagedArtists))
 	for i, t := range pagedArtists {
 		trackURIs[i] = t.URI
 	}
 
-	nameToTrack := make(map[string]string)
-	for _, e := range pagedArtists {
-		nameToTrack[e.Name] = e.URI
-
-	}
-
 	trackData, err := c.getSeveralTracksData(trackURIs)
 	if err != nil {
-		return pagedArtists, err
+		return nil, err
 	}
 
-	artistURIs := make([]string, 0, len(trackData))
-	trackForArtist := make(map[string]string)
+	trackByUri := make(map[string]Track, len(trackData))
+	for _, t := range trackData {
+		trackByUri[t.URI] = t
+	}
 
-	for _, track := range trackData {
-		for _, artist := range track.Artists {
-			if track.URI == nameToTrack[artist.Name] {
-				artistURIs = append(artistURIs, artist.URI)
-				trackForArtist[artist.URI] = track.URI
+	artistURIs := make([]string, len(trackData))
+	for i, entry := range pagedArtists {
+		t, ok := trackByUri[entry.URI]
+		if !ok {
+			slog.Warn("missing track data for artist entry", "trackURI", entry.URI)
+			continue
+		}
+		matchFound := false
+		for _, artist := range t.Artists {
+
+			if strings.EqualFold(artist.Name, entry.Name) {
+				slog.Info("found matching artist", "uri", artist.URI)
+				artistURIs[i] = artist.URI
+				matchFound = true
 				break
 			}
+		}
+		if !matchFound && len(t.Artists) > 0 {
+			slog.Debug("artist name not found in track, fallback to first artist", "entryName", entry.Name)
+			artistURIs[i] = t.Artists[0].URI
 		}
 	}
 
 	if len(artistURIs) == 0 {
 		slog.Warn("no artist URIs found")
+		return nil, err
 	}
 
 	artistData, err := c.getSeveralArtistsData(artistURIs)
 	if err != nil {
 		slog.Error("couldnt get several artist data", "err", err)
-		return pagedArtists, err
+		return nil, err
 	}
 
-	meta := make(map[string]trackInfo, len(artistData))
-	for _, a := range artistData {
+	meta := make([]MetaInfo, len(artistData))
+	for i, a := range artistData {
 		var artURl string
 		if len(a.Images) > 0 {
 			artURl = a.Images[0].URL
 		}
 
-		meta[a.URI] = trackInfo{
-			URL:     a.ExternalUrls.Spotify,
-			Artwork: artURl,
+		meta[i] = MetaInfo{
+			ItemURL:  a.ExternalUrls.Spotify,
+			ImageURL: artURl,
 		}
 
 	}
 
-	returnArtists := make([]summary.ScoredEntry, len(pagedArtists))
-	for i, e := range pagedArtists {
-		trackURI := e.URI
-		var artistURI string
-		for aURI, tURI := range trackForArtist {
-			if tURI == trackURI {
-				artistURI = aURI
-				break
-			}
-		}
-		if artistURI == "" {
-			returnArtists[i] = summary.ScoredEntry{
-				Name:       e.Name,
-				TotalMs:    e.TotalMs,
-				Count:      e.Count,
-				URI:        e.URI,
-				SpotifyURL: e.SpotifyURL,
-				ArtworkURL: e.ArtworkURL,
-			}
-			continue
-		}
-		info := meta[artistURI]
-
-		returnArtists[i] = summary.ScoredEntry{
-			Name:       e.Name,
-			TotalMs:    e.TotalMs,
-			Count:      e.Count,
-			URI:        artistURI,
-			SpotifyURL: info.URL,
-			ArtworkURL: info.Artwork,
-		}
-	}
-	return returnArtists, nil
+	return meta, nil
 }
