@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"os"
 
@@ -22,7 +21,6 @@ func DemoMiddleware(next http.Handler) http.Handler {
 
 		demoUserID := os.Getenv("KINDRID_USER_ID")
 		ctx := context.WithValue(r.Context(), constants.UserIDKey, demoUserID)
-		slog.Info("GETTING DEMO")
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

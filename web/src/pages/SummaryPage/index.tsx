@@ -11,6 +11,7 @@ import SummaryBlock from "./SummaryBlock";
 import FilterControls from "./FilterControls";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "@tanstack/react-router";
+import { useSummaryMetadata } from "@/hooks/useSummaryMetadata";
 
 export const SummaryPage = ({ demo = false }) => {
     const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
@@ -58,6 +59,17 @@ export const SummaryPage = ({ demo = false }) => {
         demo
     );
 
+    const metaRequestData =
+        displayType == "artists"
+            ? summaryData?.top_artists
+            : summaryData?.top_tracks;
+
+    const {
+        data: metaData,
+        isLoading: metaIsLoading,
+        error: metaError,
+    } = useSummaryMetadata(displayType, metaRequestData, token!, demo);
+
     return (
         <div className="flex w-full flex-col">
             {/* <div className="absolute left-1/2 z-60 h-screen w-[2px] bg-red-500"></div> */}
@@ -92,11 +104,14 @@ export const SummaryPage = ({ demo = false }) => {
                         <SummaryBlock
                             displayType={displayType}
                             setDisplayType={setDisplayType}
-                            summaryData={summaryData}
                             offsetLimit={filters.offsetLimit}
-                            isLoading={summaryIsLoading}
-                            error={summaryError}
+                            summaryData={summaryData}
+                            summaryIsLoading={summaryIsLoading}
+                            summaryError={summaryError}
                             setFilters={setFilters}
+                            metaData={metaData}
+                            metaIsLoading={metaIsLoading}
+                            metaError={metaError}
                         />
                     </section>
                 </div>

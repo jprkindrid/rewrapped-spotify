@@ -8,12 +8,10 @@ import (
 )
 
 type ScoredEntry struct {
-	Name       string
-	TotalMs    int
-	Count      int
-	URI        string
-	ArtworkURL string
-	SpotifyURL string
+	Name    string
+	TotalMs int
+	Count   int
+	URI     string
 }
 
 func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sortBy string) []ScoredEntry {
@@ -28,10 +26,8 @@ func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sor
 
 		if counts[name] == nil {
 			counts[name] = &ScoredEntry{
-				Name:       name,
-				URI:        entry.SpotifyTrackURI,
-				ArtworkURL: "",
-				SpotifyURL: "",
+				Name: name,
+				URI:  entry.SpotifyTrackURI,
 			}
 
 			if reps[name] == "" {
@@ -76,10 +72,8 @@ func TopTracksInRange(data []parser.MinifiedSongData, start, end time.Time, sort
 		key := entry.TrackName + " - " + entry.ArtistName
 		if counts[key] == nil {
 			counts[key] = &ScoredEntry{
-				Name:       key,
-				URI:        entry.SpotifyTrackURI,
-				SpotifyURL: "",
-				ArtworkURL: "",
+				Name: key,
+				URI:  entry.SpotifyTrackURI,
 			}
 		}
 		counts[key].TotalMs += entry.MsPlayed

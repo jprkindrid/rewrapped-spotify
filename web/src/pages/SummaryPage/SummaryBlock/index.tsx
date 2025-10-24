@@ -3,6 +3,7 @@ import type {
     SummaryDisplay,
     SummaryEntry,
     SummaryFilters,
+    SummaryMetaEntry,
     SummmaryResponse,
 } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
@@ -14,12 +15,15 @@ import SummaryPageButtons from "./SummaryPageButtons";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
-    setDisplayType: Setter<"artists" | "tracks">;
+    setDisplayType: Setter<SummaryDisplay>;
     setFilters: Setter<SummaryFilters>;
     displayType: SummaryDisplay;
     summaryData: SummmaryResponse | undefined;
-    isLoading: boolean;
-    error: Error | null;
+    summaryIsLoading: boolean;
+    summaryError: Error | null;
+    metaData: SummaryMetaEntry[] | undefined;
+    metaIsLoading: boolean;
+    metaError: Error | null;
 };
 
 const SummaryBlock = ({
@@ -28,8 +32,11 @@ const SummaryBlock = ({
     setFilters,
     displayType,
     summaryData,
-    isLoading,
-    error,
+    summaryIsLoading,
+    summaryError,
+    metaData,
+    metaIsLoading,
+    metaError,
 }: SummaryBlockProps) => {
     const displayData: SummaryEntry[] | undefined =
         displayType === "artists"
@@ -43,12 +50,14 @@ const SummaryBlock = ({
 
     const limit: number = offsetLimit.limit;
 
+    console.log(metaData);
+
     return (
         <div className="page-section relative flex flex-1 flex-col items-center overflow-clip rounded-lg">
-            {error && (
+            {summaryError && (
                 <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center bg-stone-400/50 text-center text-2xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-stone-800/50">
                     <div>Error Getting Summary Data:</div>
-                    <div className="text-sm">{error.message}</div>
+                    <div className="text-sm">{summaryError.message}</div>
                 </div>
             )}
             <div className="bg-spotify-black flex w-full justify-around overflow-clip border-b border-white/50 px-5 py-2">
@@ -80,34 +89,49 @@ const SummaryBlock = ({
                 </div>
             </div>
             <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white transition dark:from-stone-800">
-                {isLoading ? (
+                {summaryIsLoading ? (
                     <div className="py-2">
                         {Array.from({ length: limit }).map((_, i) => (
                             <SkeletonSummaryItem key={i} />
                         ))}
                     </div>
-                ) : displayData ? (
-                    (displayData ?? []).map((item, i) => (
-                        <div
-                            key={i}
-                            className={clsx(
-                                "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2",
-                                i !== 0 && "border-t"
-                            )}
-                        >
-                            <div className="flex flex-1 items-center gap-3">
-                                <SummaryItem
-                                    i={i}
-                                    item={item}
-                                    offset={offset}
-                                    isLoading={false}
-                                />
+                ) : displayData?.length ? (
+                    (displayData ?? []).map((item, i) => {
+                        const meta = metaData?.[i];
+                        const summaryKey = `${item.URI}-${meta?.ImageURL}`;
+
+                        return (
+                            <div
+                                key={item.URI}
+                                className={clsx(
+                                    "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2",
+                                    i !== 0 && "border-t"
+                                )}
+                            >
+                                <div className="flex flex-1 items-center gap-3">
+                                    <SummaryItem
+                                        key={summaryKey || `loading${i}`}
+                                        i={i}
+                                        item={item}
+                                        offset={offset}
+                                        isLoading={false}
+                                        displayType={displayType}
+                                        imageUrl={meta?.ImageURL ?? ""}
+                                        metaIsLoading={metaIsLoading}
+                                        metaError={metaError}
+                                    />
+                                </div>
+                                <div>
+                                    <ItemLinkButton
+                                        key={i}
+                                        link={meta?.ItemURL ?? ""}
+                                        metaIsLoading={metaIsLoading}
+                                        metaError={metaError}
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <ItemLinkButton link={item.SpotifyURL} />
-                            </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
                         No Data To Display For Current Selection

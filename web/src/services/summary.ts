@@ -1,4 +1,6 @@
 import type {
+    SummaryMetaEntry,
+    SummaryMetaParams,
     SummaryParams,
     SummmaryResponse,
 } from "../shared-components/SummaryTypes";
@@ -33,4 +35,32 @@ export async function getUserSummary({
 
 export async function deleteData(token: string) {
     return await apiFetch("DELETE", "/api/delete", token);
+}
+
+export async function getUserSummaryMetadata({
+    type,
+    items,
+    token,
+    demo,
+}: SummaryMetaParams): Promise<SummaryMetaEntry[]> {
+    const reqURL = demo ? "/api/demo/summary/images" : "/api/summary/images";
+
+    const res = await apiFetch(
+        "POST",
+        reqURL,
+        token,
+        {
+            body: JSON.stringify({
+                entry_type: type,
+                entries: items,
+            }),
+        },
+        demo
+    );
+
+    if (!res.ok) {
+        throw new Error(`Failed to fetch ${type} metadata: ${res.statusText}`);
+    }
+    const data = res.json();
+    return data;
 }
