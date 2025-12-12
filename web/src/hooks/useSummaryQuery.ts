@@ -55,3 +55,5 @@ export function useSummaryQuery(
         retry: false,
     });
 }
+
+export type UseSummaryQueryResult = ReturnType<typeof useSummaryQuery>;

@@ -13,26 +13,25 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "@tanstack/react-router";
 import { useSummaryMetadata } from "@/hooks/useSummaryMetadata";
 
+const initialRange: DateRange = {
+    from: new Date(2011, 0, 1),
+    to: new Date(),
+};
+
+const initialOffsetLimit: OffsetLimit = {
+    offsetTracks: 0,
+    offsetArtists: 0,
+    limit: 10,
+};
+
 export const SummaryPage = ({ demo = false }) => {
     const [displayType, setDisplayType] = useState<SummaryDisplay>("artists");
     const navigate = useNavigate();
-
-    const { token: token } = useAuth();
+    const { token } = useAuth();
 
     if (!token && !demo) {
         navigate({ to: "/" });
     }
-
-    const initialRange: DateRange = {
-        from: new Date(2011, 0, 1),
-        to: new Date(),
-    };
-
-    const initialOffsetLimit: OffsetLimit = {
-        offsetTracks: 0,
-        offsetArtists: 0,
-        limit: 10,
-    };
 
     const [filters, setFilters] = useState<SummaryFilters>({
         range: initialRange,
@@ -45,11 +44,7 @@ export const SummaryPage = ({ demo = false }) => {
     const handleApply = () => setFilters(bufferFilters);
     const handleReset = () => setBufferFilters(filters);
 
-    const {
-        data: summaryData,
-        isLoading: summaryIsLoading,
-        error: summaryError,
-    } = useSummaryQuery(
+    const summaryQuery = useSummaryQuery(
         filters.range,
         filters.offsetLimit.offsetTracks,
         filters.offsetLimit.offsetArtists,
@@ -60,19 +55,19 @@ export const SummaryPage = ({ demo = false }) => {
     );
 
     const metaRequestData =
-        displayType == "artists"
-            ? summaryData?.top_artists
-            : summaryData?.top_tracks;
+        displayType === "artists"
+            ? summaryQuery.data?.top_artists
+            : summaryQuery.data?.top_tracks;
 
-    const {
-        data: metaData,
-        isLoading: metaIsLoading,
-        error: metaError,
-    } = useSummaryMetadata(displayType, metaRequestData, token!, demo);
+    const metaQuery = useSummaryMetadata(
+        displayType,
+        metaRequestData,
+        token!,
+        demo
+    );
 
     return (
         <div className="flex w-full flex-col">
-            {/* <div className="absolute left-1/2 z-60 h-screen w-[2px] bg-red-500"></div> */}
             <NavBar includeUser={!demo} />
             <div className="text-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:bg-black dark:text-white">
                 <div className="relative h-full w-full max-w-5xl">
@@ -105,13 +100,9 @@ export const SummaryPage = ({ demo = false }) => {
                             displayType={displayType}
                             setDisplayType={setDisplayType}
                             offsetLimit={filters.offsetLimit}
-                            summaryData={summaryData}
-                            summaryIsLoading={summaryIsLoading}
-                            summaryError={summaryError}
                             setFilters={setFilters}
-                            metaData={metaData}
-                            metaIsLoading={metaIsLoading}
-                            metaError={metaError}
+                            summaryQuery={summaryQuery}
+                            metaQuery={metaQuery}
                         />
                     </section>
                 </div>

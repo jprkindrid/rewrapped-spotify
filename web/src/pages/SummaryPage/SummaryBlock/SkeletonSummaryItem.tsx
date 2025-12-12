@@ -1,7 +1,7 @@
 const SkeletonSummaryItem = () => {
     return (
         <div className="flex w-full animate-pulse items-center px-6 py-2">
-            <div className="mr-4 h-[80px] w-[80px] rounded bg-stone-300 dark:bg-stone-700"></div>
+            <div className="mr-4 h-20 w-20 rounded bg-stone-300 dark:bg-stone-700"></div>
 
             <div className="flex w-full flex-1 items-center justify-between sm:flex-row">
                 <div className="flex flex-1 flex-col sm:flex-row">

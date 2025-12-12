@@ -34,3 +34,5 @@ export function useSummaryMetadata(
         retry: false,
     });
 }
+
+export type UseSummaryMetadataResult = ReturnType<typeof useSummaryMetadata>;
