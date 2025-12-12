@@ -113,7 +113,7 @@ const SummaryBlock = ({
                 </div>
             </div>
 
-            <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-gradient-to-bl to-white transition dark:from-stone-800">
+            <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-bl to-white transition dark:from-stone-800">
                 {viewState === "loading" && (
                     <div className="py-2">
                         {Array.from({ length: limit }).map((_, i) => (
@@ -129,7 +129,7 @@ const SummaryBlock = ({
                 )}
 
                 {viewState === "data" &&
-                    displayData!.map((item, i) => {
+                    displayData!.map((item: SummaryEntry, i: number) => {
                         const meta = metaData?.[i];
                         const summaryKey = `${item.URI}-${meta?.ImageURL}`;
                         const delay = i * 20;
