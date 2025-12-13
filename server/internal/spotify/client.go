@@ -69,10 +69,11 @@ func (c *SpotifyClient) GetValidToken() (string, error) {
 		return token.AccessToken, nil
 	}
 
-	cfg := config.Get()
-
-	slog.Info("No valid access token found, fetching new token...")
-	newToken, err := c.getAccessToken(cfg.SpotifyClientID, cfg.SpotifySecret)
+	newToken, err := c.getAccessToken(c.clientID, c.clientSecret)
+	if err != nil {
+		log.Fatalf("Failed to get access token: %v", err)
+		return "", err
+	}
 	if err != nil {
 		log.Fatalf("Failed to get access token: %v", err)
 		return "", err

@@ -14,8 +14,8 @@ func Open() *sql.DB {
 	cfg := config.Get()
 
 	if cfg.ProductionBuild {
-		if cfg.TursoURL == "" {
-			log.Fatal("TURSO_DATABASE_URL must be set in production")
+		if cfg.TursoURL == "" || cfg.TursoToken == "" {
+			log.Fatal("Turso database URL and auth token must be configured for production")
 		}
 
 		dbConn, err := sql.Open("libsql", cfg.TursoURL+"?authToken="+cfg.TursoToken)
@@ -29,9 +29,6 @@ func Open() *sql.DB {
 	dbPath := cfg.DBPath
 	if cfg.IsDocker && cfg.DBPathDocker != "" {
 		dbPath = cfg.DBPathDocker
-	}
-	if dbPath == "" {
-		log.Fatal("DB_PATH or DB_PATH_DOCKER environment variables must be set")
 	}
 
 	dbConn, err := sql.Open("sqlite3", dbPath)

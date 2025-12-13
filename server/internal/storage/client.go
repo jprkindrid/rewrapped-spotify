@@ -40,19 +40,19 @@ func Init() {
 
 	bucketName := cfg.CloudflareBucketName
 	if bucketName == "" {
-		log.Fatal("CLOUDFLARE_BUCKET_NAME enviroment variable not present")
+		log.Fatal("CLOUDFLARE_BUCKET_NAME configuration not present")
 	}
 	accountId := cfg.CloudflareAccountID
 	if accountId == "" {
-		log.Fatal("CLOUDFLARE_ACCOUNT_ID enviroment variable not present")
+		log.Fatal("CLOUDFLARE_ACCOUNT_ID configuration not present")
 	}
 	accessKeyId := cfg.CloudflareKeyID
 	if accessKeyId == "" {
-		log.Fatal("CLOUDFLARE_KEY_ID enviroment variable not present")
+		log.Fatal("CLOUDFLARE_KEY_ID configuration not present")
 	}
 	accessKeySecret := cfg.CloudflareKeySecret
 	if accessKeySecret == "" {
-		log.Fatal("CLOUDFLARE_KEY_SECRET enviroment variable not present")
+		log.Fatal("CLOUDFLARE_KEY_SECRET configuration not present")
 	}
 
 	cloudConfig, err := awsconfig.LoadDefaultConfig(ctx,
