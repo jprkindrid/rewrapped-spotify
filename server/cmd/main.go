@@ -34,6 +34,8 @@ func main() {
 		_ = godotenv.Load("./.env")
 	}
 
+	envConfig := config.Init()
+
 	conn := db.Open()
 
 	if err := conn.Ping(); err != nil {
@@ -41,8 +43,6 @@ func main() {
 	}
 
 	dbQueries := database.New(conn)
-
-	envConfig := config.Init()
 
 	cfg := &handlers.ApiConfig{
 		DB:        dbQueries,

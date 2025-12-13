@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 )
 
 type CloudflareClient struct {
@@ -36,26 +36,28 @@ func GetClient() *CloudflareClient {
 
 func Init() {
 	ctx := context.Background()
-	bucketName := os.Getenv("CLOUDFLARE_BUCKET_NAME")
+	cfg := config.Get()
+
+	bucketName := cfg.CloudflareBucketName
 	if bucketName == "" {
 		log.Fatal("CLOUDFLARE_BUCKET_NAME enviroment variable not present")
 	}
-	accountId := os.Getenv("CLOUDFLARE_ACCOUNT_ID")
+	accountId := cfg.CloudflareAccountID
 	if accountId == "" {
 		log.Fatal("CLOUDFLARE_ACCOUNT_ID enviroment variable not present")
 	}
-	accessKeyId := os.Getenv("CLOUDFLARE_KEY_ID")
+	accessKeyId := cfg.CloudflareKeyID
 	if accessKeyId == "" {
 		log.Fatal("CLOUDFLARE_KEY_ID enviroment variable not present")
 	}
-	accessKeySecret := os.Getenv("CLOUDFLARE_KEY_SECRET")
+	accessKeySecret := cfg.CloudflareKeySecret
 	if accessKeySecret == "" {
 		log.Fatal("CLOUDFLARE_KEY_SECRET enviroment variable not present")
 	}
 
-	cloudConfig, err := config.LoadDefaultConfig(ctx,
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret, "")),
-		config.WithRegion("auto"),
+	cloudConfig, err := awsconfig.LoadDefaultConfig(ctx,
+		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret, "")),
+		awsconfig.WithRegion("auto"),
 	)
 
 	if err != nil {

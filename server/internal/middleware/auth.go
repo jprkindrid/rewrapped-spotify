@@ -3,12 +3,11 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
@@ -25,12 +24,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		claims := jwt.MapClaims{}
 
-		jwtSecretStr := os.Getenv("JWT_SECRET")
-		if jwtSecretStr == "" {
-			log.Fatal("[AUTH] Missing required environment variable JWT_SECRET")
-		}
-
-		jwtSecret := []byte(jwtSecretStr)
+		cfg := config.Get()
+		jwtSecret := cfg.JWTSecretBytes()
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
 			if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

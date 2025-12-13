@@ -10,12 +10,11 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"sync"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 )
 
 type TokenResponse struct {
@@ -42,17 +41,13 @@ var (
 )
 
 func Init() error {
-	clientID := os.Getenv("SPOTIFY_CLIENT_ID")
-	clientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
-	if clientID == "" || clientSecret == "" {
-		return fmt.Errorf("missing client credentials")
-	}
+	cfg := config.Get()
 
 	slog.Info("initializing spotify client")
 	spotifyClient = &SpotifyClient{
-		clientID:     clientID,
-		clientSecret: clientSecret,
-		HTTP:         &http.Client{Timeout: 30 * time.Second},
+		clientID:     cfg.SpotifyClientID,
+		clientSecret: cfg.SpotifySecret,
+		HTTP:         &http.Client{Timeout: cfg.HTTPClientTimeout},
 	}
 
 	return nil
@@ -74,17 +69,10 @@ func (c *SpotifyClient) GetValidToken() (string, error) {
 		return token.AccessToken, nil
 	}
 
-	if os.Getenv("DOCKER") == "" {
-		_ = godotenv.Load()
-	}
-	devClientID := os.Getenv("SPOTIFY_CLIENT_ID")
-	devClientSecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
-	if devClientID == "" || devClientSecret == "" {
-		return "", fmt.Errorf("missing client credentials")
-	}
+	cfg := config.Get()
 
 	slog.Info("No valid access token found, fetching new token...")
-	newToken, err := c.getAccessToken(devClientID, devClientSecret)
+	newToken, err := c.getAccessToken(cfg.SpotifyClientID, cfg.SpotifySecret)
 	if err != nil {
 		log.Fatalf("Failed to get access token: %v", err)
 		return "", err

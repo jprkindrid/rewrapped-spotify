@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 
@@ -40,13 +39,7 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	redirectBase := os.Getenv("FRONTEND_REDIRECT_URL")
-	if redirectBase == "" {
-		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] missing redirect url to client", fmt.Errorf("missing redirect url to client in environment variables"))
-		return
-	}
-
-	redirectUrl := fmt.Sprintf("%s?auth_code=%s", redirectBase, authCode)
+	redirectUrl := fmt.Sprintf("%s?auth_code=%s", cfg.Env.FrontendRedirectURL, authCode)
 	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
 
