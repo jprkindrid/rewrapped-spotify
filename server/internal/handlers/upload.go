@@ -1,21 +1,16 @@
 package handlers
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
-	"io"
-	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
-	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
-	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
+	"github.com/jprkindrid/rewrapped-spotify/internal/services"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
@@ -25,146 +20,70 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, "File parsing error", err)
 		return
 	}
+
 	files := r.MultipartForm.File[constants.FileFormHeader]
 	var userSongData []parser.MinifiedSongData
 
 	for _, fileheader := range files {
-		ext := strings.ToLower(filepath.Ext(fileheader.Filename))
-
-		switch ext {
-		case ".json":
-			file, err := fileheader.Open()
-			if err != nil {
-				utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
-				return
-			}
-			outPath := filepath.Join(constants.TempDirName, fileheader.Filename)
-
-			if err := os.MkdirAll(constants.TempDirName, os.ModePerm); err != nil {
-				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to create tmp dir", err)
-				return
-			}
-
-			outFile, err := os.Create(outPath)
-			if err != nil {
-				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save JSON file", err)
-				return
-			}
-			defer outFile.Close()
-
-			if _, err := io.Copy(outFile, file); err != nil {
-				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to write JSON file", err)
-				return
-			}
-
-			parsedData, err := parser.ParseJsonFiles([]string{outPath})
-			if err != nil {
-				fmt.Printf("Bad file upload at %s", outPath)
-				continue
-			}
-
-			minifiedData := parser.MinifyParsedData(parsedData)
-
-			userSongData = append(userSongData, minifiedData...)
-
-			os.Remove(outPath)
-
-			file.Close()
-		case ".zip":
-			file, err := fileheader.Open()
-			if err != nil {
-				utils.RespondWithError(w, http.StatusBadRequest, "Failed to read form file", err)
-				return
-			}
-			paths, err := parser.UnzipAndExtractFiles(file, constants.TempDirName)
-			if err != nil {
-				utils.RespondWithError(w, http.StatusInternalServerError, "Failed to extract zip", err)
-				return
-			}
-
-			if len(paths) == 0 {
-				utils.RespondWithError(w, http.StatusInternalServerError, "No valid JSON files in zip", err)
-				return
-
-			}
-
-			parsedData, err := parser.ParseJsonFiles(paths)
-			if err != nil {
-				utils.RespondWithError(w, http.StatusInternalServerError, "unable to parse JSON files", err)
-			}
-
-			minifiedData := parser.MinifyParsedData(parsedData)
-
-			userSongData = append(userSongData, minifiedData...)
-
-			for _, path := range paths {
-				os.Remove(path)
-			}
-
-			file.Close()
-
-		default:
+		data, err := processUploadedFile(fileheader)
+		if err != nil {
+			fmt.Printf("Failed to process %s: %v", fileheader.Filename, err)
 			continue
 		}
-	}
 
-	_, err = storeData(r, userSongData, cfg.DB)
+		if data != nil {
+			userSongData = append(userSongData, data...)
+		}
+	}
+	_, err = services.StoreData(r, userSongData, cfg.DB)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{})
-
-	// go func(data []parser.MinifiedSongData) {
-	// 	if err := parser.VerifyTrackArtistIDRelations(data, cfg.DB, nil, context.Background()); err != nil {
-	// 		slog.Error("async track-artist verification failed", "err", err)
-	// 	}
-	// }(userSongData)
-
 }
 
-func storeData(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
-	ctx := r.Context()
+func processUploadedFile(fh *multipart.FileHeader) ([]parser.MinifiedSongData, error) {
+	ext := strings.ToLower(filepath.Ext(fh.Filename))
 
-	cfClient := storage.GetClient()
-
-	spotifyID := ctx.Value(constants.UserIDKey).(string)
-	if spotifyID == "" {
-		log.Printf("[storeDataInDB] No valid user_id in session!")
-		return database.User{}, errors.New("no user ID in session")
-	}
-
-	objKey, err := cfClient.UploadJSON(ctx, data, spotifyID)
+	file, err := fh.Open()
 	if err != nil {
-		return database.User{}, err
+		return nil, fmt.Errorf("failted to open: %w", err)
+	}
+	defer file.Close()
+
+	var paths []string
+
+	switch ext {
+	case ".json":
+		paths, err = parser.SaveTempFile(file, fh.Filename, constants.TempDirName)
+	case ".zip":
+		paths, err = parser.UnzipAndExtractFiles(file, constants.TempDirName)
+	default:
+		return nil, nil
 	}
 
-	existing, err := db.GetUserData(ctx, spotifyID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			newID := uuid.New().String()
-			newUser, err := db.CreateUser(ctx, database.CreateUserParams{
-				ID:         newID,
-				SpotifyID:  spotifyID,
-				StorageKey: objKey,
-			})
-			if err != nil {
-				return database.User{}, fmt.Errorf("error creating new user: %w", err)
-			}
-			return newUser, nil
-		}
-		return database.User{}, fmt.Errorf("error checking for existing user: %w", err)
+		return nil, err
 	}
 
-	_ = cfClient.DeleteExistingBlob(ctx, existing.StorageKey)
+	defer cleanupPaths(paths)
 
-	updatedUser, err := db.UpdateUser(ctx, database.UpdateUserParams{
-		ID:         existing.ID,
-		StorageKey: objKey,
-	})
+	if len(paths) == 0 {
+		return nil, nil
+	}
+
+	parsedData, err := parser.ParseJsonFiles(paths)
 	if err != nil {
-		return database.User{}, fmt.Errorf("error updating user: %w", err)
+		return nil, fmt.Errorf("parse error: %w", err)
 	}
 
-	return updatedUser, nil
+	return parser.MinifyParsedData(parsedData), nil
+}
+
+func cleanupPaths(paths []string) {
+	for _, p := range paths {
+		os.Remove(p)
+	}
 }

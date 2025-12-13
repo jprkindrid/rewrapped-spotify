@@ -20,6 +20,7 @@ func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
 	dbUser, err := cfg.DB.GetUserData(ctx, userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error getting user data for deletion", err)
+		return
 	}
 
 	cfClient := storage.GetClient()
@@ -27,7 +28,7 @@ func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
 	err = cfClient.DeleteExistingBlob(ctx, dbUser.StorageKey)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data from bucket", err)
-
+		return
 	}
 
 	err = cfg.DB.DeleteUser(ctx, userID)
