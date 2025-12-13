@@ -1,30 +1,16 @@
+import type { QueryStatus } from "@tanstack/react-query";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
-type ViewState = "loading" | "error" | "empty" | "image";
-
-const getViewState = (
-    isLoading: boolean,
-    hasError: boolean,
-    imageUrl: string | undefined
-): ViewState => {
-    if (isLoading) return "loading";
-    if (hasError) return "error";
-    if (!imageUrl || imageUrl === "") return "empty";
-    return "image";
-};
-
 interface ArtworkBlockProps {
-    metaIsLoading: boolean;
-    metaError: boolean;
+    metaStatus: QueryStatus;
     imageUrl?: string;
     imageAlt: string;
     placeHolderImgUrl: string;
 }
 
 export const ArtworkBlock = ({
-    metaIsLoading,
-    metaError,
+    metaStatus,
     imageUrl,
     imageAlt,
     placeHolderImgUrl,
@@ -53,8 +39,6 @@ export const ArtworkBlock = ({
         return () => observer.disconnect();
     }, []);
 
-    const viewState = getViewState(metaIsLoading, metaError, imageUrl);
-
     return (
         <div
             ref={ref}
@@ -66,7 +50,7 @@ export const ArtworkBlock = ({
         >
             {visible && (
                 <>
-                    {viewState === "loading" && (
+                    {metaStatus === "pending" && (
                         <div className="flex h-full w-full items-center justify-center bg-stone-100 dark:bg-stone-900">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +73,7 @@ export const ArtworkBlock = ({
                         </div>
                     )}
 
-                    {viewState === "error" && (
+                    {metaStatus === "error" && (
                         <div className="bg-spotify-green flex h-full w-full items-center justify-center">
                             <span className="text-base font-semibold text-white">
                                 Error
@@ -97,26 +81,25 @@ export const ArtworkBlock = ({
                         </div>
                     )}
 
-                    {viewState === "empty" && (
-                        <div className="bg-spotify-green flex h-full w-full items-center justify-center text-center">
-                            <span className="text-shadow-xl text-base text-shadow-black">
-                                No Artwork Found
-                            </span>
-                        </div>
-                    )}
-
-                    {viewState === "image" && (
-                        <img
-                            src={imageUrl}
-                            alt={imageAlt}
-                            className="h-full w-full object-cover"
-                            loading="lazy"
-                            onLoad={() => setHasLoaded(true)}
-                            onError={(e) =>
-                                (e.currentTarget.src = placeHolderImgUrl)
-                            }
-                        />
-                    )}
+                    {metaStatus === "success" &&
+                        (imageUrl ? (
+                            <img
+                                src={imageUrl}
+                                alt={imageAlt}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                                onLoad={() => setHasLoaded(true)}
+                                onError={(e) =>
+                                    (e.currentTarget.src = placeHolderImgUrl)
+                                }
+                            />
+                        ) : (
+                            <div className="bg-spotify-green flex h-full w-full items-center justify-center text-center">
+                                <span className="text-shadow-xl text-base text-shadow-black">
+                                    No Artwork Found
+                                </span>
+                            </div>
+                        ))}
                 </>
             )}
         </div>

@@ -11,6 +11,19 @@ export interface SummmaryResponse {
     total_time_listening: number;
 }
 
+export interface SummaryEntry {
+    Name: string;
+    TotalMs: number;
+    Count: number;
+    URI: string;
+}
+
+export interface OffsetLimit {
+    offsetTracks: number;
+    offsetArtists: number;
+    limit: number;
+}
+
 export interface SummaryParams extends OffsetLimit {
     start: Date;
     end: Date;
@@ -24,19 +37,6 @@ export interface SummaryMetaParams {
     items: SummaryEntry[];
     token: string;
     demo: boolean;
-}
-
-export interface OffsetLimit {
-    offsetTracks: number;
-    offsetArtists: number;
-    limit: number;
-}
-
-export interface SummaryEntry {
-    Name: string;
-    TotalMs: number;
-    Count: number;
-    URI: string;
 }
 
 export interface SummaryMetaEntry {

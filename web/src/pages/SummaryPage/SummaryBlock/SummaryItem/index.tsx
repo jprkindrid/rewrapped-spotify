@@ -4,6 +4,7 @@ import type {
 } from "@/shared-components/SummaryTypes";
 import { formatMsDuration } from "@/utils/formatDuration";
 import ArtworkBlock from "./ArtworkBlock";
+import type { QueryStatus } from "@tanstack/react-query";
 
 type Props = {
     i: number;
@@ -12,8 +13,7 @@ type Props = {
     isLoading: boolean;
     displayType: SummaryDisplay;
     imageUrl: string;
-    metaIsLoading: boolean;
-    metaError: Error | null;
+    metaStatus: QueryStatus;
 };
 
 const SummaryItem = ({
@@ -23,8 +23,7 @@ const SummaryItem = ({
     isLoading,
     displayType,
     imageUrl,
-    metaIsLoading,
-    metaError,
+    metaStatus,
 }: Props) => {
     const placeHolderImgUrl =
         "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
@@ -36,10 +35,9 @@ const SummaryItem = ({
 
     return (
         <div className="mt-2 flex w-full items-center text-xl text-shadow-sm sm:text-2xl">
-            <div className="dark:ring-spotify-green/50 mr-4 h-[80px] w-[80px] flex-shrink-0 overflow-hidden shadow-lg dark:ring">
+            <div className="dark:ring-spotify-green/50 mr-4 h-20 w-20 shrink-0 overflow-hidden shadow-lg dark:ring">
                 <ArtworkBlock
-                    metaIsLoading={metaIsLoading}
-                    metaError={!!metaError}
+                    metaStatus={metaStatus}
                     imageUrl={imageUrl}
                     imageAlt={imageAlt}
                     placeHolderImgUrl={placeHolderImgUrl}

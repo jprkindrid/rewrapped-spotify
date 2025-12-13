@@ -1,7 +1,6 @@
 import type {
     OffsetLimit,
     SummaryDisplay,
-    SummaryEntry,
     SummaryFilters,
 } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
@@ -23,17 +22,6 @@ type SummaryBlockProps = {
     metaQuery: UseSummaryMetadataResult;
 };
 
-type ViewState = "loading" | "empty" | "data";
-
-const getViewState = (
-    isLoading: boolean,
-    data: SummaryEntry[] | undefined
-): ViewState => {
-    if (isLoading) return "loading";
-    if (!data?.length) return "empty";
-    return "data";
-};
-
 const SummaryBlock = ({
     offsetLimit,
     setDisplayType,
@@ -42,12 +30,7 @@ const SummaryBlock = ({
     summaryQuery,
     metaQuery,
 }: SummaryBlockProps) => {
-    const {
-        data: summaryData,
-        isLoading: summaryIsLoading,
-        error: summaryError,
-    } = summaryQuery;
-
+    const { data: summaryData, status, error: summaryError } = summaryQuery;
     const {
         data: metaData,
         isLoading: metaIsLoading,
@@ -69,15 +52,13 @@ const SummaryBlock = ({
     const [showTransitions, setShowTransitions] = useState(false);
 
     useEffect(() => {
-        if (!summaryIsLoading && displayData?.length) {
+        if (status === "success" && displayData?.length) {
             const t = setTimeout(() => setShowTransitions(true), 50);
             return () => clearTimeout(t);
         } else {
             setShowTransitions(false);
         }
-    }, [summaryIsLoading, displayData]);
-
-    const viewState = getViewState(summaryIsLoading, displayData);
+    }, [status, displayData]);
 
     return (
         <div className="page-section relative flex flex-1 flex-col items-center overflow-clip rounded-lg">
@@ -114,7 +95,7 @@ const SummaryBlock = ({
             </div>
 
             <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-bl to-white transition dark:from-stone-800">
-                {viewState === "loading" && (
+                {status === "pending" && (
                     <div className="py-2">
                         {Array.from({ length: limit }).map((_, i) => (
                             <SkeletonSummaryItem key={i} />
@@ -122,54 +103,53 @@ const SummaryBlock = ({
                     </div>
                 )}
 
-                {viewState === "empty" && (
-                    <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
-                        No Data To Display For Current Selection
-                    </div>
-                )}
+                {status === "success" &&
+                    (displayData?.length ? (
+                        displayData.map((item, i) => {
+                            const meta = metaData?.[i];
+                            const summaryKey = `${item.URI}-${meta?.ImageURL}`;
+                            const delay = i * 20;
 
-                {viewState === "data" &&
-                    displayData!.map((item: SummaryEntry, i: number) => {
-                        const meta = metaData?.[i];
-                        const summaryKey = `${item.URI}-${meta?.ImageURL}`;
-                        const delay = i * 20;
-
-                        return (
-                            <div
-                                key={item.URI}
-                                className={clsx(
-                                    "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2 transition duration-300",
-                                    i !== 0 && "border-t",
-                                    showTransitions
-                                        ? "translate-y-0 opacity-100"
-                                        : "translate-y-4 opacity-0"
-                                )}
-                                style={{ transitionDelay: `${delay}ms` }}
-                            >
-                                <div className="flex flex-1 items-center gap-3">
-                                    <SummaryItem
-                                        key={summaryKey || `loading${i}`}
-                                        i={i}
-                                        item={item}
-                                        offset={offset}
-                                        isLoading={false}
-                                        displayType={displayType}
-                                        imageUrl={meta?.ImageURL ?? ""}
-                                        metaIsLoading={metaIsLoading}
-                                        metaError={metaError}
-                                    />
+                            return (
+                                <div
+                                    key={item.URI}
+                                    className={clsx(
+                                        "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2 transition duration-300",
+                                        i !== 0 && "border-t",
+                                        showTransitions
+                                            ? "translate-y-0 opacity-100"
+                                            : "translate-y-4 opacity-0"
+                                    )}
+                                    style={{ transitionDelay: `${delay}ms` }}
+                                >
+                                    <div className="flex flex-1 items-center gap-3">
+                                        <SummaryItem
+                                            key={summaryKey || `loading${i}`}
+                                            i={i}
+                                            item={item}
+                                            offset={offset}
+                                            isLoading={false}
+                                            displayType={displayType}
+                                            imageUrl={meta?.ImageURL ?? ""}
+                                            metaStatus={metaQuery.status}
+                                        />
+                                    </div>
+                                    <div>
+                                        <ItemLinkButton
+                                            key={i}
+                                            link={meta?.ItemURL ?? ""}
+                                            metaIsLoading={metaIsLoading}
+                                            metaError={metaError}
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <ItemLinkButton
-                                        key={i}
-                                        link={meta?.ItemURL ?? ""}
-                                        metaIsLoading={metaIsLoading}
-                                        metaError={metaError}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })
+                    ) : (
+                        <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
+                            No Data To Display For Current Selection
+                        </div>
+                    ))}
             </div>
 
             <div className="border-spotify-black w-full border-t py-2 dark:border-white/50">
