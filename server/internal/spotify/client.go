@@ -52,7 +52,7 @@ func Init() error {
 	spotifyClient = &SpotifyClient{
 		clientID:     clientID,
 		clientSecret: clientSecret,
-		HTTP:         &http.Client{},
+		HTTP:         &http.Client{Timeout: 30 * time.Second},
 	}
 
 	return nil

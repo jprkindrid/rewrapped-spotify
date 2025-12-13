@@ -33,6 +33,7 @@ func UnzipAndExtractFiles(file multipart.File, dest string) ([]string, error) {
 		slog.Error("Failed to open zip reader", "error", err)
 		return nil, err
 	}
+	defer r.Close()
 
 	var extracted []string
 
