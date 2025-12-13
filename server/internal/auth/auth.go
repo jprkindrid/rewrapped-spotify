@@ -18,8 +18,7 @@ const (
 	MaxAge = constants.SessionMaxAge
 )
 
-func NewAuth() {
-	cfg := config.Get()
+func NewAuth(cfg *config.Config) {
 
 	if !cfg.IsDocker {
 		if err := godotenv.Load("../.env"); err != nil {

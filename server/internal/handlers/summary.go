@@ -26,7 +26,7 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cfClient := storage.GetClient()
+	cfClient := storage.GetClient(cfg.Env)
 
 	var data []parser.MinifiedSongData
 	if err := cfClient.GetJSON(ctx, dbUser.StorageKey, &data); err != nil {

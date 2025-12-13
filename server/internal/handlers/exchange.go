@@ -26,7 +26,7 @@ func (cfg *ApiConfig) HandlerExchange(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	token, err := auth.GenerateJWT(userID, name)
+	token, err := auth.GenerateJWT(userID, name, cfg.Env)
 
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] error making jwt", err)

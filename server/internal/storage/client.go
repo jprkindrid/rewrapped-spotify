@@ -26,17 +26,16 @@ var (
 	cloudflareClient *CloudflareClient
 )
 
-func GetClient() *CloudflareClient {
+func GetClient(cfg *config.Config) *CloudflareClient {
 	if cloudflareClient == nil {
-		Init()
+		Init(cfg)
 	}
 
 	return cloudflareClient
 }
 
-func Init() {
+func Init(cfg *config.Config) {
 	ctx := context.Background()
-	cfg := config.Get()
 
 	bucketName := cfg.CloudflareBucketName
 	if bucketName == "" {

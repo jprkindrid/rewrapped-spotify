@@ -8,8 +8,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 )
 
-func GenerateJWT(userID, displayName string) (string, error) {
-	cfg := config.Get()
+func GenerateJWT(userID, displayName string, cfg *config.Config) (string, error) {
 	jwtSecret := cfg.JWTSecretBytes()
 	if len(jwtSecret) == 0 {
 		return "", fmt.Errorf("missing required JWT_SECRET in config")

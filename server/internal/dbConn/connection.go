@@ -10,9 +10,7 @@ import (
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
-func Open() *sql.DB {
-	cfg := config.Get()
-
+func Open(cfg *config.Config) *sql.DB {
 	if cfg.ProductionBuild {
 		if cfg.TursoURL == "" || cfg.TursoToken == "" {
 			log.Fatal("Turso database URL and auth token must be configured for production")

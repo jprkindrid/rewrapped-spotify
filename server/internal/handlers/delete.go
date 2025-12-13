@@ -23,7 +23,7 @@ func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cfClient := storage.GetClient()
+	cfClient := storage.GetClient(cfg.Env)
 
 	err = cfClient.DeleteExistingBlob(ctx, dbUser.StorageKey)
 	if err != nil {

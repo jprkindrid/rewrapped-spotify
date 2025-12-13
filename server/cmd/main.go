@@ -36,7 +36,7 @@ func main() {
 
 	envConfig := config.Init()
 
-	conn := db.Open()
+	conn := db.Open(envConfig)
 
 	if err := conn.Ping(); err != nil {
 		log.Fatalf("DB connection failed: %v", err)
@@ -50,11 +50,11 @@ func main() {
 		Env:       envConfig,
 	}
 
-	err := spotify.Init()
+	err := spotify.Init(cfg.Env)
 	if err != nil {
 		log.Fatalf("error initializing spotify client: %v", err)
 	}
-	sClient := spotify.GetClient()
+	sClient := spotify.GetClient(cfg.Env)
 	_, err = sClient.GetValidToken()
 	if err != nil {
 		log.Fatalf("error initializing getting token: %v", err)
@@ -72,8 +72,8 @@ func main() {
 	if os.Getenv("DOCKER") == "" {
 		addr = "127.0.0.1:8080"
 	}
-	auth.NewAuth()
-	storage.Init()
+	auth.NewAuth(cfg.Env)
+	storage.Init(cfg.Env)
 
 	mux := http.NewServeMux()
 
@@ -82,13 +82,13 @@ func main() {
 	mux.HandleFunc("GET /auth/spotify/login", cfg.HandlerLogin)
 	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
 	mux.HandleFunc("POST /auth/exchange", cfg.HandlerExchange)
-	mux.Handle("POST /api/upload", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerUpload)))
-	mux.Handle("GET /api/summary", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerSummary)))
-	mux.Handle("GET /api/demo/summary", middleware.DemoMiddleware(http.HandlerFunc(cfg.HandlerSummary)))
-	mux.Handle("POST /api/summary/images", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerSummaryImages)))
-	mux.Handle("POST /api/demo/summary/images", middleware.DemoMiddleware(http.HandlerFunc(cfg.HandlerSummaryImages)))
+	mux.Handle("POST /api/upload", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerUpload)))
+	mux.Handle("GET /api/summary", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummary)))
+	mux.Handle("GET /api/demo/summary", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummary)))
+	mux.Handle("POST /api/summary/images", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummaryImages)))
+	mux.Handle("POST /api/demo/summary/images", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummaryImages)))
 	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
-	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerDelete)))
+	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDelete)))
 
 	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", "http://127.0.0.1:4173", " https://127.0.0.1:4173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
 

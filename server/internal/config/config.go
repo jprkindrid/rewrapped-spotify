@@ -96,12 +96,12 @@ func Init() *Config {
 	return globalConfig
 }
 
-func Get() *Config {
-	if globalConfig == nil {
-		panic("configuration not initialized")
-	}
-	return globalConfig
-}
+// func Get() *Config {
+// 	if globalConfig == nil {
+// 		panic("configuration not initialized")
+// 	}
+// 	return globalConfig
+// }
 
 func (c *Config) JWTSecretBytes() []byte {
 	return []byte(c.JWTSecret)

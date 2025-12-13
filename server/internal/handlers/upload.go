@@ -35,7 +35,7 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 			userSongData = append(userSongData, data...)
 		}
 	}
-	_, err = services.StoreData(r, userSongData, cfg.DB)
+	_, err = services.StoreData(r, userSongData, cfg.DB, cfg.Env)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "unable to store user data in database", err)
 		return

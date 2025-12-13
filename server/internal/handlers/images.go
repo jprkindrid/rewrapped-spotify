@@ -34,7 +34,7 @@ func (cfg *ApiConfig) HandlerSummaryImages(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	spotifyClient := spotify.GetClient()
+	spotifyClient := spotify.GetClient(cfg.Env)
 
 	var metaInfo []spotify.MetaInfo
 	var err error

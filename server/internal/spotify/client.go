@@ -40,9 +40,7 @@ var (
 	spotifyClient *SpotifyClient
 )
 
-func Init() error {
-	cfg := config.Get()
-
+func Init(cfg *config.Config) error {
 	slog.Info("initializing spotify client")
 	spotifyClient = &SpotifyClient{
 		clientID:     cfg.SpotifyClientID,
@@ -53,9 +51,9 @@ func Init() error {
 	return nil
 }
 
-func GetClient() *SpotifyClient {
+func GetClient(cfg *config.Config) *SpotifyClient {
 	if spotifyClient == nil {
-		Init()
+		Init(cfg)
 	}
 	return spotifyClient
 }

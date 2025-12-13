@@ -10,9 +10,8 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
-func DemoMiddleware(next http.Handler) http.Handler {
+func DemoMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cfg := config.Get()
 		expectedKey := cfg.DemoKey
 
 		if r.Header.Get("X-Demo-Key") != expectedKey {

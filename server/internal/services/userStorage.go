@@ -8,16 +8,17 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 )
 
-func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Queries) (database.User, error) {
+func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Queries, cfg *config.Config) (database.User, error) {
 	ctx := r.Context()
 
-	cfClient := storage.GetClient()
+	cfClient := storage.GetClient(cfg)
 
 	spotifyID, ok := ctx.Value(constants.UserIDKey).(string)
 	if !ok || spotifyID == "" {

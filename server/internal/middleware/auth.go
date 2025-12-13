@@ -12,7 +12,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
-func AuthMiddleware(next http.Handler) http.Handler {
+func AuthMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
@@ -24,7 +24,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		claims := jwt.MapClaims{}
 
-		cfg := config.Get()
 		jwtSecret := cfg.JWTSecretBytes()
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
 			if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
