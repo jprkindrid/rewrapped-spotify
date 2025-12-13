@@ -2,7 +2,7 @@ import type {
     SummaryMetaEntry,
     SummaryMetaParams,
     SummaryParams,
-    SummmaryResponse,
+    SummaryResponse,
 } from "../shared-components/SummaryTypes";
 import { apiFetch } from "./apiFetch";
 
@@ -15,7 +15,7 @@ export async function getUserSummary({
     sortBy,
     token,
     demo,
-}: SummaryParams): Promise<SummmaryResponse> {
+}: SummaryParams): Promise<SummaryResponse> {
     const params = new URLSearchParams({
         start: start.toISOString(),
         end: end.toISOString(),

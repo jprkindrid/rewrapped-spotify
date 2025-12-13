@@ -2,13 +2,13 @@ import type {
     OffsetLimit,
     SummaryDisplay,
     SummaryFilters,
-    SummmaryResponse,
+    SummaryResponse,
 } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
-    summaryData: SummmaryResponse | undefined;
+    summaryData: SummaryResponse | undefined;
     displayType: SummaryDisplay;
     offsetLimit: OffsetLimit;
     setFilters: Setter<SummaryFilters>;

@@ -1,7 +1,7 @@
 import type { DateRange } from "react-day-picker";
 import type {
     SummarySortBy,
-    SummmaryResponse,
+    SummaryResponse,
 } from "../shared-components/SummaryTypes";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as summaryService from "../services/summary";
@@ -26,7 +26,7 @@ export function useSummaryQuery(
         boolean,
     ];
 
-    return useQuery<SummmaryResponse, Error, SummmaryResponse, SummaryKey>({
+    return useQuery<SummaryResponse, Error, SummaryResponse, SummaryKey>({
         queryKey: [
             "summary",
             range,

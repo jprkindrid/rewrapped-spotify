@@ -1,6 +1,6 @@
 import type { DateRange } from "react-day-picker";
 
-export interface SummmaryResponse {
+export interface SummaryResponse {
     offset_artists: number;
     offset_tracks: number;
     limit: number;
