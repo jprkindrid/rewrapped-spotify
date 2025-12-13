@@ -74,10 +74,6 @@ func (c *SpotifyClient) GetValidToken() (string, error) {
 		log.Fatalf("Failed to get access token: %v", err)
 		return "", err
 	}
-	if err != nil {
-		log.Fatalf("Failed to get access token: %v", err)
-		return "", err
-	}
 
 	if newToken.AccessToken == "" {
 		return "", fmt.Errorf("received empty access token")

@@ -1,28 +1,18 @@
 package auth
 
 import (
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
-	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 )
 
 func GenerateJWT(userID, displayName string) (string, error) {
-
 	cfg := config.Get()
 	jwtSecret := cfg.JWTSecretBytes()
 	if len(jwtSecret) == 0 {
-		log.Fatal("[AUTH] Missing required JWT_SECRET in config")
-	cfg := config.Get()
-	jwtSecret := cfg.JWTSecretBytes()
-	if len(jwtSecret) == 0 {
-		log.Fatal("[AUTH] Missing required JWT_SECRET in config")
-	}
-
-	if cfg.JWTExpiry <= 0 {
-		return "", fmt.Errorf("invalid JWT expiry duration: %v", cfg.JWTExpiry)
+		return "", fmt.Errorf("missing required JWT_SECRET in config")
 	}
 
 	claims := jwt.MapClaims{
