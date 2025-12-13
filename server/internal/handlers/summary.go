@@ -14,8 +14,8 @@ import (
 func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	userID := ctx.Value(constants.UserIDKey).(string)
-	if userID == "" {
+	userID, ok := ctx.Value(constants.UserIDKey).(string)
+	if !ok || userID == "" {
 		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", nil)
 		return
 	}

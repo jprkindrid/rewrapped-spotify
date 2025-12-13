@@ -20,8 +20,8 @@ type imageRequest struct {
 func (cfg *ApiConfig) HandlerSummaryImages(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	userID := ctx.Value(constants.UserIDKey).(string)
-	if userID == "" {
+	userID, ok := ctx.Value(constants.UserIDKey).(string)
+	if !ok || userID == "" {
 		slog.Error("[Images] no user ID in session")
 		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", fmt.Errorf("no user id in session"))
 		return

@@ -19,8 +19,8 @@ func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Que
 
 	cfClient := storage.GetClient()
 
-	spotifyID := ctx.Value(constants.UserIDKey).(string)
-	if spotifyID == "" {
+	spotifyID, ok := ctx.Value(constants.UserIDKey).(string)
+	if !ok || spotifyID == "" {
 		log.Printf("[storeDataInDB] No valid user_id in session!")
 		return database.User{}, errors.New("no user ID in session")
 	}
