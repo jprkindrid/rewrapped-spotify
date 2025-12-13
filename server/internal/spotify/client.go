@@ -43,9 +43,9 @@ var (
 func Init(cfg *config.Config) error {
 	slog.Info("initializing spotify client")
 	spotifyClient = &SpotifyClient{
-		clientID:     cfg.SpotifyClientID,
-		clientSecret: cfg.SpotifySecret,
-		HTTP:         &http.Client{Timeout: cfg.HTTPClientTimeout},
+		clientID:     cfg.Spotify.ClientID,
+		clientSecret: cfg.Spotify.Secret,
+		HTTP:         &http.Client{Timeout: cfg.Time.HTTPClientTimeout},
 	}
 
 	return nil

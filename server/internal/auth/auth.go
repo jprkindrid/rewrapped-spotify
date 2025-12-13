@@ -20,20 +20,20 @@ const (
 
 func NewAuth(cfg *config.Config) {
 
-	if !cfg.IsDocker {
+	if !cfg.Server.IsDocker {
 		if err := godotenv.Load("../.env"); err != nil {
 			log.Printf("Warning: Error loading .env file: %v", err)
 		}
 	}
 
-	secret := cfg.SessionSecret
+	secret := cfg.Auth.SessionSecret
 	if len(secret) < constants.MinSessionSecretLength {
 		panic("SESSION_SECRET must be at least 32 characters")
 	}
 
 	sessionKey := []byte(secret)
 	store := sessions.NewCookieStore(sessionKey)
-	if cfg.ProductionBuild {
+	if cfg.Server.ProductionBuild {
 		store.Options = &sessions.Options{
 			Path:     "/",
 			Domain:   "api-rewrapped-spotify.fly.dev",
@@ -60,9 +60,9 @@ func NewAuth(cfg *config.Config) {
 
 	goth.UseProviders(
 		spotify.New(
-			cfg.SpotifyClientID,
-			cfg.SpotifySecret,
-			cfg.SpotifyRedirectURI,
+			cfg.Spotify.ClientID,
+			cfg.Spotify.Secret,
+			cfg.Spotify.RedirectURI,
 			"user-read-email",
 			"user-read-private",
 		),
@@ -70,5 +70,5 @@ func NewAuth(cfg *config.Config) {
 
 	gothic.Store = store
 
-	log.Printf("[NewAuth] Initialized auth with provider=spotify, callback=%s", cfg.SpotifyRedirectURI)
+	log.Printf("[NewAuth] Initialized auth with provider=spotify, callback=%s", cfg.Spotify.RedirectURI)
 }

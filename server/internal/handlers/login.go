@@ -39,7 +39,7 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	redirectUrl := fmt.Sprintf("%s?auth_code=%s", cfg.Env.FrontendRedirectURL, authCode)
+	redirectUrl := fmt.Sprintf("%s?auth_code=%s", cfg.Env.Server.FrontendRedirectURL, authCode)
 	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 }
 

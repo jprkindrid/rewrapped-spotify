@@ -9,7 +9,7 @@ import (
 )
 
 func GenerateJWT(userID, displayName string, cfg *config.Config) (string, error) {
-	jwtSecret := cfg.JWTSecretBytes()
+	jwtSecret := cfg.Auth.JWTSecretBytes()
 	if len(jwtSecret) == 0 {
 		return "", fmt.Errorf("missing required JWT_SECRET in config")
 	}
@@ -19,7 +19,7 @@ func GenerateJWT(userID, displayName string, cfg *config.Config) (string, error)
 		"display_name": displayName,
 		"iss":          "api-rewrapped-spotify",
 		"iat":          jwt.NewNumericDate(time.Now().UTC()),
-		"exp":          jwt.NewNumericDate(time.Now().UTC().Add(cfg.JWTExpiry)),
+		"exp":          jwt.NewNumericDate(time.Now().UTC().Add(cfg.Time.JWTExpiry)),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

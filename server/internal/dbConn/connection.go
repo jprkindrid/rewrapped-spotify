@@ -11,22 +11,22 @@ import (
 )
 
 func Open(cfg *config.Config) *sql.DB {
-	if cfg.ProductionBuild {
-		if cfg.TursoURL == "" || cfg.TursoToken == "" {
+	if cfg.Server.ProductionBuild {
+		if cfg.Database.TursoURL == "" || cfg.Database.TursoToken == "" {
 			log.Fatal("Turso database URL and auth token must be configured for production")
 		}
 
-		dbConn, err := sql.Open("libsql", cfg.TursoURL+"?authToken="+cfg.TursoToken)
+		dbConn, err := sql.Open("libsql", cfg.Database.TursoURL+"?authToken="+cfg.Database.TursoToken)
 		if err != nil {
 			log.Fatalf("Error opening production DB: %v", err)
 		}
-		slog.Info("[Connection] connected to db", "db_url", cfg.TursoURL)
+		slog.Info("[Connection] connected to db", "db_url", cfg.Database.TursoURL)
 		return dbConn
 	}
 
-	dbPath := cfg.DBPath
-	if cfg.IsDocker && cfg.DBPathDocker != "" {
-		dbPath = cfg.DBPathDocker
+	dbPath := cfg.Database.Path
+	if cfg.Server.IsDocker && cfg.Database.PathDocker != "" {
+		dbPath = cfg.Database.PathDocker
 	}
 
 	dbConn, err := sql.Open("sqlite3", dbPath)

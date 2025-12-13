@@ -24,7 +24,7 @@ func AuthMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		claims := jwt.MapClaims{}
 
-		jwtSecret := cfg.JWTSecretBytes()
+		jwtSecret := cfg.Auth.JWTSecretBytes()
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
 			if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

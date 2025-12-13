@@ -36,26 +36,10 @@ func GetClient(cfg *config.Config) *CloudflareClient {
 
 func Init(cfg *config.Config) {
 	ctx := context.Background()
-
-	bucketName := cfg.CloudflareBucketName
-	if bucketName == "" {
-		log.Fatal("CLOUDFLARE_BUCKET_NAME configuration not present")
-	}
-	accountId := cfg.CloudflareAccountID
-	if accountId == "" {
-		log.Fatal("CLOUDFLARE_ACCOUNT_ID configuration not present")
-	}
-	accessKeyId := cfg.CloudflareKeyID
-	if accessKeyId == "" {
-		log.Fatal("CLOUDFLARE_KEY_ID configuration not present")
-	}
-	accessKeySecret := cfg.CloudflareKeySecret
-	if accessKeySecret == "" {
-		log.Fatal("CLOUDFLARE_KEY_SECRET configuration not present")
-	}
+	CF := cfg.Storage
 
 	cloudConfig, err := awsconfig.LoadDefaultConfig(ctx,
-		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret, "")),
+		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(CF.KeyID, CF.KeySecret, "")),
 		awsconfig.WithRegion("auto"),
 	)
 
@@ -64,12 +48,12 @@ func Init(cfg *config.Config) {
 	}
 
 	s3Client := s3.NewFromConfig(cloudConfig, func(o *s3.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("https://%s.r2.cloudflarestorage.com", accountId))
+		o.BaseEndpoint = aws.String(fmt.Sprintf("https://%s.r2.cloudflarestorage.com", CF.AccountID))
 	})
 
 	testKey := "connection_test.txt"
 	_, err = s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &bucketName,
+		Bucket: &CF.BucketName,
 		Key:    aws.String(testKey),
 		Body:   strings.NewReader("ok"),
 	})
@@ -78,15 +62,15 @@ func Init(cfg *config.Config) {
 	}
 
 	_, _ = s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
-		Bucket: &bucketName,
+		Bucket: &CF.BucketName,
 		Key:    aws.String(testKey),
 	})
 
 	cloudflareClient = &CloudflareClient{
-		accountID:       accountId,
-		accessKeyId:     accessKeyId,
-		accessKeySecret: accessKeySecret,
-		bucketname:      bucketName,
+		accountID:       CF.AccountID,
+		accessKeyId:     CF.KeyID,
+		accessKeySecret: CF.KeySecret,
+		bucketname:      CF.BucketName,
 		s3Client:        s3Client,
 	}
 
