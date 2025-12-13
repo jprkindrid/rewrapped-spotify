@@ -49,7 +49,7 @@ func processUploadedFile(fh *multipart.FileHeader) ([]parser.MinifiedSongData, e
 
 	file, err := fh.Open()
 	if err != nil {
-		return nil, fmt.Errorf("failted to open: %w", err)
+		return nil, fmt.Errorf("failed to open: %w", err)
 	}
 	defer file.Close()
 
