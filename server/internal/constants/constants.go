@@ -19,11 +19,6 @@ const (
 )
 
 const (
-	HTTPWriteTimeout = 30
-	HTTPReadTimeout  = 30
-)
-
-const (
 	SortByTime  = "time"
 	SortByCount = "count"
 )

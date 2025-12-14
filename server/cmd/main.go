@@ -11,15 +11,13 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
 	"github.com/jprkindrid/rewrapped-spotify/internal/authcode"
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
-	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	db "github.com/jprkindrid/rewrapped-spotify/internal/dbConn"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
-	"github.com/jprkindrid/rewrapped-spotify/internal/middleware"
+	"github.com/jprkindrid/rewrapped-spotify/internal/server"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/rs/cors"
 )
 
 func main() {
@@ -50,26 +48,17 @@ func main() {
 		Env:       envConfig,
 	}
 
-	err := spotify.Init(cfg.Env)
-	if err != nil {
-		log.Fatalf("error initializing spotify client: %v", err)
-	}
 	sClient := spotify.GetClient(cfg.Env)
-	_, err = sClient.GetValidToken()
+	_, err := sClient.GetValidToken()
 	if err != nil {
-		log.Fatalf("error initializing getting token: %v", err)
-	}
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+		log.Fatalf("error getting spotify client token: %v", err)
 	}
 
 	// addr := "127.0.0.1:" + port
 	// debugging
 	addr := "0.0.0.0:8080"
 
-	if os.Getenv("DOCKER") == "" {
+	if cfg.Env.Server.IsDocker {
 		addr = "127.0.0.1:8080"
 	}
 	auth.NewAuth(cfg.Env)
@@ -77,37 +66,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	//api
-	mux.HandleFunc("GET /health", cfg.HandlerHealth)
-	mux.HandleFunc("GET /auth/spotify/login", cfg.HandlerLogin)
-	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
-	mux.HandleFunc("POST /auth/exchange", cfg.HandlerExchange)
-	mux.Handle("POST /api/upload", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerUpload)))
-	mux.Handle("GET /api/summary", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummary)))
-	mux.Handle("GET /api/demo/summary", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummary)))
-	mux.Handle("POST /api/summary/images", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummaryImages)))
-	mux.Handle("POST /api/demo/summary/images", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummaryImages)))
-	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
-	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDelete)))
-
-	allowedOrigins := []string{"http://127.0.0.1:5173", " https://127.0.0.1:5173", "http://127.0.0.1:4173", " https://127.0.0.1:4173", " http://127.0.0.1:8080", "http://127.0.0.1:8080"}
-
-	if os.Getenv("PRODUCTION_BUILD") == "TRUE" {
-		allowedOrigins = []string{"https://rewrapped-spotify.pages.dev"}
-	}
-
-	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   allowedOrigins,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: true,
-	})
+	server.RegisterRoutes(mux, cfg)
+	corsHandler := server.NewCORSHandler(cfg.Env.Server.ProductionBuild)
 
 	srv := http.Server{
 		Handler:      corsHandler.Handler(mux),
 		Addr:         addr,
-		WriteTimeout: constants.HTTPWriteTimeout * time.Second,
-		ReadTimeout:  constants.HTTPReadTimeout * time.Second,
+		WriteTimeout: cfg.Env.Time.HTTPClientTimeout,
+		ReadTimeout:  cfg.Env.Time.HTTPClientTimeout,
 	}
 
 	log.Printf("Server running at http://%s\n", addr)
