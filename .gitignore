@@ -1,6 +1,6 @@
 .env*
 *.zip
-/tmp
+server/tmp/*.json
 out
 data/
 todo.md
