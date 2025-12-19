@@ -1,177 +1,265 @@
 # ReWrapped Spotify
 
-See the demo at: https://rewrapped-spotify.pages.dev/ (frontend hosting)
+Explore and visualize your Spotify listening history with interactive insights. Upload your Spotify data and discover your top tracks, artists, and listening patterns.
 
-ReWrapped Spotify is a web application that helps you explore and visualize your Spotify listening history. Upload your Spotify data (the Streaming History you can request from Spotify’s privacy portal) and discover your top tracks, artists, and listening patterns over time.
+**Live Demo:** https://rewrapped-spotify.pages.dev/
 
-## 🚀 What is ReWrapped Spotify?
+## About
 
-ReWrapped Spotify lets you securely upload your Spotify streaming history (downloaded from Spotify’s privacy portal) and provides interactive insights, such as:
+ReWrapped Spotify is a full-stack web application that lets you:
+- Securely upload your Spotify streaming history (downloaded from [Spotify's privacy portal](https://www.spotify.com/account/privacy/))
+- Explore personalized listening insights with interactive visualizations
+- Filter data by date ranges and view detailed statistics
+- Authenticate securely via Spotify OAuth
 
-- Top tracks and artists
-- Total listening time
-- Activity by date and hour
-- Trends and patterns in your music habits
+## Features
 
-## ✨ Features
+- **Spotify OAuth Login** – Secure authentication via Spotify
+- **File Upload** – Support for Spotify's JSON or ZIP streaming history exports
+- **Interactive Stats** – Top tracks, top artists, total listening time, activity trends
+- **Date Filtering** – Filter your data by custom date ranges
+- **Pagination & Search** – Easily browse through your listening history
+- **Modern UI** – React + TypeScript frontend with Tailwind CSS
+- **Secure Storage** – SQLite for development, Turso for production
 
-- Spotify OAuth login (backend handles OAuth flow).
-- Upload Spotify Streaming History (JSON or ZIP) and parse it server-side.
-- Personalized stats: top tracks, top artists, total listening time.
-- Date-range filtering, pagination, and interactive summary pages.
-- Modern React + Vite frontend with TypeScript and Tailwind CSS.
-- Local storage of user data in SQLite (backend).
+## Technology Stack
 
-## 🛠️ Technology Stack
+**Backend:**
+- Go 1.25+ with `net/http`
+- SQLite for development / Turso (LibSQL) for production with `sqlc` for type-safe queries
+- Goth for Spotify OAuth
+- RESTful API
 
-- Backend: Go (go 1.25), net/http, SQLite, sqlc, Goth for Spotify OAuth
-- Frontend: React 19 (TypeScript), Vite, Tailwind CSS, @tanstack/react-query, @tanstack/react-router
-- Tooling: Docker, pnpm (package manager used in `web/`), Vite dev server
-- Hosting used by the project: Fly.io for API and Cloudflare Pages for frontend (example)
+**Frontend:**
+- React 19 with TypeScript
+- Vite bundler
+- TanStack Query & Router
+- Tailwind CSS for styling
+- Bun package management
 
-## 📦 Prerequisites
+**Deployment:**
+- Docker for containerization
+- Fly.io (API) & Cloudflare Pages (frontend) for hosting
 
-- Go (1.25+ recommended for the server) — see `server/go.mod`
-- Node.js (16+ recommended) and bun (or npm/pnpm/yarn) for the frontend
-- SQLite (for local DB storage)
-- Docker (optional, for containerized deployment)
-- A Spotify developer account (to create a Client ID/Secret and set redirect URI)
+## Prerequisites
 
-## ⚡ Setup & Development
+- **Go** 1.25+ ([download](https://golang.org/doc/install))
+- **Node.js** 16+ and **bun** (or npm/pnpm/yarn) for frontend
+- **SQLite** (included in most systems)
+- **Docker** (optional, for containerized setup)
+- **Spotify Developer Account** ([create here](https://developer.spotify.com/dashboard)) with Client ID/Secret
 
-The project contains two main parts: the backend server (in `server/`) and the frontend (in `web/`). You can run them separately during development.
+## Quick Start
 
-1. Clone the repository:
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/jprkindrid/rewrapped-spotify.git
 cd rewrapped-spotify
 ```
 
-2. Backend (server):
+### 2. Configure Backend
 
-- Install Go dependencies and build:
+Navigate to the server directory and set up environment variables:
 
 ```bash
 cd server
+```
+
+Create a `.env` file with your configuration:
+
+```env
+# Required: Spotify OAuth
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8080/auth/spotify/callback
+
+# Required: Authentication
+JWT_SECRET=your_jwt_secret_key
+SESSION_SECRET=your_session_secret_key
+
+# Required: Frontend
+FRONTEND_REDIRECT_URL=http://127.0.0.1:5173
+
+# Required: File Storage (Cloudflare R2)
+CLOUDFLARE_BUCKET_NAME=your_bucket_name
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_KEY_ID=your_key_id
+CLOUDFLARE_KEY_SECRET=your_key_secret
+
+Note: Easily replacable with AWS S3 Bucket
+
+# Optional: Database
+# For Development (SQLite - default):
+DB_PATH=data/userdata.sqlite
+DB_PATH_DOCKER=data/userdata.sqlite
+# For Production (Turso):
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=your_turso_token
+
+# Optional: Server
+PORT=8080
+PRODUCTION_BUILD=FALSE (must be TRUE on deployment)
+
+# Optional: Demo Mode
+DEMO_KEY: Key to authenticate demo on client in lieu of jwt token derived from user id
+KINDRID_USER_ID: Whatever Spotify user ID you want to use for the demo. I used my own, hence "kindrid user ID"
+```
+
+Download dependencies and build:
+
+```bash
 go mod download
 go build -o out ./cmd
 ```
 
-- Create a `.env` (or set env vars) with your Spotify credentials. Typical vars used by the server:
-
-```text
-SPOTIFY_CLIENT_ID=""
-SPOTIFY_CLIENT_SECRET=""
-SPOTIFY_REDIRECT_URI="http://127.0.0.1:8080/auth/spotify/callback"
-PORT=8080
-DB_PATH=data/userdata.sqlite
-URL_ADDR=127.0.0.1
-```
-
-- Run migrations (the repo includes `scripts/gsup.sh` which wraps goose):
+Run database migrations:
 
 ```bash
 ./scripts/gsup.sh
 ```
 
-- Start the server:
+Start the server:
 
 ```bash
 ./out
 ```
 
-Or use Docker Compose from the repository root:
+**Or use Docker:**
 
 ```bash
 docker-compose -f server/docker-compose.yml up --build
 ```
 
-3. Frontend (web):
+### 3. Configure Frontend
 
-The frontend uses Vite + React + TypeScript and is located in `web/`. The project uses bun as the package manager (see `web/package.json`), but npm, yarn, or pnpm will also work.
-
-Install dependencies and run the dev server:
+Navigate to the frontend directory:
 
 ```bash
 cd web
-bun install   # or `npm/pnpm install` / `yarn`
-npm run dev   # starts Vite on http://127.0.0.1:5173
 ```
 
-Vite's dev server proxies `/api` and `/auth` requests to the backend at http://127.0.0.1:8080 (see `web/vite.config.ts`). Run the backend first so the frontend can reach the API routes.
+Install dependencies:
 
-## 🛠️ API Overview
+```bash
+bun install
+# or: npm install / pnpm install / yarn install
+```
 
-The backend exposes a small REST API to upload and summarize streaming history. Main endpoints used by the frontend include:
+Start the development server:
 
-- POST /api/upload — Upload streaming history JSON or ZIP
-- GET /api/summary — Retrieve a listening summary (supports start/end filters, offset, limit)
-- GET /auth/spotify — Begin Spotify OAuth login
-- GET /auth/spotify/callback — OAuth callback redirect for Spotify
-- POST /auth/logout — Log out
+```bash
+npm run dev
+```
 
-Example request:
+The frontend will be available at `http://127.0.0.1:5173` and will proxy API calls to the backend at `http://127.0.0.1:8080`.
 
+> **Note:** Make sure the backend is running before starting the frontend.
+
+## � API Reference
+
+The backend exposes a REST API for uploading and retrieving listening data.
+
+### Key Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/upload` | Upload streaming history (JSON or ZIP) |
+| GET | `/api/summary` | Retrieve listening summary with filters |
+| GET | `/auth/spotify` | Begin Spotify OAuth login |
+| GET | `/auth/spotify/callback` | OAuth callback handler |
+| POST | `/auth/logout` | Log out |
+
+### Example Summary Request
+
+```bash
 GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset=0&limit=10
+```
 
-Query parameters:
-- start (optional, RFC3339)
-- end (optional, RFC3339)
-- offset (optional)
-- limit (optional, default 10)
+**Query Parameters:**
+- `start` (optional) – Start date in RFC3339 format
+- `end` (optional) – End date in RFC3339 format
+- `offset` (optional) – Pagination offset
+- `limit` (optional, default: 10) – Results per page
 
-Responses are JSON objects containing counts, top artists/tracks, and aggregated listening time.
+**Authentication:** Spotify OAuth required for all endpoints that access user data.
 
-Authentication (Spotify OAuth) is required for the endpoints that read or write user data.
+## Contributing
 
-## 🤝 Contributing
+Contributions are welcome! To contribute:
 
-Contributions are very welcome! 
-If you would like to contribute please fork the repo and create a pull request to the `main` branch.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Make your changes
+4. Commit your work (`git commit -am 'Add your feature'`)
+5. Push to the branch (`git push origin feature/your-feature`)
+6. Open a Pull Request to `main`
 
-## 📝 Usage
+## � Usage Guide
 
-1. **Login with Spotify:** Click "Login with Spotify" on the homepage.
-2. **Download your data:** Visit [Spotify Privacy Settings](https://www.spotify.com/account/privacy/) and request your data.
-3. **Upload your files:** Go to the "Upload & Analyze" page and upload your streaming history files.
-4. **Explore your stats:** View your top tracks, artists, and listening trends.
+1. **Login with Spotify**
+   - Click "Login with Spotify" on the homepage
+   - Authorize the application to access your account
 
-## 🗺️ Project Structure
+2. **Get Your Data**
+   - Visit [Spotify Account Settings → Privacy](https://www.spotify.com/account/privacy/)
+   - Request your data download (arrives via email in ~30 days)
+   - Extract the ZIP file
 
-Backend (`server/`):
+3. **Upload Your Files**
+   - Navigate to "Upload & Analyze" page
+   - Upload your Spotify streaming history files (JSON or ZIP)
+   - Wait for processing to complete
 
-`server/` – Go module, Dockerfile, and server-related config
-`server/cmd/` – Backend entrypoint
-`server/internal/` – Backend packages (auth, handlers, database, parser, spotify clients, summary)
-`server/sql/` – Database schema and queries
-`server/scripts/` – Helper scripts (db migrations, docker helpers)
+4. **Explore Your Stats**
+   - View your top tracks and artists
+   - Filter by custom date ranges
+   - Analyze your listening patterns and trends
 
-Frontend (`web/`):
+## � Project Structure
 
-`web/package.json` — frontend scripts and dependencies (pnpm recommended)
-`web/vite.config.ts` — Vite dev server and proxy config
-`web/index.html` — frontend HTML entry
-`web/src/main.tsx` — React entry, router + query client, AuthProvider
-`web/src/routes.tsx` — route definitions
-`web/src/index.css` — Tailwind and global styles
-`web/src/pages/` — top-level pages
-  - `HomePage/` — homepage components
-  - `SummaryPage/` — app summary UI, includes `FilterControls/` and `SummaryBlock/`
-  - `UploadPage/` — upload UI and file upload section
-`web/src/components/ui/` — shared UI primitives (buttons, popovers, calendar)
-`web/src/context/` — `AuthProvider` and context utilities
-`web/src/hooks/` — React hooks (`useAuth`, `useSummaryQuery`, `useLogout`)
-`web/src/services/` — API wrappers (`apiFetch`, `auth`, `summary`)
-`web/src/shared-components/` — reusable UI (NavBar, Explanation, etc.)
-`web/src/utils/` — helper utilities and types
+```
+.
+├── server/                          # Go backend
+│   ├── cmd/main.go                 # Application entrypoint
+│   ├── internal/
+│   │   ├── auth/                   # OAuth & JWT authentication
+│   │   ├── handlers/               # HTTP request handlers
+│   │   ├── database/               # Database models & queries
+│   │   ├── parser/                 # Spotify history parsing
+│   │   ├── spotify/                # Spotify API client
+│   │   ├── storage/                # File storage operations
+│   │   ├── summary/                # Analytics & summary logic
+│   │   └── ...                     # Other internal packages
+│   ├── sql/                        # Database schema & queries
+│   ├── scripts/                    # Utility scripts
+│   └── Dockerfile                  # Container configuration
+│
+├── web/                            # React + TypeScript frontend
+│   ├── src/
+│   │   ├── pages/                 # Page components (Home, Summary, Upload)
+│   │   ├── components/            # Reusable UI components
+│   │   ├── hooks/                 # Custom React hooks
+│   │   ├── services/              # API client wrappers
+│   │   ├── context/               # Auth context & providers
+│   │   ├── utils/                 # Utility functions & types
+│   │   ├── main.tsx               # React entry point
+│   │   ├── routes.tsx             # Route definitions
+│   │   └── index.css              # Global styles
+│   ├── vite.config.ts             # Vite configuration with API proxy
+│   ├── package.json               # Dependencies & scripts
+│   └── index.html                 # HTML entry
+│
+└── README.md                       # This file
+```
 
-## 🚧 Future Enhancements
+## Roadmap
 
-- Artist images and richer metadata
-- More advanced analytics (genre, time series, clustering)
-- Exportable CSV/JSON reports and shareable summaries
+- [ ] Advanced analytics (genre filtering, time series, clustering)
+- [ ] Exportable reports (CSV, JSON)
+- [ ] Shareable summary links
+- [ ] Genre-based insights
 
-## 📄 License
+## License
 
-MIT
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
