@@ -117,7 +117,17 @@ const SummaryBlock = ({
                 {status === "pending" && (
                     <div className="py-4">
                         {Array.from({ length: limit }).map((_, i) => (
-                            <SkeletonSummaryItem key={i} />
+                            <div
+                                key={`skeleton-${i}`}
+                                className={clsx(
+                                    "mx-6 my-1 flex flex-1 items-center justify-between border-neutral-200 px-4 py-3 dark:border-neutral-500/30",
+                                    i !== 0 && "border-t"
+                                )}
+                            >
+                                <SkeletonSummaryItem />
+                                {/* Button placeholder */}
+                                <div className="h-10 w-10 shrink-0 rounded-full bg-neutral-200/60 dark:bg-neutral-700/40" />
+                            </div>
                         ))}
                     </div>
                 )}
