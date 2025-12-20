@@ -4,7 +4,7 @@ const DarkModeButtons = () => {
     return (
         <div className="text-spotify-black flex h-full items-center space-x-2 dark:text-white">
             <button
-                className="rounded-lg p-2 transition hover:bg-slate-300/50 dark:hover:bg-slate-500/50"
+                className="rounded-lg p-2 transition hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
                 onClick={() => themeUtil.setTheme("light")}
             >
                 <svg
@@ -23,7 +23,7 @@ const DarkModeButtons = () => {
                 </svg>
             </button>
             <button
-                className="rounded-lg p-2 transition hover:bg-slate-500/50"
+                className="rounded-lg p-2 transition hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
                 onClick={() => themeUtil.setTheme("dark")}
             >
                 <svg
@@ -42,7 +42,7 @@ const DarkModeButtons = () => {
                 </svg>
             </button>
             <button
-                className="rounded-lg p-2 transition hover:bg-slate-500/50"
+                className="rounded-lg p-2 transition hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
                 onClick={() => themeUtil.setTheme("system")}
             >
                 <svg

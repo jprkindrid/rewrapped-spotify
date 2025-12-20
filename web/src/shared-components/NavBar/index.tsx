@@ -45,8 +45,8 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                     </div>
                 </div>
 
-                <div className="flex w-full items-center justify-start px-8">
-                    <div className="hidden w-1/3 items-center sm:flex">
+                <div className="grid w-full grid-cols-3 items-center px-8">
+                    <div className="hidden justify-self-start items-center sm:flex">
                         <UserButton
                             setShowUserModal={setShowUserModal}
                             includeUser={includeUser}
@@ -62,7 +62,7 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                         </div>
                     )}
 
-                    <div className="flex w-full flex-col text-center sm:w-1/3">
+                    <div className="flex flex-col text-center">
                         <div className="dark:text-spotify-green text-spotify-black text-4xl text-shadow-sm dark:text-shadow-xs">
                             <h1 className="text-5xl font-bold">
                                 ReWrapped Spotify
@@ -107,7 +107,7 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                             </nav>
                         </div>
                     </div>
-                    <div className="hidden w-1/3 justify-end sm:flex">
+                    <div className="hidden justify-end sm:flex">
                         <DarkModeButtons />
                     </div>
                 </div>
