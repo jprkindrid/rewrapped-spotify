@@ -177,6 +177,7 @@ const SummaryBlock = ({
                     displayType={displayType}
                     offsetLimit={offsetLimit}
                     setFilters={setFilters}
+                    isLoading={status === "pending"}
                 />
             </div>
         </div>
