@@ -69,9 +69,9 @@ export const SummaryPage = ({ demo = false }) => {
     return (
         <div className="flex w-full flex-col">
             <NavBar includeUser={!demo} />
-            <div className="text-spotify-black flex min-h-screen flex-col items-center bg-white py-4 font-sans transition dark:bg-black dark:text-white">
+            <div className="text-spotify-black flex min-h-screen flex-col items-center bg-linear-to-b from-white via-neutral-50 to-white py-8 font-sans transition dark:from-neutral-900 dark:via-neutral-950 dark:to-black dark:text-white">
                 <div className="relative h-full w-full max-w-5xl">
-                    <section className="page-section mx-2 mb-4 flex justify-center rounded-md pb-2">
+                    <section className="page-section mx-2 mb-6 flex justify-center rounded-lg pb-2 shadow-sm">
                         <FilterControls
                             bufferFilters={bufferFilters}
                             setBufferFilters={setBufferFilters}
@@ -81,7 +81,7 @@ export const SummaryPage = ({ demo = false }) => {
                     </section>
                     {demo && (
                         <div className="flex w-full justify-center text-center">
-                            <div className="dark:text-spotify-green page-section bg-spotify-black text-spotify-black mb-4 w-fit rounded-md px-4 py-2 text-lg font-bold">
+                            <div className="dark:text-spotify-green page-section bg-spotify-black text-spotify-black mb-6 w-fit rounded-lg px-6 py-3 text-lg font-bold shadow-md">
                                 <div>
                                     Demo Data Courtesy of{" "}
                                     <a
@@ -95,7 +95,7 @@ export const SummaryPage = ({ demo = false }) => {
                             </div>
                         </div>
                     )}
-                    <section className="page-section mx-2 flex flex-col rounded-lg">
+                    <section className="page-section mx-2 flex flex-col rounded-lg shadow-md">
                         <SummaryBlock
                             displayType={displayType}
                             setDisplayType={setDisplayType}

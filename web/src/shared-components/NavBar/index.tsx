@@ -56,7 +56,7 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                     {showUserModal && (
                         <div
                             ref={userModalRef}
-                            className="absolute top-0 left-0 rounded-br-lg border-r border-b border-slate-500 bg-slate-300 p-6 transition dark:bg-slate-900"
+                            className="absolute top-0 left-0 rounded-lg border border-neutral-300 bg-neutral-100 p-6 shadow-lg transition dark:border-neutral-700 dark:bg-neutral-900"
                         >
                             <UserModal />
                         </div>
@@ -64,8 +64,10 @@ const NavBar = ({ includeUser }: NavBarProps) => {
 
                     <div className="flex w-full flex-col text-center sm:w-1/3">
                         <div className="dark:text-spotify-green text-spotify-black text-4xl text-shadow-sm dark:text-shadow-xs">
-                            <h1 className="font-bold">ReWrapped Spotify</h1>
-                            <nav className="font-base flex justify-around space-x-2 pt-4 text-xl transition-all">
+                            <h1 className="text-5xl font-bold">
+                                ReWrapped Spotify
+                            </h1>
+                            <nav className="font-base flex justify-around space-x-4 pt-4 text-lg font-medium transition-all">
                                 <Link
                                     to="/"
                                     className="transition"

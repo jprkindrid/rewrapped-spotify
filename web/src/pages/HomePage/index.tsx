@@ -8,11 +8,11 @@ const HomePage = () => {
     return (
         <>
             <NavBar includeUser={false} />
-            <div className="text-spotify-black flex w-full justify-center bg-stone-100 pt-8 transition dark:bg-black dark:text-white">
+            <div className="text-spotify-black flex w-full justify-center bg-linear-to-b from-neutral-50 to-neutral-100 pt-8 transition dark:from-neutral-900 dark:to-black dark:text-white">
                 <div className="mx-2 h-screen w-full max-w-5xl">
-                    <div className="mt-4 mb-8 flex flex-col items-center rounded-xl">
+                    <div className="mt-8 mb-12 flex flex-col items-center rounded-xl">
                         <button
-                            className="bg-spotify-green text-spotify-black flex items-center justify-center rounded-full p-4 text-2xl shadow-sm transition hover:scale-105 hover:cursor-pointer dark:text-white dark:shadow-white"
+                            className="bg-spotify-green text-spotify-black dark:shadow-spotify-green/40 dark:hover:shadow-spotify-green/60 flex items-center justify-center rounded-full p-6 text-2xl shadow-lg transition duration-200 hover:scale-105 hover:cursor-pointer dark:text-white"
                             onClick={() => {
                                 window.location.href = `${API_URL}/auth/spotify/login`;
                             }}

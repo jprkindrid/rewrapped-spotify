@@ -1,10 +1,10 @@
 const Explanation = () => {
     return (
-        <section className="page-section mt-4 flex flex-col items-center rounded-xl py-4">
-            <h2 className="text-3xl font-bold">How It Works</h2>
-            <div className="bg-spotify-green my-4 h-px w-[calc(100%-4rem)]"></div>
+        <section className="page-section mt-8 flex flex-col items-center rounded-lg py-6 shadow-sm">
+            <h2 className="text-4xl font-bold">How It Works</h2>
+            <div className="from-spotify-green/0 via-spotify-green to-spotify-green/0 my-6 h-1 w-[calc(100%-4rem)] rounded-full bg-linear-to-r"></div>
 
-            <ol className="max-w-[80%] list-decimal text-stone-500 dark:text-stone-300">
+            <ol className="max-w-[80%] list-decimal space-y-2 text-neutral-600 dark:text-neutral-300">
                 <li>
                     Go to{" "}
                     <a
