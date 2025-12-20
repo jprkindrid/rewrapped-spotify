@@ -56,10 +56,10 @@ func main() {
 
 	// addr := "127.0.0.1:" + port
 	// debugging
-	addr := "0.0.0.0:8080"
+	addr := "127.0.0.1:8080"
 
 	if cfg.Env.Server.IsDocker {
-		addr = "127.0.0.1:8080"
+		addr = "0.0.0.0:8080"
 	}
 	auth.NewAuth(cfg.Env)
 	storage.Init(cfg.Env)
