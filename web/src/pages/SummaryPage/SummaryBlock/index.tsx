@@ -64,9 +64,19 @@ const SummaryBlock = ({
     return (
         <div className="page-section relative flex flex-1 flex-col items-center overflow-clip">
             {summaryError && (
-                <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center bg-neutral-400/50 text-center text-2xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-neutral-800/50">
-                    <div>Error Getting Summary Data:</div>
-                    <div className="text-sm">{summaryError.message}</div>
+                <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center gap-4 bg-neutral-400/50 text-center text-3xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-neutral-800/50">
+                    <div>
+                        {summaryError.message?.includes("404") ||
+                        summaryError.message?.includes("Not Found")
+                            ? "No Data Found"
+                            : "Error Getting Summary Data:"}
+                    </div>
+                    <div className="text-lg">
+                        {summaryError.message?.includes("404") ||
+                        summaryError.message?.includes("Not Found")
+                            ? "Upload your streaming history to get started"
+                            : summaryError.message}
+                    </div>
                 </div>
             )}
 
