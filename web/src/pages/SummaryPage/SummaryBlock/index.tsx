@@ -61,21 +61,22 @@ const SummaryBlock = ({
     }, [status, displayData]);
 
     return (
-        <div className="page-section relative flex flex-1 flex-col items-center overflow-clip rounded-lg">
+        <div className="page-section relative flex flex-1 flex-col items-center overflow-clip">
             {summaryError && (
-                <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center bg-stone-400/50 text-center text-2xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-stone-800/50">
+                <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center bg-neutral-400/50 text-center text-2xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-neutral-800/50">
                     <div>Error Getting Summary Data:</div>
                     <div className="text-sm">{summaryError.message}</div>
                 </div>
             )}
 
-            <div className="bg-spotify-black flex w-full justify-around overflow-clip border-b border-white/50 px-5 py-2">
+            <div className="bg-spotify-black border-spotify-green/30 flex w-full justify-around overflow-clip border-b px-5 py-3">
                 <div className="flex font-bold">
                     <button
                         className={clsx(
-                            "bg-spotify-green rounded-l-md border-r border-black px-4 py-2 transition",
-                            displayType !== "artists" &&
-                                "text-spotify-green bg-stone-800 hover:cursor-pointer"
+                            "rounded-l-md border-r border-black px-6 py-2 font-semibold transition duration-200 hover:shadow-md",
+                            displayType === "artists"
+                                ? "bg-spotify-green text-black"
+                                : "text-spotify-green bg-neutral-800 hover:cursor-pointer hover:bg-neutral-700"
                         )}
                         onClick={() => setDisplayType("artists")}
                     >
@@ -83,9 +84,10 @@ const SummaryBlock = ({
                     </button>
                     <button
                         className={clsx(
-                            "bg-spotify-green rounded-r-md border-r border-black px-4 py-2 transition",
-                            displayType !== "tracks" &&
-                                "text-spotify-green bg-stone-800 hover:cursor-pointer"
+                            "rounded-r-md border-r border-black px-6 py-2 font-semibold transition duration-200 hover:shadow-md",
+                            displayType === "tracks"
+                                ? "bg-spotify-green text-black"
+                                : "text-spotify-green bg-neutral-800 hover:cursor-pointer hover:bg-neutral-700"
                         )}
                         onClick={() => setDisplayType("tracks")}
                     >
@@ -94,9 +96,9 @@ const SummaryBlock = ({
                 </div>
             </div>
 
-            <div className="from-spotify-green/50 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-bl to-white transition dark:from-stone-800">
+            <div className="from-spotify-green/20 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-br via-white/50 to-white transition dark:from-neutral-800 dark:via-neutral-800">
                 {status === "pending" && (
-                    <div className="py-2">
+                    <div className="py-4">
                         {Array.from({ length: limit }).map((_, i) => (
                             <SkeletonSummaryItem key={i} />
                         ))}
@@ -114,7 +116,7 @@ const SummaryBlock = ({
                                 <div
                                     key={item.URI}
                                     className={clsx(
-                                        "border-spotify-black/50 dark:border-spotify-green/50 mx-6 my-1 flex flex-1 items-center justify-between px-2 transition duration-300",
+                                        "dark:border-spotify-green/30 mx-6 my-1 flex flex-1 items-center justify-between border-neutral-200 px-4 py-2 transition duration-300",
                                         i !== 0 && "border-t",
                                         showTransitions
                                             ? "translate-y-0 opacity-100"
@@ -146,13 +148,13 @@ const SummaryBlock = ({
                             );
                         })
                     ) : (
-                        <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center font-bold text-shadow-sm dark:text-shadow-white/20">
+                        <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center text-lg font-bold text-shadow-sm dark:text-shadow-white/20">
                             No Data To Display For Current Selection
                         </div>
                     ))}
             </div>
 
-            <div className="border-spotify-black w-full border-t py-2 dark:border-white/50">
+            <div className="w-full border-t border-neutral-200 py-4 dark:border-neutral-700">
                 <SummaryPageButtons
                     summaryData={summaryData}
                     displayType={displayType}
