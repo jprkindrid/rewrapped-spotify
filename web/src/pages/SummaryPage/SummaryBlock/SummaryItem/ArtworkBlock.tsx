@@ -51,14 +51,14 @@ export const ArtworkBlock = ({
             {visible && (
                 <>
                     {metaStatus === "pending" && (
-                        <div className="flex h-full w-full items-center justify-center bg-stone-100 dark:bg-stone-900">
+                        <div className="flex h-full w-full items-center justify-center bg-neutral-100 dark:bg-neutral-900">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 strokeWidth={1.5}
                                 stroke="currentColor"
-                                className="size-9 animate-pulse text-stone-500"
+                                className="size-9 animate-pulse text-neutral-500"
                                 aria-label="loading"
                             >
                                 <path

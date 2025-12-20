@@ -88,7 +88,7 @@ const FilterControls = ({
                         Apply
                     </button>
                     <button
-                        className="w-22 rounded-md bg-stone-800/50 px-4 py-2 font-bold text-white/70 transition hover:bg-stone-700/50"
+                        className="w-22 rounded-md bg-neutral-800/50 px-4 py-2 font-bold text-white/70 transition hover:bg-neutral-700/50"
                         onClick={onReset}
                     >
                         Reset

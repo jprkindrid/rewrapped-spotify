@@ -95,15 +95,15 @@ const FileUploadSection = () => {
                         "border-red-300 bg-red-100 text-red-800": isError,
                         "border-green-300 bg-green-100 text-green-800":
                             isSuccess,
-                        "bg-gray-50 text-stone-700 dark:bg-transparent":
+                        "bg-gray-50 text-neutral-700 dark:bg-transparent":
                             !isError && !isSuccess,
                     }
                 )}
             >
-                <div className="font-bold text-stone-500">
+                <div className="font-bold text-neutral-500">
                     File(s) Selected:
                 </div>
-                <div className="truncate text-stone-400 dark:text-stone-600">
+                <div className="truncate text-neutral-400 dark:text-neutral-600">
                     {fileNames}
                 </div>
 
