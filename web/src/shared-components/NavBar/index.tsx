@@ -1,8 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import DarkModeButtons from "./DarkModeButtons";
 import UserModal from "./modals/UserModal";
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import UserButton from "./UserButton";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 
 type NavBarProps = {
     includeUser: boolean;
@@ -10,23 +15,6 @@ type NavBarProps = {
 
 const NavBar = ({ includeUser }: NavBarProps) => {
     const [showUserModal, setShowUserModal] = useState(false);
-    const userModalRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (
-                userModalRef.current &&
-                !userModalRef.current.contains(e.target as Node)
-            ) {
-                setShowUserModal(false);
-            }
-        };
-
-        if (showUserModal)
-            document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-    }, [showUserModal]);
 
     // TODO: GET USER ID DATA HERE FROM CONTEXT
 
@@ -46,21 +34,22 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                 </div>
 
                 <div className="grid w-full grid-cols-3 items-center px-8">
-                    <div className="hidden justify-self-start items-center sm:flex">
-                        <UserButton
-                            setShowUserModal={setShowUserModal}
-                            includeUser={includeUser}
-                        />
-                    </div>
-
-                    {showUserModal && (
-                        <div
-                            ref={userModalRef}
-                            className="absolute top-0 left-0 rounded-lg border border-neutral-300 bg-neutral-100 p-6 shadow-lg transition dark:border-neutral-700 dark:bg-neutral-900"
-                        >
+                    <Popover
+                        open={showUserModal}
+                        onOpenChange={setShowUserModal}
+                    >
+                        <PopoverTrigger asChild>
+                            <div className="hidden justify-self-start sm:flex">
+                                <UserButton
+                                    setShowUserModal={setShowUserModal}
+                                    includeUser={includeUser}
+                                />
+                            </div>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="w-fit">
                             <UserModal />
-                        </div>
-                    )}
+                        </PopoverContent>
+                    </Popover>
 
                     <div className="flex flex-col text-center">
                         <div className="dark:text-spotify-green text-spotify-black text-4xl text-shadow-sm dark:text-shadow-xs">

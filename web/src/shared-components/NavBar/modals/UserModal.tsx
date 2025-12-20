@@ -1,18 +1,20 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useLogout } from "@/hooks/useLogout";
 import { deleteData } from "@/services/summary";
+import { Button } from "@/components/ui/button";
 
 const UserModal = () => {
     const { mutate: logout, isPending } = useLogout();
     const { token: token } = useAuth();
     return (
-        <div className="text-spotify-black flex flex-col dark:text-white">
-            <button
-                className="hover:text-spotify-green flex p-2 transition"
+        <div className="flex flex-col gap-2">
+            <Button
+                variant="ghost"
                 onClick={() => {
                     logout();
                 }}
                 disabled={isPending}
+                className="justify-start"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +22,7 @@ const UserModal = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-6"
+                    className="size-5"
                 >
                     <path
                         strokeLinecap="round"
@@ -29,15 +31,16 @@ const UserModal = () => {
                     />
                 </svg>
                 Logout
-            </button>
-            <button
-                className="flex p-2 transition hover:text-red-500"
+            </Button>
+            <Button
+                variant="ghost"
                 onClick={async () => {
                     const res = await deleteData(token!);
                     if (res.ok) {
                         window.location.reload();
                     }
                 }}
+                className="justify-start text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +48,7 @@ const UserModal = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-6"
+                    className="size-5"
                 >
                     <path
                         strokeLinecap="round"
@@ -54,7 +57,7 @@ const UserModal = () => {
                     />
                 </svg>
                 Delete Data
-            </button>
+            </Button>
         </div>
     );
 };
