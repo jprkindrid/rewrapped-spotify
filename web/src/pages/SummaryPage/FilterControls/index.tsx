@@ -1,6 +1,6 @@
 import type { SummaryFilters } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
-import clsx from "clsx";
+import { Button } from "@/components/ui/button";
 
 import DateRangePicker from "./DateRangePicker";
 import YearRangeDropown from "./YearRangeDropdown";
@@ -33,13 +33,10 @@ const FilterControls = ({
                             Select Sort Type
                         </div>
                         <div className="flex gap-2">
-                            <button
-                                className={clsx(
-                                    "w-22 rounded-md border bg-stone-200 px-4 py-2 font-bold transition hover:brightness-105 dark:bg-stone-700/50",
-                                    sortBy === "count"
-                                        ? "border-inset border-spotify-green text-spotify-green"
-                                        : "text-black dark:text-white/70"
-                                )}
+                            <Button
+                                variant={
+                                    sortBy === "count" ? "default" : "outline"
+                                }
                                 onClick={() =>
                                     setBufferFilters((prev) => ({
                                         ...prev,
@@ -48,14 +45,11 @@ const FilterControls = ({
                                 }
                             >
                                 Count
-                            </button>
-                            <button
-                                className={clsx(
-                                    "w-22 rounded-md border bg-stone-200 px-4 py-2 font-bold transition hover:brightness-105 dark:bg-stone-700/50",
-                                    sortBy === "time"
-                                        ? "border-inset border-spotify-green text-spotify-green"
-                                        : "border text-black dark:text-white/70"
-                                )}
+                            </Button>
+                            <Button
+                                variant={
+                                    sortBy === "time" ? "default" : "outline"
+                                }
                                 onClick={() =>
                                     setBufferFilters((prev) => ({
                                         ...prev,
@@ -64,7 +58,7 @@ const FilterControls = ({
                                 }
                             >
                                 Time
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     <div className="flex flex-col items-center sm:flex-row sm:items-end">
@@ -85,7 +79,7 @@ const FilterControls = ({
                     </div>
                 </div>
 
-                <div className="bg-spotify-green my-6 h-[1px] w-4/5 max-w-2xl"></div>
+                <div className="bg-spotify-green my-6 h-px w-4/5 max-w-2xl"></div>
                 <div className="flex gap-2">
                     <button
                         className="bg-spotify-green w-22 rounded-md px-4 py-2 font-bold text-black transition hover:brightness-110 dark:text-white"

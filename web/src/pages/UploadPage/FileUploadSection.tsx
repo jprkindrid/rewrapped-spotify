@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import clsx from "clsx";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 const FileUploadSection = () => {
     const [files, setFiles] = useState<FileList | null>(null);
@@ -70,28 +71,26 @@ const FileUploadSection = () => {
                     className="hidden"
                 />
 
-                <button
-                    type="button"
+                <Button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading}
-                    className="bg-spotify-green text-spotify-black mx-2 w-34 rounded-md px-4 py-2 font-bold hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-900 dark:text-white"
+                    className="bg-spotify-green hover:bg-spotify-green/90 mx-2 text-black"
                 >
                     {isLoading ? "..." : "Choose Files"}
-                </button>
+                </Button>
 
-                <button
-                    type="button"
+                <Button
                     onClick={handleUpload}
                     disabled={!files?.length || isLoading}
-                    className="bg-spotify-green text-spotify-black mx-2 w-34 rounded-md px-4 py-2 font-bold hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-900 dark:text-white"
+                    className="bg-spotify-green hover:bg-spotify-green/90 mx-2 text-black"
                 >
                     {isLoading ? "Uploading..." : "Analyze Data"}
-                </button>
+                </Button>
             </div>
 
             <div
                 className={clsx(
-                    "relative mx-2 my-4 w-1/3 min-w-[22rem] overflow-clip rounded-md border px-3 py-2 transition-colors duration-200",
+                    "relative mx-2 my-4 w-1/3 min-w-88 overflow-clip rounded-md border px-3 py-2 transition-colors duration-200",
                     {
                         "border-red-300 bg-red-100 text-red-800": isError,
                         "border-green-300 bg-green-100 text-green-800":

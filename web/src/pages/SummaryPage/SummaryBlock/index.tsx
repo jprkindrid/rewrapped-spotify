@@ -6,6 +6,7 @@ import type {
 import type { Setter } from "@/utils/types";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
+import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
@@ -70,29 +71,35 @@ const SummaryBlock = ({
             )}
 
             <div className="bg-spotify-black border-spotify-green/30 flex w-full justify-around overflow-clip border-b px-5 py-3">
-                <div className="flex font-bold">
-                    <button
-                        className={clsx(
-                            "rounded-l-md border-r border-black px-6 py-2 font-semibold transition duration-200 hover:shadow-md",
-                            displayType === "artists"
-                                ? "bg-spotify-green text-black"
-                                : "text-spotify-green bg-neutral-800 hover:cursor-pointer hover:bg-neutral-700"
-                        )}
+                <div className="flex">
+                    <Button
+                        variant={
+                            displayType === "artists" ? "default" : "outline"
+                        }
                         onClick={() => setDisplayType("artists")}
+                        className={clsx(
+                            "rounded-r-none",
+                            displayType === "artists"
+                                ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
+                                : "border-spotify-green text-spotify-green"
+                        )}
                     >
                         ARTISTS
-                    </button>
-                    <button
-                        className={clsx(
-                            "rounded-r-md border-r border-black px-6 py-2 font-semibold transition duration-200 hover:shadow-md",
-                            displayType === "tracks"
-                                ? "bg-spotify-green text-black"
-                                : "text-spotify-green bg-neutral-800 hover:cursor-pointer hover:bg-neutral-700"
-                        )}
+                    </Button>
+                    <Button
+                        variant={
+                            displayType === "tracks" ? "default" : "outline"
+                        }
                         onClick={() => setDisplayType("tracks")}
+                        className={clsx(
+                            "rounded-l-none border-l-0",
+                            displayType === "tracks"
+                                ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
+                                : "border-spotify-green text-spotify-green"
+                        )}
                     >
                         TRACKS
-                    </button>
+                    </Button>
                 </div>
             </div>
 

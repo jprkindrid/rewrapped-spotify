@@ -5,6 +5,7 @@ import type {
     SummaryResponse,
 } from "@/shared-components/SummaryTypes";
 import type { Setter } from "@/utils/types";
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -94,13 +95,14 @@ const SummaryPageButtons = ({
         <div className="flex w-full items-center justify-center px-4">
             <div className="flex flex-col-reverse items-center gap-2 sm:flex-row">
                 {[-100, -10, -1].map((n) => (
-                    <button
+                    <Button
                         key={n}
-                        className="mx-1 w-14 rounded-md border bg-stone-200 py-1 text-center text-xs transition hover:brightness-105 dark:bg-stone-700/50"
+                        variant="outline"
+                        size="sm"
                         onClick={() => adjustOffset(n * offsetLimit.limit)}
                     >
                         {n < 0 ? n : `+${n}`}
-                    </button>
+                    </Button>
                 ))}
             </div>
 
@@ -110,13 +112,14 @@ const SummaryPageButtons = ({
 
             <div className="flex flex-col items-center gap-2 sm:flex-row">
                 {[1, 10, 100].map((n) => (
-                    <button
+                    <Button
                         key={n}
-                        className="mx-1 w-14 rounded-md border bg-stone-200 py-1 text-center text-xs transition hover:brightness-105 dark:bg-stone-700/50"
+                        variant="outline"
+                        size="sm"
                         onClick={() => adjustOffset(n * offsetLimit.limit)}
                     >
                         +{n}
-                    </button>
+                    </Button>
                 ))}
             </div>
         </div>
