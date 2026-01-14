@@ -110,25 +110,25 @@ Download dependencies and build:
 
 ```bash
 go mod download
-go build -o out ./cmd
+make build
 ```
 
 Run database migrations:
 
 ```bash
-./scripts/gsup.sh
+make migrate-up
 ```
 
 Start the server:
 
 ```bash
-./out
+make run
 ```
 
 **Or use Docker:**
 
 ```bash
-docker-compose -f server/docker-compose.yml up --build
+docker-compose up --build
 ```
 
 ### 3. Configure Frontend
@@ -136,7 +136,7 @@ docker-compose -f server/docker-compose.yml up --build
 Navigate to the frontend directory:
 
 ```bash
-cd web
+cd ../web
 ```
 
 Install dependencies:

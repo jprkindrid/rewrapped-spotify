@@ -1,6 +1,6 @@
 FROM golang:1.25 AS builder
 
-RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc make && rm -rf /var/lib/apt/lists/*
 
 ENV CGO_ENABLED=1
 WORKDIR /app
@@ -9,7 +9,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o app ./cmd
+RUN make build
 
 RUN CGO_ENABLED=0 go install github.com/pressly/goose/v3/cmd/goose@latest
 
@@ -26,5 +26,4 @@ COPY scripts/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 EXPOSE 8080
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/app/app"]
+ENTRYPOINT ["/app/app"]
