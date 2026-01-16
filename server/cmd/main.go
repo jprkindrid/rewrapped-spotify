@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
 	"github.com/jprkindrid/rewrapped-spotify/internal/authcode"
+	"github.com/jprkindrid/rewrapped-spotify/internal/cache"
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	db "github.com/jprkindrid/rewrapped-spotify/internal/dbConn"
@@ -46,6 +47,7 @@ func main() {
 		DB:        dbQueries,
 		AuthCodes: authcode.NewStore(60 * time.Second),
 		Env:       envConfig,
+		DataCache: cache.NewUserDataCache(30 * time.Minute),
 	}
 
 	sClient := spotify.GetClient(cfg.Env)

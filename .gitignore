@@ -1,7 +1,4 @@
 .env*
 *.zip
-server/tmp/*.json
-out
-data/
 todo.md
 node_modules
