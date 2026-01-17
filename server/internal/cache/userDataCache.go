@@ -32,6 +32,9 @@ func NewUserDataCache(ttl time.Duration, maxItems int) *UserDataCache {
 }
 
 func (c *UserDataCache) Get(spotifyID string) ([]parser.MinifiedSongData, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	elem, ok := c.items[spotifyID]
 	if !ok {
 		return nil, false
@@ -50,8 +53,8 @@ func (c *UserDataCache) Get(spotifyID string) ([]parser.MinifiedSongData, bool) 
 }
 
 func (c *UserDataCache) Set(spotifyID string, data []parser.MinifiedSongData) {
-	c.mu.Unlock()
-	defer c.mu.Lock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	if elem, ok := c.items[spotifyID]; ok {
 		cached := elem.Value.(*cachedData)
