@@ -21,6 +21,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+const CACHE_TIMEOUT = 30 * time.Minute
+
 func main() {
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -47,7 +49,7 @@ func main() {
 		DB:        dbQueries,
 		AuthCodes: authcode.NewStore(60 * time.Second),
 		Env:       envConfig,
-		DataCache: cache.NewUserDataCache(30 * time.Minute),
+		DataCache: cache.NewUserDataCache(envConfig.DataCache.ExpiryTime, envConfig.DataCache.MaxItems),
 	}
 
 	sClient := spotify.GetClient(cfg.Env)

@@ -41,6 +41,8 @@ func (cfg *ApiConfig) HandlerUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cfg.DataCache.Set(r.Context().Value(constants.UserIDKey).(string), userSongData) // if we got this far that context value wont fail
+
 	utils.RespondWithJSON(w, http.StatusAccepted, map[string]string{})
 }
 

@@ -56,14 +56,20 @@ type TimeConfig struct {
 	MinPlayTimeMs     int
 }
 
+type UserDataCacheConfig struct {
+	ExpiryTime time.Duration
+	MaxItems   int
+}
+
 type Config struct {
-	Auth     *AuthConfig
-	Spotify  *SpotifyConfig
-	Database *DatabaseConfig
-	Storage  *StorageConfig
-	Server   *ServerConfig
-	Demo     *DemoConfig
-	Time     *TimeConfig
+	Auth      *AuthConfig
+	Spotify   *SpotifyConfig
+	Database  *DatabaseConfig
+	Storage   *StorageConfig
+	Server    *ServerConfig
+	Demo      *DemoConfig
+	Time      *TimeConfig
+	DataCache *UserDataCacheConfig
 }
 
 func Init() *Config {
@@ -114,6 +120,10 @@ func Init() *Config {
 			TokenExpiryBuffer: 60 * time.Second,
 			HTTPClientTimeout: 30 * time.Second,
 			MinPlayTimeMs:     30000,
+		},
+		DataCache: &UserDataCacheConfig{
+			ExpiryTime: 30 * time.Minute,
+			MaxItems:   25,
 		},
 	}
 }
