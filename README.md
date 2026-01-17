@@ -184,6 +184,14 @@ GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset=0&li
 
 **Authentication:** Spotify OAuth required for all endpoints that access user data.
 
+## Architecture Highlights
+
+- **LRU Cache** – Custom in-memory LRU cache with TTL expiration for user listening data. Reduces R2 fetches from ~500ms to sub-millisecond on cache hit. Thread-safe with `sync.Mutex` and `container/list`.
+
+- **Blob Storage Strategy** – User listening history (~28MB JSON per user) stored in Cloudflare R2 rather than database rows. Avoids SQLite/Turso row limits and reduces DB costs.
+
+- **Type-Safe SQL** – All database queries generated via `sqlc` for compile-time safety.
+
 ## Contributing
 
 Contributions are welcome! To contribute:
@@ -258,7 +266,7 @@ Contributions are welcome! To contribute:
 - [ ] Advanced analytics (genre filtering, time series, clustering)
 - [ ] Exportable reports (CSV, JSON)
 - [ ] Shareable summary links
-- [ ] Genre-based insights
+- [ ] Queryable over time charts
 
 ## License
 
