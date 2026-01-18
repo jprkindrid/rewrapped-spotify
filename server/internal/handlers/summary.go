@@ -10,6 +10,17 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
 )
 
+type SummaryResponse struct {
+	OffsetArtists      int                   `json:"offset_artists"`
+	OffsetTracks       int                   `json:"offset_tracks"`
+	Limit              int                   `json:"limit"`
+	TotalArtistsCount  int                   `json:"total_artists_count"`
+	TotalTracksCount   int                   `json:"total_tracks_count"`
+	TopArtists         []summary.ScoredEntry `json:"top_artists"`
+	TopTracks          []summary.ScoredEntry `json:"top_tracks"`
+	TotalTimeListening int                   `json:"total_time_listening"`
+}
+
 func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -90,14 +101,14 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		pagedTracks = topTracks[startTracks:endTracks]
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, map[string]any{
-		"offset_artists":       paginationParams.OffsetArtists,
-		"offset_tracks":        paginationParams.OffsetTracks,
-		"limit":                paginationParams.Limit,
-		"total_artists_count":  artistLen,
-		"total_tracks_count":   trackLen,
-		"top_artists":          pagedArtists,
-		"top_tracks":           pagedTracks,
-		"total_time_listening": totalTimeListenedMS,
+	utils.RespondWithJSON(w, http.StatusOK, SummaryResponse{
+		OffsetArtists:      paginationParams.OffsetArtists,
+		OffsetTracks:       paginationParams.OffsetTracks,
+		Limit:              paginationParams.Limit,
+		TotalArtistsCount:  artistLen,
+		TotalTracksCount:   trackLen,
+		TopArtists:         pagedArtists,
+		TopTracks:          pagedTracks,
+		TotalTimeListening: totalTimeListenedMS,
 	})
 }
