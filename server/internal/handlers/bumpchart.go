@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/bump"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
-	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
 )
@@ -54,13 +54,24 @@ func (cfg *ApiConfig) HandlerBumpChart(w http.ResponseWriter, r *http.Request) {
 
 	sortParams := validation.ValidateSortParam(r)
 
-	summaryArtists := summary.TopArtistsInRange(data, timeParams.Start, timeParams.End, sortParams.SortBy)
-	summaryTracks := summary.TopTracksInRange(data, timeParams.Start, timeParams.End, sortParams.SortBy)
+	interval := validation.ValidateIntervalParam(r)
 
-	topArtists := bump.SummaryToBump(summaryArtists)
-	topTracks := bump.SummaryToBump(summaryTracks)
+	var topTracks, topArtists []bump.ScoredEntry
+	var wg sync.WaitGroup
 
-	// TODO: add a time parameter request (months or years probably) and then loop for each of the iteration in the givne time period
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		topTracks = bump.GenerateBumpData(data, timeParams.Start, timeParams.End, interval.Interval, sortParams.SortBy, true)
+	}()
+
+	go func() {
+		defer wg.Done()
+		topArtists = bump.GenerateBumpData(data, timeParams.Start, timeParams.End, interval.Interval, sortParams.SortBy, false)
+	}()
+
+	wg.Wait()
 
 	utils.RespondWithJSON(w, http.StatusOK, BumpResponse{
 		TopArtists: topArtists,

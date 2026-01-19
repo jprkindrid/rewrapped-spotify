@@ -24,7 +24,8 @@ const (
 )
 
 const (
-	DefaultSortBy = SortByCount
+	IntervalMonthly = "monthly"
+	IntervalYearly  = "yearly"
 )
 
 const FileFormHeader = "files"

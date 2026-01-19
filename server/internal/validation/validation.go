@@ -33,6 +33,10 @@ type SortParams struct {
 	SortBy string
 }
 
+type IntervalParams struct {
+	Interval string
+}
+
 func ValidatePaginationParams(r *http.Request) (*PaginationParams, error) {
 	offsetTrackStr := r.URL.Query().Get("offset_tracks")
 	offsetArtistStr := r.URL.Query().Get("offset_artists")
@@ -112,10 +116,22 @@ func ValidateSortParam(r *http.Request) *SortParams {
 	sortBy := r.URL.Query().Get("sort_by")
 
 	if sortBy != constants.SortByTime && sortBy != constants.SortByCount {
-		sortBy = constants.DefaultSortBy
+		sortBy = constants.SortByCount
 	}
 
 	return &SortParams{
 		SortBy: sortBy,
+	}
+}
+
+func ValidateIntervalParam(r *http.Request) *IntervalParams {
+	interval := r.URL.Query().Get("interval")
+
+	if interval != constants.IntervalMonthly && interval != constants.IntervalYearly {
+		interval = constants.IntervalMonthly
+	}
+
+	return &IntervalParams{
+		Interval: interval,
 	}
 }
