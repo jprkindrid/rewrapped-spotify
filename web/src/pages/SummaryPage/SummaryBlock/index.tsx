@@ -1,8 +1,4 @@
-import type {
-    OffsetLimit,
-    SummaryDisplay,
-    SummaryFilters,
-} from "@/types/Summary";
+import type { EntityType, OffsetLimit, SummaryFilters } from "@/types/Summary";
 import type { Setter } from "@/utils/types";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
@@ -16,9 +12,9 @@ import { useEffect, useState } from "react";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
-    setDisplayType: Setter<SummaryDisplay>;
+    setDisplayType: Setter<EntityType>;
     setFilters: Setter<SummaryFilters>;
-    displayType: SummaryDisplay;
+    displayType: EntityType;
     summaryQuery: UseSummaryQueryResult;
     metaQuery: UseSummaryMetadataResult;
 };

@@ -1,6 +1,6 @@
 import type {
     OffsetLimit,
-    SummaryDisplay,
+    EntityType,
     SummaryFilters,
     SummaryResponse,
 } from "@/types/Summary";
@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
     summaryData: SummaryResponse | undefined;
-    displayType: SummaryDisplay;
+    displayType: EntityType;
     offsetLimit: OffsetLimit;
     setFilters: Setter<SummaryFilters>;
     isLoading?: boolean;

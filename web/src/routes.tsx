@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { initTheme } from "./utils/theme";
 import UploadPage from "./pages/UploadPage";
 import HomePage from "./pages/HomePage";
+import ChartsPage from "./pages/ChartsPage";
 
 const rootRoute = createRootRoute({
     component: () => (
@@ -38,22 +39,28 @@ const signInRoute = createRoute({
     component: HomePage,
 });
 
-const summaryRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: "/summary",
-    component: () => <SummaryPage demo={false} />,
-});
-
-const demoRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: "/demo",
-    component: () => <SummaryPage demo={true} />,
-});
-
 const uploadRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/upload",
     component: UploadPage,
+});
+
+const summaryRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/summary",
+    validateSearch: (search: Record<string, unknown>) => ({
+        demo: (search.demo as boolean | undefined) ?? false,
+    }),
+    component: SummaryPage,
+});
+
+const chartsRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/charts",
+    validateSearch: (search: Record<string, unknown>) => ({
+        demo: (search.demo as boolean | undefined) ?? false,
+    }),
+    component: ChartsPage,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -61,7 +68,7 @@ const routeTree = rootRoute.addChildren([
     signInRoute,
     summaryRoute,
     uploadRoute,
-    demoRoute,
+    chartsRoute,
 ]);
 
 export const router = createRouter({ routeTree });

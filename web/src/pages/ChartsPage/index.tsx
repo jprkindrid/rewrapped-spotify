@@ -1,13 +1,11 @@
 import NavBar from "@/components/NavBar";
-import type { EntityType, OffsetLimit, SummaryFilters } from "@/types/Summary";
+import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
-import { useSummaryQuery } from "@/hooks/useSummaryQuery";
-import SummaryBlock from "./SummaryBlock";
 import FilterControls from "../../components/FilterControls";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useSummaryMetadata } from "@/hooks/useSummaryMetadata";
+import BumpChart from "./BumpChart";
 
 const initialRange: DateRange = {
     from: new Date(2011, 0, 1),
@@ -20,10 +18,11 @@ const initialOffsetLimit: OffsetLimit = {
     limit: 10,
 };
 
-export const SummaryPage = () => {
-    const [displayType, setDisplayType] = useState<EntityType>("artists");
+export const ChartsPage = () => {
+    // const [displayType, setDisplayType] = useState<EntityType>("artists");
     const navigate = useNavigate();
     const { token } = useAuth();
+
     const { demo } = useSearch({ strict: false }) as { demo: boolean };
 
     if (!token && !demo) {
@@ -41,27 +40,27 @@ export const SummaryPage = () => {
     const handleApply = () => setFilters(bufferFilters);
     const handleReset = () => setBufferFilters(filters);
 
-    const summaryQuery = useSummaryQuery(
-        filters.range,
-        filters.offsetLimit.offsetTracks,
-        filters.offsetLimit.offsetArtists,
-        filters.offsetLimit.limit,
-        filters.sortBy,
-        token!,
-        demo
-    );
+    // const summaryQuery = useSummaryQuery(
+    //     filters.range,
+    //     filters.offsetLimit.offsetTracks,
+    //     filters.offsetLimit.offsetArtists,
+    //     filters.offsetLimit.limit,
+    //     filters.sortBy,
+    //     token!,
+    //     demo
+    // );
 
-    const metaRequestData =
-        displayType === "artists"
-            ? summaryQuery.data?.top_artists
-            : summaryQuery.data?.top_tracks;
+    // const metaRequestData =
+    //     displayType === "artists"
+    //         ? summaryQuery.data?.top_artists
+    //         : summaryQuery.data?.top_tracks;
 
-    const metaQuery = useSummaryMetadata(
-        displayType,
-        metaRequestData,
-        token!,
-        demo
-    );
+    // const metaQuery = useSummaryMetadata(
+    //     displayType,
+    //     metaRequestData,
+    //     token!,
+    //     demo
+    // );
 
     return (
         <div className="flex w-full flex-col">
@@ -93,14 +92,7 @@ export const SummaryPage = () => {
                         </div>
                     )}
                     <section className="page-section mx-2 flex flex-col rounded-lg shadow-md">
-                        <SummaryBlock
-                            displayType={displayType}
-                            setDisplayType={setDisplayType}
-                            offsetLimit={filters.offsetLimit}
-                            setFilters={setFilters}
-                            summaryQuery={summaryQuery}
-                            metaQuery={metaQuery}
-                        />
+                        <BumpChart />
                     </section>
                 </div>
             </div>
@@ -108,4 +100,4 @@ export const SummaryPage = () => {
     );
 };
 
-export default SummaryPage;
+export default ChartsPage;

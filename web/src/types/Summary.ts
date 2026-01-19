@@ -27,7 +27,7 @@ export interface OffsetLimit {
 export interface SummaryParams extends OffsetLimit {
     start: Date;
     end: Date;
-    sortBy: SummarySortBy;
+    sortBy: SortBy;
     token: string;
     demo: boolean;
 }
@@ -46,9 +46,9 @@ export interface SummaryMetaEntry {
 
 export type SummaryFilters = {
     range: DateRange | undefined;
-    sortBy: SummarySortBy;
+    sortBy: SortBy;
     offsetLimit: OffsetLimit;
 };
 
-export type SummarySortBy = "time" | "count";
-export type SummaryDisplay = "artists" | "tracks";
+export type SortBy = "time" | "count";
+export type EntityType = "artists" | "tracks";

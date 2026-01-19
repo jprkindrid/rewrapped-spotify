@@ -1,4 +1,4 @@
-import type { SummaryDisplay, SummaryEntry } from "@/types/Summary";
+import type { EntityType, SummaryEntry } from "@/types/Summary";
 import { formatMsDuration } from "@/utils/formatDuration";
 import ArtworkBlock from "./ArtworkBlock";
 import type { QueryStatus } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ type Props = {
     item: SummaryEntry;
     offset: number;
     isLoading: boolean;
-    displayType: SummaryDisplay;
+    displayType: EntityType;
     imageUrl: string;
     metaStatus: QueryStatus;
 };

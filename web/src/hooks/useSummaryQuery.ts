@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker";
-import type { SummarySortBy, SummaryResponse } from "../types/Summary";
+import type { SortBy, SummaryResponse } from "../types/Summary";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as summaryService from "../services/summary";
 
@@ -8,7 +8,7 @@ export function useSummaryQuery(
     offsetTracks: number,
     offsetArtists: number,
     limit: number,
-    sortBy: SummarySortBy,
+    sortBy: SortBy,
     token: string,
     demo: boolean
 ) {
@@ -18,7 +18,7 @@ export function useSummaryQuery(
         number,
         number,
         number,
-        SummarySortBy,
+        SortBy,
         string,
         boolean,
     ];
