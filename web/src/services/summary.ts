@@ -3,7 +3,7 @@ import type {
     SummaryMetaParams,
     SummaryParams,
     SummaryResponse,
-} from "../shared-components/SummaryTypes";
+} from "../types/Summary";
 import { apiFetch } from "./apiFetch";
 
 export async function getUserSummary({

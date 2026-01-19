@@ -1,8 +1,5 @@
 import type { DateRange } from "react-day-picker";
-import type {
-    SummarySortBy,
-    SummaryResponse,
-} from "../shared-components/SummaryTypes";
+import type { SummarySortBy, SummaryResponse } from "../types/Summary";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as summaryService from "../services/summary";
 

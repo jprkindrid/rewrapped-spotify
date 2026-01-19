@@ -1,5 +1,5 @@
 import * as summaryService from "@/services/summary";
-import type { SummaryEntry } from "@/shared-components/SummaryTypes";
+import type { SummaryEntry } from "@/types/Summary";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 
 export function useSummaryMetadata(

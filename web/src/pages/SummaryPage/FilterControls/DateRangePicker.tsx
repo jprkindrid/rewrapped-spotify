@@ -7,7 +7,7 @@ import {
     PopoverContent,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import type { SummaryFilters } from "@/shared-components/SummaryTypes";
+import type { SummaryFilters } from "@/types/Summary";
 
 interface Props {
     bufferFilters: SummaryFilters;

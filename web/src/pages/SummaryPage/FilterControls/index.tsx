@@ -1,4 +1,4 @@
-import type { SummaryFilters } from "@/shared-components/SummaryTypes";
+import type { SummaryFilters } from "@/types/Summary";
 import type { Setter } from "@/utils/types";
 import { Button } from "@/components/ui/button";
 

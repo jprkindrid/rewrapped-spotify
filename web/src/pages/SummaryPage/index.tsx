@@ -1,9 +1,9 @@
-import NavBar from "@/shared-components/NavBar";
+import NavBar from "@/components/NavBar";
 import {
     type OffsetLimit,
     type SummaryDisplay,
     type SummaryFilters,
-} from "@/shared-components/SummaryTypes";
+} from "@/types/Summary";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";

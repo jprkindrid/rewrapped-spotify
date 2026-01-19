@@ -2,7 +2,7 @@ import type {
     OffsetLimit,
     SummaryDisplay,
     SummaryFilters,
-} from "@/shared-components/SummaryTypes";
+} from "@/types/Summary";
 import type { Setter } from "@/utils/types";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";

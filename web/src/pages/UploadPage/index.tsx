@@ -1,5 +1,5 @@
-import Explanation from "@/shared-components/Explanation";
-import NavBar from "@/shared-components/NavBar";
+import Explanation from "@/components/Explanation";
+import NavBar from "@/components/NavBar";
 import FileUploadSection from "./FileUploadSection";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";

@@ -1,7 +1,4 @@
-import type {
-    SummaryDisplay,
-    SummaryEntry,
-} from "@/shared-components/SummaryTypes";
+import type { SummaryDisplay, SummaryEntry } from "@/types/Summary";
 import { formatMsDuration } from "@/utils/formatDuration";
 import ArtworkBlock from "./ArtworkBlock";
 import type { QueryStatus } from "@tanstack/react-query";

@@ -3,7 +3,7 @@ import type {
     SummaryDisplay,
     SummaryFilters,
     SummaryResponse,
-} from "@/shared-components/SummaryTypes";
+} from "@/types/Summary";
 import type { Setter } from "@/utils/types";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { API_URL } from "@/utils/constants";
+import { API_URL } from "@/config/constants";
 
 export function usePingApi() {
     useEffect(() => {

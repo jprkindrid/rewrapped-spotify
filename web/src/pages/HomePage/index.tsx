@@ -1,7 +1,7 @@
 import { usePingApi } from "@/hooks/usePingAPi";
-import Explanation from "@/shared-components/Explanation";
-import NavBar from "@/shared-components/NavBar";
-import { API_URL } from "@/utils/constants";
+import Explanation from "@/components/Explanation";
+import NavBar from "@/components/NavBar";
+import { API_URL } from "@/config/constants";
 
 const HomePage = () => {
     usePingApi();

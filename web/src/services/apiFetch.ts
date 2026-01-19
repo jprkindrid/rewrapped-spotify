@@ -1,4 +1,4 @@
-import { API_URL, DEMO_KEY } from "@/utils/constants";
+import { API_URL, DEMO_KEY } from "@/config/constants";
 
 type RestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
