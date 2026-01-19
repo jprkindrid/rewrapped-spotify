@@ -1,24 +1,34 @@
 import type { SummaryFilters } from "@/types/Summary";
-import type { Setter } from "@/utils/types";
 import { Button } from "@/components/ui/button";
 
 import DateRangePicker from "./DateRangePicker";
 import YearRangeDropown from "./YearRangeDropdown";
+import type { ChartFilters } from "@/types/Bump";
+import type { Dispatch, SetStateAction } from "react";
+import type { SortBy } from "@/types/Shared";
 
-type FilterControlParams = {
-    bufferFilters: SummaryFilters;
-    setBufferFilters: Setter<SummaryFilters>;
+type FilterControlParams<T extends SummaryFilters | ChartFilters> = {
+    bufferFilters: T;
+    setBufferFilters: Dispatch<SetStateAction<T>>;
     onApply: () => void;
     onReset: () => void;
 };
 
-const FilterControls = ({
+const FilterControls = <T extends SummaryFilters | ChartFilters>({
     bufferFilters,
     setBufferFilters,
     onApply,
     onReset,
-}: FilterControlParams) => {
+}: FilterControlParams<T>) => {
     const { sortBy } = bufferFilters;
+    // const isSummary = "offsetLimit" in bufferFilters;
+
+    const updateSortBy = (newSort: SortBy) => {
+        setBufferFilters((prev) => ({
+            ...prev,
+            sortBy: newSort,
+        }));
+    };
 
     return (
         <div className="flex w-full justify-center py-2">
@@ -37,12 +47,7 @@ const FilterControls = ({
                                 variant={
                                     sortBy === "count" ? "default" : "outline"
                                 }
-                                onClick={() =>
-                                    setBufferFilters((prev) => ({
-                                        ...prev,
-                                        sortBy: "count",
-                                    }))
-                                }
+                                onClick={() => updateSortBy("count")}
                             >
                                 Count
                             </Button>
@@ -50,12 +55,7 @@ const FilterControls = ({
                                 variant={
                                     sortBy === "time" ? "default" : "outline"
                                 }
-                                onClick={() =>
-                                    setBufferFilters((prev) => ({
-                                        ...prev,
-                                        sortBy: "time",
-                                    }))
-                                }
+                                onClick={() => updateSortBy("time")}
                             >
                                 Time
                             </Button>

@@ -1,18 +1,20 @@
 import type { SummaryFilters } from "@/types/Summary";
-import type { Setter } from "@/utils/types";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
+import type { ChartFilters } from "@/types/Bump";
 
-type Props = {
-    setBufferFilters: Setter<SummaryFilters>;
+type YearRangeParams<T extends SummaryFilters | ChartFilters> = {
+    setBufferFilters: Dispatch<SetStateAction<T>>;
 };
 
-const YearRangeDropown = ({ setBufferFilters }: Props) => {
+const YearRangeDropown = <T extends SummaryFilters | ChartFilters>({
+    setBufferFilters,
+}: YearRangeParams<T>) => {
     const [yearDropOpen, setYearDropOpen] = useState(false);
     const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
@@ -23,7 +25,7 @@ const YearRangeDropown = ({ setBufferFilters }: Props) => {
         const yearEnd = new Date(y, 11, 31);
         setSelectedYear(y);
         setYearDropOpen(false);
-        setBufferFilters((prev: SummaryFilters) => ({
+        setBufferFilters((prev) => ({
             ...prev,
             range: { from: yearStart, to: yearEnd },
         }));

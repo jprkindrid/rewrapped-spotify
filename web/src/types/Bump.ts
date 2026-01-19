@@ -1,4 +1,5 @@
-import type { SortBy } from "./Summary";
+import type { DateRange } from "react-day-picker";
+import type { SortBy } from "./Shared";
 
 export interface BumpResponse {
     top_artists: BumpEntry[];
@@ -24,5 +25,11 @@ export interface BumpParams {
     token: string;
     demo: boolean;
 }
+
+export type ChartFilters = {
+    range: DateRange | undefined;
+    sortBy: SortBy;
+    interval: ChartInterval;
+};
 
 export type ChartInterval = "monthly" | "yearly";

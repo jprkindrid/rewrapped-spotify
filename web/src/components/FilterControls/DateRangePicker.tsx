@@ -1,4 +1,3 @@
-import * as React from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -8,16 +7,18 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import type { SummaryFilters } from "@/types/Summary";
+import type { Dispatch, SetStateAction } from "react";
+import type { ChartFilters } from "@/types/Bump";
 
-interface Props {
-    bufferFilters: SummaryFilters;
-    setBufferFilters: React.Dispatch<React.SetStateAction<SummaryFilters>>;
-}
+type DateRangeParams<T extends SummaryFilters | ChartFilters> = {
+    bufferFilters: T;
+    setBufferFilters: Dispatch<SetStateAction<T>>;
+};
 
-const DateRangePicker: React.FC<Props> = ({
+const DateRangePicker = <T extends SummaryFilters | ChartFilters>({
     bufferFilters,
     setBufferFilters,
-}) => {
+}: DateRangeParams<T>) => {
     const { range } = bufferFilters;
 
     const handleStartChange = (newFrom: Date | undefined) =>

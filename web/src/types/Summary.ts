@@ -1,4 +1,5 @@
 import type { DateRange } from "react-day-picker";
+import type { SortBy } from "./Shared";
 
 export interface SummaryResponse {
     offset_artists: number;
@@ -49,6 +50,3 @@ export type SummaryFilters = {
     sortBy: SortBy;
     offsetLimit: OffsetLimit;
 };
-
-export type SortBy = "time" | "count";
-export type EntityType = "artists" | "tracks";

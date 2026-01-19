@@ -1,8 +1,8 @@
 import type { DateRange } from "react-day-picker";
-import type { SortBy } from "../types/Summary";
 import type { BumpResponse, ChartInterval } from "@/types/Bump";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as bumpService from "../services/bump";
+import type { SortBy } from "@/types/Shared";
 
 export function useBumpQuery(
     range: DateRange | undefined,

@@ -1,19 +1,19 @@
-import type { EntityType, OffsetLimit, SummaryFilters } from "@/types/Summary";
-import type { Setter } from "@/utils/types";
+import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
+import type { EntityType } from "@/types/Shared";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
 import SkeletonSummaryItem from "./SkeletonSummaryItem";
 import SummaryPageButtons from "./SummaryPageButtons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
-    setDisplayType: Setter<EntityType>;
-    setFilters: Setter<SummaryFilters>;
+    setDisplayType: Dispatch<SetStateAction<EntityType>>;
+    setFilters: Dispatch<SetStateAction<SummaryFilters>>;
     displayType: EntityType;
     summaryQuery: UseSummaryQueryResult;
     metaQuery: UseSummaryMetadataResult;

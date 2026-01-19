@@ -1,21 +1,16 @@
 import NavBar from "@/components/NavBar";
-import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import FilterControls from "../../components/FilterControls";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import BumpChart from "./BumpChart";
+import { useBumpQuery } from "@/hooks/useBumpQuery";
+import type { ChartFilters } from "@/types/Bump";
 
 const initialRange: DateRange = {
     from: new Date(2011, 0, 1),
     to: new Date(),
-};
-
-const initialOffsetLimit: OffsetLimit = {
-    offsetTracks: 0,
-    offsetArtists: 0,
-    limit: 10,
 };
 
 export const ChartsPage = () => {
@@ -29,10 +24,10 @@ export const ChartsPage = () => {
         navigate({ to: "/" });
     }
 
-    const [filters, setFilters] = useState<SummaryFilters>({
+    const [filters, setFilters] = useState<ChartFilters>({
         range: initialRange,
         sortBy: "count",
-        offsetLimit: initialOffsetLimit,
+        interval: "yearly",
     });
 
     const [bufferFilters, setBufferFilters] = useState(filters);
@@ -40,15 +35,13 @@ export const ChartsPage = () => {
     const handleApply = () => setFilters(bufferFilters);
     const handleReset = () => setBufferFilters(filters);
 
-    // const summaryQuery = useSummaryQuery(
-    //     filters.range,
-    //     filters.offsetLimit.offsetTracks,
-    //     filters.offsetLimit.offsetArtists,
-    //     filters.offsetLimit.limit,
-    //     filters.sortBy,
-    //     token!,
-    //     demo
-    // );
+    const bumpQuery = useBumpQuery(
+        filters.range,
+        filters.sortBy,
+        filters.interval,
+        token!,
+        demo
+    );
 
     // const metaRequestData =
     //     displayType === "artists"
@@ -92,7 +85,7 @@ export const ChartsPage = () => {
                         </div>
                     )}
                     <section className="page-section mx-2 flex flex-col rounded-lg shadow-md">
-                        <BumpChart />
+                        <BumpChart bumpQuery={bumpQuery} />
                     </section>
                 </div>
             </div>

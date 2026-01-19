@@ -18,7 +18,7 @@ export async function getUserBump({
 
     const reqURL = demo ? "/api/demo/bumpchart" : "/api/bumpchart";
     const reqString = `${reqURL}?${params.toString()}`;
-    const res = await apiFetch("GET", reqString, token, {}, demo);
+    const res = await apiFetch("POST", reqString, token, {}, demo);
     if (!res.ok) throw new Error(`Failed to fetch summary: ${res.statusText}`);
     const data = await res.json();
     return data;
