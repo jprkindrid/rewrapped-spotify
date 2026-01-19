@@ -10,7 +10,7 @@ const BumpChart = ({ bumpQuery }: BumpChartProps) => {
     const topTracks: BumpEntry[] = bumpData?.top_tracks;
     const topArtists: BumpEntry[] = bumpData?.top_artists;
 
-    // console.log(topTracks);
+    console.log(topTracks);
     // TODO: THIS COMPONENT LOL
     return (
         <div className="flex justify-center py-12">

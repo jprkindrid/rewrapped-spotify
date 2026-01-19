@@ -40,14 +40,14 @@ func GenerateBumpData(data []parser.MinifiedSongData, start, end time.Time, inte
 				break
 			}
 
-			scored, exists := entryMap[entry.URI]
+			scored, exists := entryMap[entry.Name]
 			if !exists {
 				scored = &ScoredEntry{
 					URI:      entry.URI,
 					Name:     entry.Name,
 					Timeline: []BumpData{},
 				}
-				entryMap[entry.URI] = scored
+				entryMap[entry.Name] = scored
 			}
 
 			scored.Timeline = append(scored.Timeline, BumpData{
