@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+import { lazy, Suspense } from "react";
 import {
     Popover,
     PopoverTrigger,
@@ -9,6 +9,12 @@ import { Button } from "@/components/ui/button";
 import type { SummaryFilters } from "@/types/Summary";
 import type { Dispatch, SetStateAction } from "react";
 import type { ChartFilters } from "@/types/Bump";
+
+const Calendar = lazy(() =>
+    import("@/components/ui/calendar").then((mod) => ({
+        default: mod.Calendar,
+    }))
+);
 
 type DateRangeParams<T extends SummaryFilters | ChartFilters> = {
     bufferFilters: T;
@@ -60,13 +66,17 @@ const DateRangePicker = <T extends SummaryFilters | ChartFilters>({
                         align="center"
                         className="bg-background w-auto border p-2 shadow-md"
                     >
-                        <Calendar
-                            mode="single"
-                            selected={range?.from}
-                            onSelect={handleStartChange}
-                            disabled={(date) => !!range?.to && date > range.to}
-                            captionLayout="dropdown"
-                        />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <Calendar
+                                mode="single"
+                                selected={range?.from}
+                                onSelect={handleStartChange}
+                                disabled={(date) =>
+                                    !!range?.to && date > range.to
+                                }
+                                captionLayout="dropdown"
+                            />
+                        </Suspense>
                     </PopoverContent>
                 </Popover>
             </div>
@@ -95,15 +105,17 @@ const DateRangePicker = <T extends SummaryFilters | ChartFilters>({
                         align="center"
                         className="bg-background w-auto border p-2 shadow-md"
                     >
-                        <Calendar
-                            mode="single"
-                            selected={range?.to}
-                            onSelect={handleEndChange}
-                            disabled={(date) =>
-                                !!range?.from && date < range.from
-                            }
-                            captionLayout="dropdown"
-                        />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <Calendar
+                                mode="single"
+                                selected={range?.to}
+                                onSelect={handleEndChange}
+                                disabled={(date) =>
+                                    !!range?.from && date < range.from
+                                }
+                                captionLayout="dropdown"
+                            />
+                        </Suspense>
                     </PopoverContent>
                 </Popover>
             </div>
