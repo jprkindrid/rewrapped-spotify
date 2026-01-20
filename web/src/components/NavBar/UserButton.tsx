@@ -1,8 +1,8 @@
-import type { Setter } from "@/utils/types";
 import { useAuth } from "@/hooks/useAuth";
+import type { Dispatch, SetStateAction } from "react";
 
 type Props = {
-    setShowUserModal: Setter<boolean>;
+    setShowUserModal: Dispatch<SetStateAction<boolean>>;
     includeUser: boolean;
 };
 

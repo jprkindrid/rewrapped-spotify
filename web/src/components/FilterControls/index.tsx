@@ -21,12 +21,20 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
     onReset,
 }: FilterControlParams<T>) => {
     const { sortBy } = bufferFilters;
-    // const isSummary = "offsetLimit" in bufferFilters;
+    const isChart = "interval" in bufferFilters;
+    const interval = isChart ? bufferFilters.interval : null;
 
     const updateSortBy = (newSort: SortBy) => {
         setBufferFilters((prev) => ({
             ...prev,
             sortBy: newSort,
+        }));
+    };
+
+    const updateInterval = (newInterval: "monthly" | "yearly") => {
+        setBufferFilters((prev) => ({
+            ...prev,
+            interval: newInterval,
         }));
     };
 
@@ -61,6 +69,37 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
                             </Button>
                         </div>
                     </div>
+
+                    {isChart && (
+                        <div className="sm:justify-beginning mt-4 flex flex-col items-center gap-2 sm:mb-0 sm:flex-row">
+                            <div className="mb-2 text-xl sm:mb-0">
+                                Select Interval
+                            </div>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant={
+                                        interval === "yearly"
+                                            ? "default"
+                                            : "outline"
+                                    }
+                                    onClick={() => updateInterval("yearly")}
+                                >
+                                    Yearly
+                                </Button>
+                                <Button
+                                    variant={
+                                        interval === "monthly"
+                                            ? "default"
+                                            : "outline"
+                                    }
+                                    onClick={() => updateInterval("monthly")}
+                                >
+                                    Monthly
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex flex-col items-center sm:flex-row sm:items-end">
                         <div className="mb-2 text-xl sm:mb-1">
                             Select Date Range

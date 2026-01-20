@@ -1,5 +1,5 @@
 import NavBar from "@/components/NavBar";
-import type { EntityType, OffsetLimit, SummaryFilters } from "@/types/Summary";
+import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
@@ -8,6 +8,7 @@ import FilterControls from "../../components/FilterControls";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useSummaryMetadata } from "@/hooks/useSummaryMetadata";
+import type { EntityType } from "@/types/Shared";
 
 const initialRange: DateRange = {
     from: new Date(2011, 0, 1),
@@ -30,17 +31,21 @@ export const SummaryPage = () => {
         navigate({ to: "/" });
     }
 
-    const [filters, setFilters] = useState<SummaryFilters>({
+    const initialFilters: SummaryFilters = {
         range: initialRange,
         sortBy: "count",
         offsetLimit: initialOffsetLimit,
-    });
+    };
+
+    const [filters, setFilters] = useState<SummaryFilters>(initialFilters);
 
     const [bufferFilters, setBufferFilters] = useState(filters);
 
     const handleApply = () => setFilters(bufferFilters);
-    const handleReset = () => setBufferFilters(filters);
-
+    const handleReset = () => {
+        setBufferFilters(initialFilters);
+        setFilters(initialFilters);
+    };
     const summaryQuery = useSummaryQuery(
         filters.range,
         filters.offsetLimit.offsetTracks,

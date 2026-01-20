@@ -1,18 +1,24 @@
 import type {
     OffsetLimit,
-    EntityType,
     SummaryFilters,
     SummaryResponse,
 } from "@/types/Summary";
-import type { Setter } from "@/utils/types";
 import { Button } from "@/components/ui/button";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    type Dispatch,
+    type SetStateAction,
+} from "react";
+import type { EntityType } from "@/types/Shared";
 
 type Props = {
     summaryData: SummaryResponse | undefined;
     displayType: EntityType;
     offsetLimit: OffsetLimit;
-    setFilters: Setter<SummaryFilters>;
+    setFilters: Dispatch<SetStateAction<SummaryFilters>>;
     isLoading?: boolean;
 };
 

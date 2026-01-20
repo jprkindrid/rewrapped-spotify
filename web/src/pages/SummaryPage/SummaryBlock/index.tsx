@@ -2,13 +2,13 @@ import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
 import type { EntityType } from "@/types/Shared";
-import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
 import SkeletonSummaryItem from "./SkeletonSummaryItem";
 import SummaryPageButtons from "./SummaryPageButtons";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import DisplayToggle from "@/components/DisplayToggle";
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
@@ -76,38 +76,10 @@ const SummaryBlock = ({
                 </div>
             )}
 
-            <div className="bg-spotify-black border-spotify-green/30 flex w-full justify-around overflow-clip border-b px-5 py-3">
-                <div className="flex">
-                    <Button
-                        variant={
-                            displayType === "artists" ? "default" : "outline"
-                        }
-                        onClick={() => setDisplayType("artists")}
-                        className={clsx(
-                            "rounded-r-none",
-                            displayType === "artists"
-                                ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
-                                : "border-spotify-green text-spotify-green"
-                        )}
-                    >
-                        ARTISTS
-                    </Button>
-                    <Button
-                        variant={
-                            displayType === "tracks" ? "default" : "outline"
-                        }
-                        onClick={() => setDisplayType("tracks")}
-                        className={clsx(
-                            "rounded-l-none border-l-0",
-                            displayType === "tracks"
-                                ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
-                                : "border-spotify-green text-spotify-green"
-                        )}
-                    >
-                        TRACKS
-                    </Button>
-                </div>
-            </div>
+            <DisplayToggle
+                displayType={displayType}
+                onDisplayTypeChange={setDisplayType}
+            />
 
             <div className="from-spotify-green/20 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-br via-white/50 to-white transition dark:from-neutral-800 dark:via-neutral-800">
                 {status === "pending" && (

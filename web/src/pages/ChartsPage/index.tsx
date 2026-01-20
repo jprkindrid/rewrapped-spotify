@@ -14,7 +14,6 @@ const initialRange: DateRange = {
 };
 
 export const ChartsPage = () => {
-    // const [displayType, setDisplayType] = useState<EntityType>("artists");
     const navigate = useNavigate();
     const { token } = useAuth();
 
@@ -24,16 +23,21 @@ export const ChartsPage = () => {
         navigate({ to: "/" });
     }
 
-    const [filters, setFilters] = useState<ChartFilters>({
+    const initialFilters: ChartFilters = {
         range: initialRange,
         sortBy: "count",
         interval: "yearly",
-    });
+    };
+
+    const [filters, setFilters] = useState<ChartFilters>(initialFilters);
 
     const [bufferFilters, setBufferFilters] = useState(filters);
 
     const handleApply = () => setFilters(bufferFilters);
-    const handleReset = () => setBufferFilters(filters);
+    const handleReset = () => {
+        setBufferFilters(initialFilters);
+        setFilters(initialFilters);
+    };
 
     const bumpQuery = useBumpQuery(
         filters.range,
@@ -42,18 +46,6 @@ export const ChartsPage = () => {
         token!,
         demo
     );
-
-    // const metaRequestData =
-    //     displayType === "artists"
-    //         ? summaryQuery.data?.top_artists
-    //         : summaryQuery.data?.top_tracks;
-
-    // const metaQuery = useSummaryMetadata(
-    //     displayType,
-    //     metaRequestData,
-    //     token!,
-    //     demo
-    // );
 
     return (
         <div className="flex w-full flex-col">
@@ -85,7 +77,7 @@ export const ChartsPage = () => {
                         </div>
                     )}
                     <section className="page-section mx-2 flex flex-col rounded-lg shadow-md">
-                        <BumpChart bumpQuery={bumpQuery} />
+                        <BumpChart bumpQuery={bumpQuery} filters={filters} />
                     </section>
                 </div>
             </div>

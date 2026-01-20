@@ -1,7 +1,8 @@
-import type { EntityType, SummaryEntry } from "@/types/Summary";
+import type { SummaryEntry } from "@/types/Summary";
 import { formatMsDuration } from "@/utils/formatDuration";
 import ArtworkBlock from "./ArtworkBlock";
 import type { QueryStatus } from "@tanstack/react-query";
+import type { EntityType } from "@/types/Shared";
 
 type Props = {
     i: number;
