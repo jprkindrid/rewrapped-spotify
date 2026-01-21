@@ -8,7 +8,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import clsx from "clsx";
+import { Button } from "../ui/button";
 
 type NavBarProps = {
     includeUser: boolean;
@@ -26,28 +26,30 @@ const NavBar = ({ includeUser }: NavBarProps) => {
     };
 
     return (
-        <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center px-8 shadow-lg transition sm:py-6">
-            <div className="flex w-full flex-col justify-center py-4 sm:flex-row sm:justify-between sm:py-0">
-                <div className="flex w-full justify-between px-4 pb-4 sm:hidden">
-                    <div className="flex items-center">
+        <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center py-2 shadow-lg sm:px-8 sm:py-6">
+            <div className="flex w-full flex-col justify-center sm:flex-row sm:justify-between">
+                <div className="flex w-full items-start justify-between px-4 pb-4 sm:hidden">
+                    {/* Mobile Buttons */}
+                    <div className="flex flex-col items-center gap-4">
                         <UserButton
                             setShowUserModal={setShowUserModal}
                             includeUser={includeUser}
                         />
-                        <button
+                        <Button
                             onClick={toggleDemo}
-                            className="rounded-md bg-neutral-800 px-3 py-1 text-white transition hover:bg-neutral-700"
+                            variant={demo ? "default" : "secondary"}
+                            className={demo ? "dark:bg-spotify-green" : ""}
                         >
                             {demo ? "Exit Demo" : "Demo Mode"}
-                        </button>
+                        </Button>
                     </div>
                     <div className="sm:hidden">
                         <DarkModeButtons />
                     </div>
                 </div>
 
-                <div className="grid w-full grid-cols-3 items-center px-8 transition">
-                    <div className="gap flex w-30 flex-col transition">
+                <div className="grid w-full items-center px-8 sm:grid-cols-3">
+                    <div className="hidden w-30 flex-col items-center gap-4 sm:flex">
                         <Popover
                             open={showUserModal}
                             onOpenChange={setShowUserModal}
@@ -64,19 +66,17 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                                 <UserModal />
                             </PopoverContent>
                         </Popover>
-                        <button
+                        <Button
                             onClick={toggleDemo}
-                            className={clsx(
-                                "rounded-md bg-neutral-800 px-2 py-2 text-white transition hover:bg-neutral-700",
-                                demo && "bg-spotify-green text-neutral-800"
-                            )}
+                            variant={demo ? "default" : "secondary"}
+                            className={demo ? "dark:bg-spotify-green" : ""}
                         >
                             {demo ? "Exit Demo" : "Demo Mode"}
-                        </button>
+                        </Button>
                     </div>
 
                     <div className="flex flex-col text-center">
-                        <div className="dark:text-spotify-green text-spotify-black text-4xl text-shadow-sm dark:text-shadow-xs">
+                        <div className="dark:text-spotify-green text-spotify-black flex flex-col text-center text-4xl text-shadow-sm dark:text-shadow-xs">
                             <h1 className="text-5xl font-bold">
                                 ReWrapped Spotify
                             </h1>
