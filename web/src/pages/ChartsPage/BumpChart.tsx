@@ -1,10 +1,10 @@
 import DisplayToggle from "@/components/DisplayToggle";
 import type { UseBumpQueryResult } from "@/hooks/useBumpQuery";
+import useBreakpoint from "@/hooks/useBreakpoint";
 import type { BumpEntry, ChartFilters } from "@/types/Bump";
 import type { EntityType } from "@/types/Shared";
 import { convertToBumpData } from "@/utils/convertToBumpData";
-import { lazy, Suspense } from "react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 
 const ResponsiveBump = lazy(() =>
     import("@nivo/bump").then((mod) => ({
@@ -23,9 +23,10 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
     const topArtists: BumpEntry[] | undefined = data?.top_artists;
 
     const [displayType, setDisplayType] = useState<EntityType>("artists");
+    const isMobile = useBreakpoint("md");
 
-    const displayData = displayType == "artists" ? topArtists : topTracks;
-    const shouldRotate = filters.interval == "monthly";
+    const displayData = displayType === "artists" ? topArtists : topTracks;
+    const shouldRotate = filters.interval === "monthly";
 
     return (
         <div>
@@ -42,6 +43,9 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                             </div>
                         }
                     >
+                        <p className="mt-1 -mb-6 block w-full text-center font-bold text-neutral-800 md:hidden dark:text-neutral-200">
+                            Hover a line to see track/artist name
+                        </p>
                         <ResponsiveBump
                             data={convertToBumpData(displayData!)}
                             xPadding={0.2}
@@ -50,26 +54,28 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                             activeLineWidth={6}
                             inactiveLineWidth={3}
                             inactiveOpacity={0.15}
-                            pointSize={10}
-                            activePointSize={16}
+                            pointSize={isMobile ? 6 : 10}
+                            activePointSize={isMobile ? 10 : 16}
                             inactivePointSize={0}
                             pointColor={{ theme: "background" }}
                             pointBorderWidth={3}
                             activePointBorderWidth={3}
                             pointBorderColor={{ from: "serie.color" }}
-                            axisLeft={null}
                             axisTop={null}
                             axisBottom={{
                                 tickSize: 5,
                                 tickPadding: 5,
                                 tickRotation: shouldRotate ? 45 : 0,
                             }}
+                            axisRight={null}
+                            endLabel={!isMobile}
+                            startLabel={false}
                             theme={{
                                 axis: {
                                     ticks: {
                                         text: {
                                             fill: "#cccccc",
-                                            fontSize: 12,
+                                            fontSize: isMobile ? 10 : 12,
                                         },
                                     },
                                 },
@@ -81,9 +87,9 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                             }}
                             margin={{
                                 top: 40,
-                                right: 100,
+                                right: isMobile ? 20 : 120,
                                 bottom: 80,
-                                left: 60,
+                                left: isMobile ? 30 : 50,
                             }}
                             lineTooltip={({ serie }) => (
                                 <div className="border-spotify-green/50 rounded border bg-black px-2 py-1 text-sm text-neutral-100 dark:bg-white dark:text-neutral-900">
