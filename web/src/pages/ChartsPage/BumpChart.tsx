@@ -69,7 +69,7 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                 displayType={displayType}
                 onDisplayTypeChange={setDisplayType}
             />
-            <div className="h-150 w-full overflow-hidden rounded-b-lg [&_svg]:drop-shadow-sm">
+            <div className="animate-in fade-in zoom-in-95 h-150 w-full overflow-hidden rounded-b-lg duration-1000 [&_svg]:drop-shadow-sm">
                 {bumpStatus === "success" && (
                     <Suspense fallback={loading}>
                         <p className="mt-1 -mb-6 block w-full text-center font-bold text-neutral-800 md:hidden dark:text-neutral-200">
