@@ -3,6 +3,12 @@ import type { BumpEntry } from "@/types/Bump";
 export const convertToBumpData = (entries: BumpEntry[]) => {
     if (!entries || entries.length === 0) return [];
 
+    const truncateLabel = (label: string, maxLength = 20) => {
+        return label.length > maxLength
+            ? label.substring(0, maxLength) + "..."
+            : label;
+    };
+
     const allPeriods = new Set<string>();
     entries.forEach((entry) => {
         entry.timeline.forEach((item) => {
@@ -14,7 +20,10 @@ export const convertToBumpData = (entries: BumpEntry[]) => {
         a.localeCompare(b, undefined, { numeric: true })
     );
 
-    if (sortedPeriods.length > 0 && sortedPeriods[0].includes("-")) {
+    const isMonthly =
+        sortedPeriods.length > 0 && sortedPeriods[0].includes("-");
+
+    if (isMonthly) {
         sortedPeriods = sortedPeriods.slice(-24);
     }
 
@@ -36,11 +45,14 @@ export const convertToBumpData = (entries: BumpEntry[]) => {
         );
 
         return {
-            id: entry.name,
+            id: entry.name.includes("-")
+                ? truncateLabel(entry.name)
+                : entry.name,
             data: displayPeriods.map((period, index) => ({
                 x: period,
                 y: dataMap.get(sortedPeriods[index]) ?? null,
             })),
+            fullName: entry.name,
         };
     });
 };

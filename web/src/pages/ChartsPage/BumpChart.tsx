@@ -63,13 +63,40 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
         </div>
     );
 
+    // All this is to prevent the song name overflowing but still having the tooltip contain it lol
+    const truncateLabel = (label: string, maxLength = 20) => {
+        return label.length > maxLength
+            ? label.substring(0, maxLength) + "..."
+            : label;
+    };
+
+    const fullNameMap = useMemo(() => {
+        if (
+            bumpStatus !== "success" ||
+            !displayData ||
+            displayData.length === 0
+        )
+            return {};
+        return displayData.reduce(
+            (acc, entry) => {
+                const truncated =
+                    displayType === "tracks"
+                        ? truncateLabel(entry.name)
+                        : entry.name;
+                acc[truncated] = entry.name;
+                return acc;
+            },
+            {} as Record<string, string>
+        );
+    }, [displayData, displayType, bumpStatus]);
+
     return (
-        <div>
+        <div className="">
             <DisplayToggle
                 displayType={displayType}
                 onDisplayTypeChange={setDisplayType}
             />
-            <div className="animate-in fade-in zoom-in-95 h-150 w-full overflow-hidden rounded-b-lg duration-1000 [&_svg]:drop-shadow-sm">
+            <div className="animate-in fade-in zoom-in-95 h-150 w-full overflow-visible rounded-b-lg duration-1000 [&_svg]:drop-shadow-sm">
                 {bumpStatus === "success" && (
                     <Suspense fallback={loading}>
                         <p className="mt-1 -mb-6 block w-full text-center font-bold text-neutral-800 md:hidden dark:text-neutral-200">
@@ -102,13 +129,17 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                             startLabel={false}
                             margin={{
                                 top: 40,
-                                right: isMobile ? 20 : 120,
+                                right: isMobile
+                                    ? 20
+                                    : displayType == "artists"
+                                      ? 120
+                                      : 150,
                                 bottom: 80,
                                 left: isMobile ? 30 : 50,
                             }}
                             lineTooltip={({ serie }) => (
                                 <div className="border-spotify-green/50 rounded border bg-white px-2 py-1 text-sm text-neutral-900 dark:bg-black dark:text-neutral-100">
-                                    <strong>{serie.id}</strong>
+                                    <strong>{fullNameMap[serie.id]}</strong>
                                 </div>
                             )}
                         />
