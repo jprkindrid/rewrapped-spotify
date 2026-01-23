@@ -32,4 +32,4 @@ export type ChartFilters = {
     interval: ChartInterval;
 };
 
-export type ChartInterval = "monthly" | "yearly";
+export type ChartInterval = "daily" | "monthly" | "yearly";

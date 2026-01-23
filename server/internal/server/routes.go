@@ -25,6 +25,9 @@ func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 	mux.Handle("POST /api/demo/bumpchart", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerBumpChart)))
 	mux.Handle("POST /api/bumpchart", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerBumpChart)))
 
+	mux.Handle("POST /api/listeningtime", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerListeningTime)))
+	mux.Handle("POST /api/demo/listeningtime", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerListeningTime)))
+
 	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
 	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDelete)))
 

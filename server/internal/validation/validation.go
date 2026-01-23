@@ -127,7 +127,7 @@ func ValidateSortParam(r *http.Request) *SortParams {
 func ValidateIntervalParam(r *http.Request) *IntervalParams {
 	interval := r.URL.Query().Get("interval")
 
-	if interval != constants.IntervalMonthly && interval != constants.IntervalYearly {
+	if interval != constants.IntervalDaily && interval != constants.IntervalMonthly && interval != constants.IntervalYearly {
 		interval = constants.IntervalMonthly
 	}
 

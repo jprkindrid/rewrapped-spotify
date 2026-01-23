@@ -31,7 +31,7 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
         }));
     };
 
-    const updateInterval = (newInterval: "monthly" | "yearly") => {
+    const updateInterval = (newInterval: "daily" | "monthly" | "yearly") => {
         setBufferFilters((prev) => ({
             ...prev,
             interval: newInterval,
@@ -95,6 +95,16 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
                                     onClick={() => updateInterval("monthly")}
                                 >
                                     Monthly
+                                </Button>
+                                <Button
+                                    variant={
+                                        interval === "daily"
+                                            ? "default"
+                                            : "outline"
+                                    }
+                                    onClick={() => updateInterval("daily")}
+                                >
+                                    Daily
                                 </Button>
                             </div>
                         </div>

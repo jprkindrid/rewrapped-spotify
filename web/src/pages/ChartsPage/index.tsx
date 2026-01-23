@@ -6,7 +6,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import BumpChart from "./BumpChart";
 import { useBumpQuery } from "@/hooks/useBumpQuery";
+import { useListeningTimeQuery } from "@/hooks/useListeningTimeQuery";
 import type { ChartFilters } from "@/types/Bump";
+import ListeningTimeChart from "./ChartBlock/ListeningTimeChart";
 
 const initialRange: DateRange = {
     from: new Date(2011, 0, 1),
@@ -44,6 +46,14 @@ export const ChartsPage = () => {
         filters.sortBy,
         filters.interval,
         token!,
+        demo,
+        filters.interval !== "daily"
+    );
+
+    const listeningTimeQuery = useListeningTimeQuery(
+        filters.range,
+        filters.interval,
+        token!,
         demo
     );
 
@@ -78,6 +88,12 @@ export const ChartsPage = () => {
                     )}
                     <section className="page-section mx-2 flex flex-col rounded-lg shadow-md">
                         <BumpChart bumpQuery={bumpQuery} filters={filters} />
+                    </section>
+                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                        <ListeningTimeChart
+                            listeningTimeQuery={listeningTimeQuery}
+                            filters={filters}
+                        />
                     </section>
                 </div>
             </div>

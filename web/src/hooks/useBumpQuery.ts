@@ -9,7 +9,8 @@ export function useBumpQuery(
     sortBy: SortBy,
     interval: ChartInterval,
     token: string,
-    demo: boolean
+    demo: boolean,
+    enabled: boolean = true
 ) {
     type BumpKey = [string, DateRange, SortBy, ChartInterval, string, boolean];
 
@@ -35,6 +36,7 @@ export function useBumpQuery(
             });
         },
         retry: false,
+        enabled: enabled,
     });
 }
 

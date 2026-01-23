@@ -24,6 +24,7 @@ const (
 )
 
 const (
+	IntervalDaily   = "daily"
 	IntervalMonthly = "monthly"
 	IntervalYearly  = "yearly"
 )
