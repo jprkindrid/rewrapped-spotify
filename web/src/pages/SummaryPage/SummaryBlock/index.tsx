@@ -143,8 +143,13 @@ const SummaryBlock = ({
                             );
                         })
                     ) : (
-                        <div className="dark:text-spotify-green text-spotify-black flex h-64 items-center justify-center text-lg font-bold text-shadow-sm dark:text-shadow-white/20">
-                            No Data To Display For Current Selection
+                        <div className="flex h-64 flex-col items-center justify-center gap-2 text-center">
+                            <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                                No summary data available
+                            </h2>
+                            <p className="text-neutral-500">
+                                Try adjusting your date range or filters.
+                            </p>
                         </div>
                     ))}
             </div>
