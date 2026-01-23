@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 
@@ -15,6 +16,18 @@ func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	q.Set("provider", "spotify")
 	r.URL.RawQuery = q.Encode()
 
+	if machineID := os.Getenv("FLY_MACHINE_ID"); machineID != "" {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "fly-force-instance-id",
+			Value:    machineID,
+			Path:     "/",
+			MaxAge:   300, // 5 minutes, enough for OAuth flow
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
+		})
+	}
+
 	gothic.BeginAuthHandler(w, r)
 }
 
@@ -24,6 +37,16 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 	r.URL.RawQuery = q.Encode()
 
 	defer gothic.Logout(w, r)
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "fly-force-instance-id",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1, // Delete the cookie
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
 
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
