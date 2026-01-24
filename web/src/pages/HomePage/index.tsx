@@ -1,12 +1,31 @@
+import { useState, useEffect } from "react";
 import { usePingApi } from "@/hooks/usePingAPi";
 import Explanation from "@/components/Explanation";
 import NavBar from "@/components/NavBar";
+import WhitelistErrorModal from "@/components/WhitelistErrorModal";
 import { API_URL } from "@/config/constants";
 
 const HomePage = () => {
+    const [showWhitelistError, setShowWhitelistError] = useState(false);
+
     usePingApi();
+
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        const error = url.searchParams.get("error");
+
+        if (error === "not_whitelisted") {
+            setShowWhitelistError(true);
+            window.history.replaceState({}, "", "/");
+        }
+    }, []);
+
     return (
         <>
+            <WhitelistErrorModal
+                open={showWhitelistError}
+                onOpenChange={setShowWhitelistError}
+            />
             <NavBar includeUser={false} />
             <div className="text-spotify-black flex w-full justify-center bg-linear-to-b from-neutral-50 to-neutral-100 pt-8 transition dark:from-neutral-900 dark:to-black dark:text-white">
                 <div className="mx-2 h-screen w-full max-w-5xl">

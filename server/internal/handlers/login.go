@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 
@@ -21,7 +22,7 @@ func (cfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 			Name:     "fly-force-instance-id",
 			Value:    machineID,
 			Path:     "/",
-			MaxAge:   300, // 5 minutes, enough for OAuth flow
+			MaxAge:   300,
 			HttpOnly: true,
 			Secure:   true,
 			SameSite: http.SameSiteNoneMode,
@@ -51,6 +52,14 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
 		log.Printf("[Callback] CompleteUserAuth error: %v", err)
+
+		if strings.Contains(err.Error(), "403") {
+			baseURL := strings.TrimSuffix(cfg.Env.Server.FrontendRedirectURL, "/upload")
+			errorRedirectUrl := fmt.Sprintf("%s/?error=not_whitelisted", baseURL)
+			http.Redirect(w, r, errorRedirectUrl, http.StatusSeeOther)
+			return
+		}
+
 		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] Auth Error: "+err.Error(), err)
 		return
 	}
