@@ -24,6 +24,7 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - **Interactive Stats** – Top tracks, top artists, total listening time, activity
   trends
 - **Bump Charts** – Visualize ranking changes over time (monthly/yearly)
+- **Listening Time Charts** – Track listening hours over time (daily/monthly/yearly)
 - **Date & Interval Filtering** – Filter by custom date ranges and time periods
 - **Sort Options** – Sort by play count or listening time
 - **Pagination & Search** – Browse listening history easily
@@ -31,6 +32,16 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - **Modern UI** – React + TypeScript frontend with Tailwind CSS
 - **Secure Storage** – SQLite for development, Turso for production
 - **Demo Mode** – Explore sample data without authentication
+
+## Spotify API Restrictions
+
+This app uses the Spotify API, which requires apps to be in "Development Mode" unless
+they generate revenue or meet Spotify's extended quota requirements. In development mode,
+only pre-approved users (added to the app's allowlist) can authenticate.
+
+If you encounter a "Login Restricted" message when trying to log in, it means your
+Spotify account hasn't been whitelisted. You can still explore the app using **Demo Mode**,
+which provides sample listening data to demonstrate all features.
 
 ## Technology Stack
 
@@ -50,7 +61,7 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - Vite bundler
 - TanStack Query & Router
 - Tailwind CSS for styling
-- Nivo Bump Charts for visualization
+- Nivo Charts (Bump & Line) for visualization
 - Bun package management
 
 **Deployment:**
@@ -186,6 +197,7 @@ The backend exposes a REST API for uploading and retrieving listening data.
 | POST | `/api/upload` | Upload streaming history (JSON or ZIP) |
 | GET | `/api/summary` | Retrieve listening summary with filters |
 | GET | `/api/bump` | Retrieve bump chart ranking trends |
+| GET | `/api/listeningtime` | Retrieve listening time over intervals |
 | GET | `/auth/spotify` | Begin Spotify OAuth login |
 | GET | `/auth/spotify/callback` | OAuth callback handler |
 | POST | `/auth/logout` | Log out |
@@ -205,6 +217,12 @@ GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset=0&li
 GET /api/bump?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=yearly&sortBy=count
 ```
 
+**Listening Time:**
+
+```bash
+GET /api/listeningtime?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=monthly
+```
+
 **Query Parameters:**
 
 - `start` (optional) – Start date in RFC3339 format
@@ -212,7 +230,7 @@ GET /api/bump?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=yearl
 - `offset` (optional) – Pagination offset (summary only)
 - `limit` (optional, default: 10) – Results per page (summary only)
 - `sortBy` (optional, default: `count`) – `count` or `time`
-- `interval` (optional, default: `yearly`) – `yearly` or `monthly` (bump only)
+- `interval` (optional, default: `yearly`) – `daily`, `monthly`, or `yearly` (bump/listeningtime only; bump excludes daily)
 
 **Authentication:** Spotify OAuth required for all endpoints that access user data
 (except demo mode, if enabled).
