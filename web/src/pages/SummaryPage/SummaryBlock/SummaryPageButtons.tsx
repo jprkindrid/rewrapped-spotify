@@ -32,6 +32,18 @@ const SummaryPageButtons = ({
     noData = true,
 }: Props) => {
     const [pageCount, setPageCount] = useState(0);
+    const [delayedLoading, setDelayedLoading] = useState(false);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setDelayedLoading(false);
+            return;
+        }
+
+        const timeout = setTimeout(() => setDelayedLoading(true), 225);
+
+        return () => clearTimeout(timeout);
+    }, [isLoading]);
 
     const getCurrentPage = (offset: number) =>
         Math.floor(offset / offsetLimit.limit) + 1;
@@ -110,7 +122,7 @@ const SummaryPageButtons = ({
                         variant="outline"
                         size="sm"
                         onClick={() => adjustOffset(n * offsetLimit.limit)}
-                        disabled={isLoading || noData}
+                        disabled={delayedLoading || noData}
                     >
                         {n < 0 ? n : `+${n}`}
                     </Button>
@@ -128,7 +140,7 @@ const SummaryPageButtons = ({
                         variant="outline"
                         size="sm"
                         onClick={() => adjustOffset(n * offsetLimit.limit)}
-                        disabled={isLoading || noData}
+                        disabled={delayedLoading || noData}
                     >
                         +{n}
                     </Button>
