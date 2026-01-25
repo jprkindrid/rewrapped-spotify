@@ -46,6 +46,8 @@ const SummaryBlock = ({
 
     const limit = offsetLimit.limit;
 
+    const noData = !displayData || displayData.length === 0;
+
     const [showTransitions, setShowTransitions] = useState(false);
 
     useEffect(() => {
@@ -79,6 +81,7 @@ const SummaryBlock = ({
             <DisplayToggle
                 displayType={displayType}
                 onDisplayTypeChange={setDisplayType}
+                noData={noData}
             />
 
             <div className="from-spotify-green/20 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-br via-white/50 to-white transition dark:from-neutral-800 dark:via-neutral-800">
@@ -101,7 +104,7 @@ const SummaryBlock = ({
                 )}
 
                 {status === "success" &&
-                    (displayData?.length ? (
+                    (!noData ? (
                         displayData.map((item, i) => {
                             const meta = metaData?.[i];
                             const summaryKey = `${item.URI}-${meta?.ImageURL}`;
@@ -161,6 +164,7 @@ const SummaryBlock = ({
                     offsetLimit={offsetLimit}
                     setFilters={setFilters}
                     isLoading={status === "pending"}
+                    noData={noData}
                 />
             </div>
         </div>

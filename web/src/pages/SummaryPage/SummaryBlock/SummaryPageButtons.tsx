@@ -20,6 +20,7 @@ type Props = {
     offsetLimit: OffsetLimit;
     setFilters: Dispatch<SetStateAction<SummaryFilters>>;
     isLoading?: boolean;
+    noData: boolean;
 };
 
 const SummaryPageButtons = ({
@@ -28,6 +29,7 @@ const SummaryPageButtons = ({
     offsetLimit,
     setFilters,
     isLoading = false,
+    noData = true,
 }: Props) => {
     const [pageCount, setPageCount] = useState(0);
 
@@ -108,7 +110,7 @@ const SummaryPageButtons = ({
                         variant="outline"
                         size="sm"
                         onClick={() => adjustOffset(n * offsetLimit.limit)}
-                        disabled={isLoading}
+                        disabled={isLoading || noData}
                     >
                         {n < 0 ? n : `+${n}`}
                     </Button>
@@ -126,7 +128,7 @@ const SummaryPageButtons = ({
                         variant="outline"
                         size="sm"
                         onClick={() => adjustOffset(n * offsetLimit.limit)}
-                        disabled={isLoading}
+                        disabled={isLoading || noData}
                     >
                         +{n}
                     </Button>

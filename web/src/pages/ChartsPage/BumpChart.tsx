@@ -33,6 +33,7 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
 
     const isDark = useDarkMode();
     const isDailyInterval = filters.interval === "daily";
+    const noData = !displayData || displayData.length === 0;
 
     const axisBottomStyle = useMemo(
         () => ({
@@ -103,6 +104,7 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
             <DisplayToggle
                 displayType={displayType}
                 onDisplayTypeChange={setDisplayType}
+                noData={noData}
             />
             <div className="animate-in fade-in zoom-in-95 h-150 w-full overflow-visible rounded-b-lg duration-1000">
                 <h2 className="-mb-6 pt-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
@@ -168,17 +170,16 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                         </Suspense>
                     )}
 
-                {bumpStatus === "success" &&
-                    (!displayData || displayData.length === 0) && (
-                        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                            <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
-                                No ranking data available
-                            </h2>
-                            <p className="text-neutral-500">
-                                Try adjusting your date range or filters.
-                            </p>
-                        </div>
-                    )}
+                {bumpStatus === "success" && noData && (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                        <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                            No ranking data available
+                        </h2>
+                        <p className="text-neutral-500">
+                            Try adjusting your date range or filters.
+                        </p>
+                    </div>
+                )}
 
                 {bumpStatus === "pending" && !isDailyInterval && loading}
                 {bumpStatus === "error" && (
