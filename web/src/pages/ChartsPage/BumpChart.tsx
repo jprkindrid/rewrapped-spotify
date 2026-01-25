@@ -106,7 +106,7 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                 onDisplayTypeChange={setDisplayType}
                 noData={noData}
             />
-            <div className="animate-in fade-in zoom-in-95 h-150 w-full overflow-visible rounded-b-lg duration-1000">
+            <div className="animate-in fade-in zoom-in-95 mb-6 h-150 w-full overflow-visible rounded-b-lg duration-1000 md:mb-0">
                 <h2 className="-mb-6 pt-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
                     Artist & Track Rankings
                 </h2>
@@ -114,7 +114,7 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                     displayData &&
                     displayData.length > 0 && (
                         <Suspense fallback={loading}>
-                            <p className="mt-1 -mb-6 block w-full text-center font-bold text-neutral-800 md:hidden dark:text-neutral-200">
+                            <p className="mt-8 -mb-6 block w-full text-center font-bold text-neutral-500 md:hidden">
                                 Hover a line to see track/artist name
                             </p>
                             <ResponsiveBump
