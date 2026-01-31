@@ -31,9 +31,10 @@ const ListeningTimeChart = ({
         if (!listeningTimeData?.listeningTime) return [];
         return convertToListeningTimeData(
             listeningTimeData.listeningTime,
-            filters.interval
+            filters.interval,
+            isMobile
         );
-    }, [listeningTimeData, filters.interval]);
+    }, [listeningTimeData, filters.interval, isMobile]);
 
     const loading = (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4">

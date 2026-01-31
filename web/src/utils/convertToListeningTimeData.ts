@@ -13,12 +13,14 @@ export interface NivoLineSeries {
     data: NivoLineDataPoint[];
 }
 
-const MAX_DAILY_PERIODS = 365;
+const MAX_DAILY_PERIODS = 120;
+const MAX_DAILY_PERIODS_MOBILE = 60;
 const MAX_MONTHLY_PERIODS = 24;
 
 export function convertToListeningTimeData(
     entries: ListeningTimeEntry[],
-    interval: ChartInterval
+    interval: ChartInterval,
+    isMobile: boolean
 ): NivoLineSeries[] {
     if (!entries || entries.length === 0) return [];
 
@@ -28,7 +30,11 @@ export function convertToListeningTimeData(
 
     let limitedEntries = sortedEntries;
     if (interval === "daily" && sortedEntries.length > MAX_DAILY_PERIODS) {
-        limitedEntries = sortedEntries.slice(-MAX_DAILY_PERIODS);
+        if (isMobile) {
+            limitedEntries = sortedEntries.slice(-MAX_DAILY_PERIODS_MOBILE);
+        } else {
+            limitedEntries = sortedEntries.slice(-MAX_DAILY_PERIODS);
+        }
     } else if (
         interval === "monthly" &&
         sortedEntries.length > MAX_MONTHLY_PERIODS
