@@ -4,6 +4,15 @@ import { useMutation } from "@tanstack/react-query";
 import { usePingApi } from "@/hooks/usePingAPi";
 import { useAuth } from "@/hooks/useAuth";
 import Explanation from "@/components/Explanation";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import * as authService from "@/services/auth";
 
 type AuthMode = "login" | "register";
@@ -18,6 +27,7 @@ const HomePage = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [formError, setFormError] = useState<string | null>(null);
+    const [showRegistered, setShowRegistered] = useState(false);
 
     usePingApi();
 
@@ -47,7 +57,7 @@ const HomePage = () => {
             ),
         onSuccess: (data) => {
             login(data.token);
-            navigate({ to: "/upload" });
+            setShowRegistered(true);
         },
         onError: (err: Error) => {
             setFormError(
@@ -257,6 +267,25 @@ const HomePage = () => {
             <div className="mx-2 w-full max-w-5xl pb-16">
                 <Explanation />
             </div>
+
+            <Dialog open={showRegistered} onOpenChange={setShowRegistered}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Account Created</DialogTitle>
+                        <DialogDescription>
+                            Your account has been created successfully. You can
+                            now upload your Spotify streaming history.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            onClick={() => navigate({ to: "/upload" })}
+                        >
+                            Continue
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
