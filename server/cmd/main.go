@@ -5,11 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
-	"github.com/jprkindrid/rewrapped-spotify/internal/authcode"
 	"github.com/jprkindrid/rewrapped-spotify/internal/cache"
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
@@ -20,8 +17,6 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	_ "github.com/mattn/go-sqlite3"
 )
-
-const CACHE_TIMEOUT = 30 * time.Minute
 
 func main() {
 
@@ -47,7 +42,6 @@ func main() {
 
 	cfg := &handlers.ApiConfig{
 		DB:        dbQueries,
-		AuthCodes: authcode.NewStore(60 * time.Second),
 		Env:       envConfig,
 		DataCache: cache.NewUserDataCache(envConfig.DataCache.ExpiryTime, envConfig.DataCache.MaxItems),
 	}
@@ -65,7 +59,6 @@ func main() {
 	if cfg.Env.Server.IsDocker {
 		addr = "0.0.0.0:8080"
 	}
-	auth.NewAuth(cfg.Env)
 	storage.Init(cfg.Env)
 
 	mux := http.NewServeMux()

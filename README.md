@@ -15,11 +15,11 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - Explore personalized listening insights with interactive visualizations
 - Filter data by date ranges, time intervals (monthly/yearly), and sort preferences
 - View ranking trends over time with bump charts
-- Authenticate securely via Spotify OAuth
+- Authenticate securely via email/password login
 
 ## Features
 
-- **Spotify OAuth Login** – Secure authentication via Spotify
+- **Email/Password Login** – App-managed authentication with JWT sessions
 - **File Upload** – Support for Spotify's JSON or ZIP streaming history exports
 - **Interactive Stats** – Top tracks, top artists, total listening time, activity
   trends
@@ -33,15 +33,18 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - **Secure Storage** – SQLite for development, Turso for production
 - **Demo Mode** – Explore sample data without authentication
 
-## Spotify API Restrictions
+## Why OAuth Was Removed
 
-This app uses the Spotify API, which requires apps to be in "Development Mode" unless
-they generate revenue or meet Spotify's extended quota requirements. In development mode,
-only pre-approved users (added to the app's allowlist) can authenticate.
+The app previously used Spotify OAuth, but Spotify development-mode restrictions tightly
+limit who can authenticate unless users are manually allowlisted in the Spotify app
+dashboard.
 
-If you encounter a "Login Restricted" message when trying to log in, it means your
-Spotify account hasn't been whitelisted. You can still explore the app using **Demo Mode**,
-which provides sample listening data to demonstrate all features.
+That made local testing and open usage painful, so authentication moved to
+email/password accounts managed by this app. Spotify APIs are still used for metadata
+lookups (artist/track images), but they are no longer used for user login.
+
+The old OAuth implementation is archived for reference in
+`docs/archive/oauth/README.md`.
 
 ## Technology Stack
 
@@ -50,7 +53,7 @@ which provides sample listening data to demonstrate all features.
 - Go 1.25+ with `net/http`
 - SQLite for development / Turso (LibSQL) for production with `sqlc` for
   type-safe queries
-- Goth for Spotify OAuth
+- JWT auth with bcrypt password hashing
 - Cloudflare R2 for blob storage (user streaming history)
 - Custom LRU cache with TTL for performance optimization
 - RESTful API
@@ -77,6 +80,7 @@ which provides sample listening data to demonstrate all features.
 - **Docker** (optional, for containerized setup)
 - **Spotify Developer Account**
   ([create here](https://developer.spotify.com/dashboard)) with Client ID/Secret
+  (required for metadata lookups, not login)
 
 ## Quick Start
 
@@ -98,17 +102,12 @@ cd server
 Create a `.env` file with your configuration:
 
 ```env
-# Required: Spotify OAuth
-SPOTIFY_CLIENT_ID=your_client_id
-SPOTIFY_CLIENT_SECRET=your_client_secret
-SPOTIFY_REDIRECT_URI=http://127.0.0.1:8080/auth/spotify/callback
-
 # Required: Authentication
 JWT_SECRET=your_jwt_secret_key
-SESSION_SECRET=your_session_secret_key
 
-# Required: Frontend
-FRONTEND_REDIRECT_URL=http://127.0.0.1:5173
+# Required: Spotify API (metadata lookups)
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
 
 # Required: File Storage (Cloudflare R2)
 CLOUDFLARE_BUCKET_NAME=your_bucket_name
@@ -134,7 +133,7 @@ PRODUCTION_BUILD=FALSE
 
 # Optional: Demo Mode
 DEMO_KEY=your_demo_key
-KINDRID_USER_ID=spotify_user_id_for_demo
+KINDRID_USER_ID=demo_user_id
 ```
 
 Download dependencies and build:
@@ -149,6 +148,9 @@ Run database migrations:
 ```bash
 make migrate-up
 ```
+
+Migration `002_auth_users_and_user_id.sql` adds the new `auth_users` table and renames
+`users.spotify_id` to `users.user_id`.
 
 Start the server:
 
@@ -196,43 +198,71 @@ The backend exposes a REST API for uploading and retrieving listening data.
 |--------|----------|-------------|
 | POST | `/api/upload` | Upload streaming history (JSON or ZIP) |
 | GET | `/api/summary` | Retrieve listening summary with filters |
-| GET | `/api/bump` | Retrieve bump chart ranking trends |
-| GET | `/api/listeningtime` | Retrieve listening time over intervals |
-| GET | `/auth/spotify` | Begin Spotify OAuth login |
-| GET | `/auth/spotify/callback` | OAuth callback handler |
-| POST | `/auth/logout` | Log out |
+| POST | `/api/bumpchart` | Retrieve bump chart ranking trends |
+| POST | `/api/listeningtime` | Retrieve listening time over intervals |
+| POST | `/auth/register` | Create account and return JWT |
+| POST | `/auth/login` | Login with email/password and return JWT |
 | GET | `/health` | Health check endpoint |
 
 ### Example Requests
 
+**Register:**
+
+```bash
+POST /auth/register
+Content-Type: application/json
+
+{
+  "email": "kindrid@example.com",
+  "password": "secure-password-123",
+  "display_name": "kindrid"
+}
+```
+
+`display_name` is optional. If omitted, the backend uses the email as the display name
+claim in JWT responses.
+
+**Login:**
+
+```bash
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "kindrid@example.com",
+  "password": "secure-password-123"
+}
+```
+
 **Summary:**
 
 ```bash
-GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset=0&limit=10&sortBy=count
+GET /api/summary?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&offset_tracks=0&offset_artists=0&limit=10&sort_by=count
 ```
 
 **Bump Chart:**
 
 ```bash
-GET /api/bump?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=yearly&sortBy=count
+POST /api/bumpchart?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=yearly&sort_by=count
 ```
 
 **Listening Time:**
 
 ```bash
-GET /api/listeningtime?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=monthly
+POST /api/listeningtime?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&interval=monthly
 ```
 
 **Query Parameters:**
 
 - `start` (optional) – Start date in RFC3339 format
 - `end` (optional) – End date in RFC3339 format
-- `offset` (optional) – Pagination offset (summary only)
+- `offset_tracks` (optional) – Tracks pagination offset (summary only)
+- `offset_artists` (optional) – Artists pagination offset (summary only)
 - `limit` (optional, default: 10) – Results per page (summary only)
-- `sortBy` (optional, default: `count`) – `count` or `time`
+- `sort_by` (optional, default: `count`) – `count` or `time`
 - `interval` (optional, default: `yearly`) – `daily`, `monthly`, or `yearly` (bump/listeningtime only; bump excludes daily)
 
-**Authentication:** Spotify OAuth required for all endpoints that access user data
+**Authentication:** JWT required for all endpoints that access user data
 (except demo mode, if enabled).
 
 ## Architecture Highlights
@@ -270,8 +300,7 @@ GET /api/listeningtime?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&inter
 ├── server/                          # Go backend
 │   ├── cmd/                         # Entrypoint (main.go)
 │   ├── internal/                    # Application code (handlers, auth, parsing, analytics)
-│   │   ├── auth/                    # OAuth + JWT
-│   │   ├── authcode/                # Auth code flow helpers
+│   │   ├── auth/                    # JWT + password helpers
 │   │   ├── bump/                    # Bump chart data generation
 │   │   ├── cache/                   # User data LRU cache + TTL
 │   │   ├── config/                  # Env/config loading

@@ -33,7 +33,7 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	data, ok := cfg.DataCache.Get(userID)
 	if !ok {
 
-		dbUser, err := cfg.DB.GetUserData(ctx, userID)
+		dbUser, err := cfg.DB.GetUserByEmail(ctx, userID)
 		if err != nil {
 			utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)
 			return

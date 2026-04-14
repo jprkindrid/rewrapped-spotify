@@ -23,16 +23,13 @@ func (cfg *ApiConfig) HandlerExchange(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		utils.RespondWithError(w, http.StatusUnauthorized, "expired or invalid code", fmt.Errorf("expired or invalid auth code"))
 		return
-
 	}
 
 	token, err := auth.GenerateJWT(userID, name, cfg.Env)
-
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] error making jwt", err)
 		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]string{"token": token})
-
 }

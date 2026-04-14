@@ -10,9 +10,8 @@ import (
 func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 	mux.HandleFunc("GET /health", cfg.HandlerHealth)
 
-	mux.HandleFunc("GET /auth/spotify/login", cfg.HandlerLogin)
-	mux.HandleFunc("GET /auth/spotify/callback", cfg.HandlerCallback)
-	mux.HandleFunc("POST /auth/exchange", cfg.HandlerExchange)
+	mux.HandleFunc("POST /auth/register", cfg.HandlerRegister)
+	mux.HandleFunc("POST /auth/login", cfg.HandlerLogin)
 
 	mux.Handle("POST /api/upload", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerUpload)))
 

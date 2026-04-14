@@ -9,15 +9,13 @@ import (
 )
 
 type AuthConfig struct {
-	JWTSecret     string
-	SessionSecret string
+	JWTSecret string
 }
 
 type SpotifyConfig struct {
-	ClientID    string
-	Secret      string
-	RedirectURI string
-	RetryDelay  time.Duration
+	ClientID   string
+	Secret     string
+	RetryDelay time.Duration
 }
 
 type DatabaseConfig struct {
@@ -34,13 +32,13 @@ type StorageConfig struct {
 	AccountID  string
 	KeyID      string
 	KeySecret  string
+	Endpoint   string
 }
 
 type ServerConfig struct {
-	Port                string
-	ProductionBuild     bool
-	IsDocker            bool
-	FrontendRedirectURL string
+	Port            string
+	ProductionBuild bool
+	IsDocker        bool
 }
 
 type DemoConfig struct {
@@ -49,7 +47,6 @@ type DemoConfig struct {
 }
 
 type TimeConfig struct {
-	AuthCodeExpiry    time.Duration
 	JWTExpiry         time.Duration
 	TokenExpiryBuffer time.Duration
 	HTTPClientTimeout time.Duration
@@ -81,14 +78,12 @@ func Init() *Config {
 
 	return &Config{
 		Auth: &AuthConfig{
-			JWTSecret:     getEnvRequired("JWT_SECRET"),
-			SessionSecret: getEnvRequired("SESSION_SECRET"),
+			JWTSecret: getEnvRequired("JWT_SECRET"),
 		},
 		Spotify: &SpotifyConfig{
-			ClientID:    getEnvRequired("SPOTIFY_CLIENT_ID"),
-			Secret:      getEnvRequired("SPOTIFY_CLIENT_SECRET"),
-			RedirectURI: getEnvRequired("SPOTIFY_REDIRECT_URI"),
-			RetryDelay:  5 * time.Second,
+			ClientID:   getEnvRequired("SPOTIFY_CLIENT_ID"),
+			Secret:     getEnvRequired("SPOTIFY_CLIENT_SECRET"),
+			RetryDelay: 5 * time.Second,
 		},
 		Database: &DatabaseConfig{
 			URL:        os.Getenv("DATABASE_URL"),
@@ -103,19 +98,18 @@ func Init() *Config {
 			AccountID:  getEnvRequired("CLOUDFLARE_ACCOUNT_ID"),
 			KeyID:      getEnvRequired("CLOUDFLARE_KEY_ID"),
 			KeySecret:  getEnvRequired("CLOUDFLARE_KEY_SECRET"),
+			Endpoint:   os.Getenv("STORAGE_ENDPOINT"),
 		},
 		Server: &ServerConfig{
-			Port:                getEnvOrDefault("PORT", "8080"),
-			ProductionBuild:     os.Getenv("PRODUCTION_BUILD") == "TRUE",
-			IsDocker:            os.Getenv("DOCKER") != "",
-			FrontendRedirectURL: getEnvRequired("FRONTEND_REDIRECT_URL"),
+			Port:            getEnvOrDefault("PORT", "8080"),
+			ProductionBuild: os.Getenv("PRODUCTION_BUILD") == "TRUE",
+			IsDocker:        os.Getenv("DOCKER") != "",
 		},
 		Demo: &DemoConfig{
 			Key:    os.Getenv("DEMO_KEY"),
 			UserID: os.Getenv("KINDRID_USER_ID"),
 		},
 		Time: &TimeConfig{
-			AuthCodeExpiry:    60 * time.Second,
 			JWTExpiry:         time.Hour,
 			TokenExpiryBuffer: 60 * time.Second,
 			HTTPClientTimeout: 30 * time.Second,
@@ -130,10 +124,6 @@ func Init() *Config {
 
 func (a *AuthConfig) JWTSecretBytes() []byte {
 	return []byte(a.JWTSecret)
-}
-
-func (a *AuthConfig) SessionSecretBytes() []byte {
-	return []byte(a.SessionSecret)
 }
 
 func getEnvOrDefault(key, defaultVal string) string {

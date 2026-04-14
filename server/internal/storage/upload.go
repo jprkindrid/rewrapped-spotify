@@ -15,7 +15,7 @@ import (
 
 const BUCKET_PREFIX = "user-data"
 
-func (c *CloudflareClient) UploadJSON(ctx context.Context, data any, userSpotifyID string) (string, error) {
+func (c *CloudflareClient) UploadJSON(ctx context.Context, data any, userID string) (string, error) {
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
 		return "", fmt.Errorf("[STORAGE] failed to marshall JSON: %w", err)
@@ -31,7 +31,7 @@ func (c *CloudflareClient) UploadJSON(ctx context.Context, data any, userSpotify
 	}
 	compressedBytes := compressed.Bytes()
 
-	key := generateKey(userSpotifyID, BUCKET_PREFIX)
+	key := generateKey(userID, BUCKET_PREFIX)
 
 	_, err = c.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:        &c.bucketname,

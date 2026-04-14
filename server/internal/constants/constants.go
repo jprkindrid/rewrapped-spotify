@@ -14,11 +14,6 @@ const (
 )
 
 const (
-	SessionMaxAge          = 86400 * 7
-	MinSessionSecretLength = 32
-)
-
-const (
 	SortByTime  = "time"
 	SortByCount = "count"
 )

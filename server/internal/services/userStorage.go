@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
@@ -20,24 +19,22 @@ func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Que
 
 	cfClient := storage.GetClient(cfg)
 
-	spotifyID, ok := ctx.Value(constants.UserIDKey).(string)
-	if !ok || spotifyID == "" {
+	userID, ok := ctx.Value(constants.UserIDKey).(string)
+	if !ok || userID == "" {
 		log.Printf("[storeDataInDB] No valid user_id in session!")
 		return database.User{}, errors.New("no user ID in session")
 	}
 
-	objKey, err := cfClient.UploadJSON(ctx, data, spotifyID)
+	objKey, err := cfClient.UploadJSON(ctx, data, userID)
 	if err != nil {
 		return database.User{}, err
 	}
 
-	existing, err := db.GetUserData(ctx, spotifyID)
+	existing, err := db.GetUserByEmail(ctx, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			newID := uuid.New().String()
 			newUser, err := db.CreateUser(ctx, database.CreateUserParams{
-				ID:         newID,
-				SpotifyID:  spotifyID,
+				Email:      userID,
 				StorageKey: objKey,
 			})
 			if err != nil {
@@ -50,8 +47,8 @@ func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Que
 
 	_ = cfClient.DeleteExistingBlob(ctx, existing.StorageKey)
 
-	updatedUser, err := db.UpdateUser(ctx, database.UpdateUserParams{
-		ID:         existing.ID,
+	updatedUser, err := db.UpdateUserData(ctx, database.UpdateUserDataParams{
+		Email:      existing.Email,
 		StorageKey: objKey,
 	})
 	if err != nil {

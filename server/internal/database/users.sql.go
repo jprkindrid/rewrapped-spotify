@@ -7,59 +7,72 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, created_at, updated_at, spotify_id, storage_key)
+INSERT INTO users (id, created_at, updated_at, email, password_hash, storage_key, display_name)
 VALUES (
-   ?1 ,datetime('now'), datetime('now'), ?2, ?3
+   ?1 ,datetime('now'), datetime('now'), ?2, ?3, ?4, ?5
 )
-RETURNING id, created_at, updated_at, spotify_id, storage_key
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
 `
 
 type CreateUserParams struct {
-	ID         string
-	SpotifyID  string
-	StorageKey string
+	ID           string
+	Email        string
+	PasswordHash string
+	StorageKey   string
+	DisplayName  sql.NullString
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.SpotifyID, arg.StorageKey)
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.ID,
+		arg.Email,
+		arg.PasswordHash,
+		arg.StorageKey,
+		arg.DisplayName,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.SpotifyID,
+		&i.Email,
+		&i.PasswordHash,
 		&i.StorageKey,
+		&i.DisplayName,
 	)
 	return i, err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
-WHERE spotify_id = ?1
+WHERE email = ?1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, spotifyID string) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, spotifyID)
+func (q *Queries) DeleteUser(ctx context.Context, email string) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, email)
 	return err
 }
 
-const getUserData = `-- name: GetUserData :one
-SELECT id, created_at, updated_at, spotify_id, storage_key FROM users
-WHERE spotify_id = ?1
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, created_at, updated_at, email, password_hash, storage_key, display_name FROM users
+WHERE email = ?1
 `
 
-func (q *Queries) GetUserData(ctx context.Context, spotifyID string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserData, spotifyID)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.SpotifyID,
+		&i.Email,
+		&i.PasswordHash,
 		&i.StorageKey,
+		&i.DisplayName,
 	)
 	return i, err
 }
@@ -73,27 +86,29 @@ func (q *Queries) ResetUsers(ctx context.Context) error {
 	return err
 }
 
-const updateUser = `-- name: UpdateUser :one
+const updateUserData = `-- name: UpdateUserData :one
 UPDATE users 
 SET storage_key = ?2, updated_at = datetime('now')
-WHERE id = ?1
-RETURNING id, created_at, updated_at, spotify_id, storage_key
+WHERE email = ?1
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
 `
 
-type UpdateUserParams struct {
-	ID         string
+type UpdateUserDataParams struct {
+	Email      string
 	StorageKey string
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser, arg.ID, arg.StorageKey)
+func (q *Queries) UpdateUserData(ctx context.Context, arg UpdateUserDataParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserData, arg.Email, arg.StorageKey)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.SpotifyID,
+		&i.Email,
+		&i.PasswordHash,
 		&i.StorageKey,
+		&i.DisplayName,
 	)
 	return i, err
 }

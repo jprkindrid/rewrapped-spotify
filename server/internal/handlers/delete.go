@@ -17,7 +17,7 @@ func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbUser, err := cfg.DB.GetUserData(ctx, userID)
+	dbUser, err := cfg.DB.GetUserByEmail(ctx, userID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error getting user data for deletion", err)
 		return

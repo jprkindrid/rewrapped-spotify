@@ -47,8 +47,14 @@ func Init(cfg *config.Config) {
 		log.Fatalf("Couldnt configure Cloudflare s3: %v", err)
 	}
 
+	baseEndpoint := CF.Endpoint
+	if baseEndpoint == "" {
+		baseEndpoint = fmt.Sprintf("https://%s.r2.cloudflarestorage.com", CF.AccountID)
+	}
+
 	s3Client := s3.NewFromConfig(cloudConfig, func(o *s3.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("https://%s.r2.cloudflarestorage.com", CF.AccountID))
+		o.BaseEndpoint = aws.String(baseEndpoint)
+		o.UsePathStyle = true
 	})
 
 	testKey := "connection_test.txt"

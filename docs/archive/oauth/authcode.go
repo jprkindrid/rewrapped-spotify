@@ -49,7 +49,6 @@ func (s *Store) ValidateAndDeleteCode(code string) (string, string, bool) {
 	defer s.mu.Unlock()
 
 	e, ok := s.codes[code]
-
 	if !ok {
 		return "", "", false
 	}

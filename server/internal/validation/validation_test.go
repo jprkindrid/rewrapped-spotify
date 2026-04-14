@@ -183,7 +183,7 @@ func TestValidateSortParams(t *testing.T) {
 	}{
 		{
 			name:  "valid sort params",
-			query: url.Values{"sort_by_artists": {"time"}, "sort_by_tracks": {"count"}},
+			query: url.Values{"sort_by": {"time"}},
 			expected: &SortParams{
 				SortBy: constants.SortByTime,
 			},
@@ -192,14 +192,14 @@ func TestValidateSortParams(t *testing.T) {
 			name:  "empty values use defaults",
 			query: url.Values{},
 			expected: &SortParams{
-				SortBy: constants.SortByTime,
+				SortBy: constants.SortByCount,
 			},
 		},
 		{
 			name:  "invalid values use defaults",
-			query: url.Values{"sort_by_artists": {"invalid"}, "sort_by_tracks": {"invalid"}},
+			query: url.Values{"sort_by": {"invalid"}},
 			expected: &SortParams{
-				SortBy: constants.SortByTime,
+				SortBy: constants.SortByCount,
 			},
 		},
 	}

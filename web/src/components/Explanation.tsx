@@ -19,7 +19,7 @@ const Explanation = () => {
                     Under "Account privacy" request your "Extended Streaming
                     History"
                 </li>
-                <li>Login with your Spotify account</li>
+                <li>Create an account or log in</li>
                 <li>
                     Once you have your data, upload your streaming history files
                 </li>

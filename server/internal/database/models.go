@@ -5,13 +5,16 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 )
 
 type User struct {
-	ID         string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	SpotifyID  string
-	StorageKey string
+	ID           string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Email        string
+	PasswordHash string
+	StorageKey   string
+	DisplayName  sql.NullString
 }

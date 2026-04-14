@@ -43,7 +43,7 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 		Name:     "fly-force-instance-id",
 		Value:    "",
 		Path:     "/",
-		MaxAge:   -1, // Delete the cookie
+		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
@@ -55,8 +55,8 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 
 		if strings.Contains(err.Error(), "403") {
 			baseURL := strings.TrimSuffix(cfg.Env.Server.FrontendRedirectURL, "/upload")
-			errorRedirectUrl := fmt.Sprintf("%s/?error=not_whitelisted", baseURL)
-			http.Redirect(w, r, errorRedirectUrl, http.StatusSeeOther)
+			errorRedirectURL := fmt.Sprintf("%s/?error=not_whitelisted", baseURL)
+			http.Redirect(w, r, errorRedirectURL, http.StatusSeeOther)
 			return
 		}
 
@@ -68,28 +68,8 @@ func (cfg *ApiConfig) HandlerCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "[Callback] failed to generate auth code", err)
 		return
-
 	}
 
-	redirectUrl := fmt.Sprintf("%s?auth_code=%s", cfg.Env.Server.FrontendRedirectURL, authCode)
-	http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
+	redirectURL := fmt.Sprintf("%s?auth_code=%s", cfg.Env.Server.FrontendRedirectURL, authCode)
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
-
-// func (cfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
-
-// 	ctx := r.Context()
-
-// 	appSession, err := gothic.Store.Get(r, constants.UserSession)
-// 	if err != nil {
-// 		log.Printf(("[Logout] Error getting user session"))
-// 		utils.RespondWithError(w, http.StatusInternalServerError, "[Logout] Auth Error: "+err.Error(), err)
-
-// 	}
-// 	appSession.Options.MaxAge = -1
-// 	appSession.Save(r, w)
-// 	gothic.Logout(w, r)
-
-// 	log.Println("[Logout] Logging out user")
-// 	utils.RespondWithJSON(w, http.StatusNoContent, "logout successful")
-// }
-// We no longer need this since switching to JWT

@@ -3,53 +3,17 @@ import NavBar from "@/components/NavBar";
 import FileUploadSection from "./FileUploadSection";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { useCallback, useEffect, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
-import * as authService from "@/services/auth";
+import { useEffect } from "react";
 
 const UploadPage = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
-    const ranOnce = useRef(false);
-
-    const exchangeMutation = useMutation({
-        mutationFn: authService.exchangeAuthCode,
-        onSuccess: (data) => {
-            login(data.token);
-            window.history.replaceState({}, "", "/upload");
-        },
-        onError: (err) => {
-            console.error("[Exchange Error]", err);
-            navigate({ to: "/" });
-        },
-    });
-
-    const handleExchange = useCallback(
-        (code: string) => {
-            if (exchangeMutation.isPending || exchangeMutation.isSuccess)
-                return;
-            exchangeMutation.mutate(code);
-        },
-        [exchangeMutation]
-    );
-
-    const { token: token } = useAuth();
+    const { token } = useAuth();
 
     useEffect(() => {
-        if (ranOnce.current) return;
-        ranOnce.current = true;
-
-        if (token) return;
-
-        const url = new URL(window.location.href);
-        const authCode = url.searchParams.get("auth_code");
-
-        if (!authCode) {
+        if (!token) {
             navigate({ to: "/" });
         }
-
-        handleExchange(authCode!);
-    }, [handleExchange, navigate, token]);
+    }, [token, navigate]);
 
     return (
         <div className="flex flex-col">

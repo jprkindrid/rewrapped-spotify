@@ -33,12 +33,6 @@ const indexRoute = createRoute({
     },
 });
 
-const signInRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: "/home",
-    component: HomePage,
-});
-
 const uploadRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/upload",
@@ -65,7 +59,6 @@ const chartsRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
     indexRoute,
-    signInRoute,
     summaryRoute,
     uploadRoute,
     chartsRoute,

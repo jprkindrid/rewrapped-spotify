@@ -31,11 +31,11 @@ func NewUserDataCache(ttl time.Duration, maxItems int) *UserDataCache {
 	}
 }
 
-func (c *UserDataCache) Get(spotifyID string) ([]parser.MinifiedSongData, bool) {
+func (c *UserDataCache) Get(userID string) ([]parser.MinifiedSongData, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	elem, ok := c.items[spotifyID]
+	elem, ok := c.items[userID]
 	if !ok {
 		return nil, false
 	}
@@ -43,7 +43,7 @@ func (c *UserDataCache) Get(spotifyID string) ([]parser.MinifiedSongData, bool) 
 	cached := elem.Value.(*cachedData)
 	if time.Now().After(cached.ExpiresAt) {
 		c.order.Remove(elem)
-		delete(c.items, spotifyID)
+		delete(c.items, userID)
 		return nil, false
 	}
 
@@ -52,11 +52,11 @@ func (c *UserDataCache) Get(spotifyID string) ([]parser.MinifiedSongData, bool) 
 	return cached.Data, true
 }
 
-func (c *UserDataCache) Set(spotifyID string, data []parser.MinifiedSongData) {
+func (c *UserDataCache) Set(userID string, data []parser.MinifiedSongData) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if elem, ok := c.items[spotifyID]; ok {
+	if elem, ok := c.items[userID]; ok {
 		cached := elem.Value.(*cachedData)
 		cached.Data = data
 		cached.ExpiresAt = time.Now().Add(c.ttl)
@@ -73,12 +73,12 @@ func (c *UserDataCache) Set(spotifyID string, data []parser.MinifiedSongData) {
 	}
 
 	cached := &cachedData{
-		UserID:    spotifyID,
+		UserID:    userID,
 		Data:      data,
 		ExpiresAt: time.Now().Add(c.ttl),
 	}
 
 	elem := c.order.PushFront(cached)
 
-	c.items[spotifyID] = elem
+	c.items[userID] = elem
 }

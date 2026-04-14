@@ -19,7 +19,6 @@ const (
 )
 
 func NewAuth(cfg *config.Config) {
-
 	if !cfg.Server.IsDocker {
 		if err := godotenv.Load("../.env"); err != nil {
 			log.Printf("Warning: Error loading .env file: %v", err)

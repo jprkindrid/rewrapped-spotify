@@ -2,6 +2,8 @@ import { API_URL, DEMO_KEY } from "@/config/constants";
 
 type RestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
+const AUTH_PATHS = ["/auth/login", "/auth/register"];
+
 export async function apiFetch(
     method: RestMethod,
     path: string,
@@ -23,5 +25,15 @@ export async function apiFetch(
         headers,
         ...options,
     });
+
+    if (
+        res.status === 401 &&
+        !AUTH_PATHS.some((authPath) => path.startsWith(authPath))
+    ) {
+        localStorage.removeItem("spotify_rewrapped_token");
+        window.location.href = "/";
+        return res;
+    }
+
     return res;
 }
