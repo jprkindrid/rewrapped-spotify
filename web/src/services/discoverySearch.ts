@@ -5,15 +5,11 @@ import type {
 import { apiFetch } from "./apiFetch";
 
 export async function searchDiscoveryArtists({
-    start,
-    end,
     query,
     token,
     demo,
 }: DiscoverySearchParams): Promise<DiscoverySearchResponse> {
     const params = new URLSearchParams({
-        start: start.toISOString(),
-        end: end.toISOString(),
         query: query,
     });
 

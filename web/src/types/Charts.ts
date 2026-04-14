@@ -52,8 +52,6 @@ export interface DiscoverySearchResponse {
 }
 
 export interface DiscoverySearchParams {
-    start: Date;
-    end: Date;
     query: string;
     token: string;
     demo: boolean;

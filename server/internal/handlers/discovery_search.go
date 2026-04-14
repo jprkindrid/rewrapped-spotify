@@ -7,7 +7,6 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/discovery"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
-	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
 )
 
 type DiscoverySearchResponse struct {
@@ -46,13 +45,7 @@ func (cfg *ApiConfig) HandlerDiscoverySearch(w http.ResponseWriter, r *http.Requ
 		cfg.DataCache.Set(userID, data)
 	}
 
-	timeParams, err := validation.ValidateTimeRange(r)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, err.Error(), err)
-		return
-	}
-
-	results := discovery.SearchArtistDiscovery(data, timeParams.Start, timeParams.End, query, discovery.DefaultSearchLimit)
+	results := discovery.SearchArtistDiscovery(data, query, discovery.DefaultSearchLimit)
 
 	utils.RespondWithJSON(w, http.StatusOK, DiscoverySearchResponse{
 		Artists: results,

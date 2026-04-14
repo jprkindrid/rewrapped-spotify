@@ -3,21 +3,18 @@ import { useDarkMode } from "@/hooks/useDarkMode";
 import useBreakpoint from "@/hooks/useBreakpoint";
 import { Loader2 } from "lucide-react";
 import { lazy, Suspense, useMemo } from "react";
-import type { DateRange } from "react-day-picker";
 import ArtistSearchPopover from "./ArtistSearchPopover";
 
 const ChartContent = lazy(() => import("./ChartContent"));
 
 type DiscoveryChartProps = {
     discoveryQuery: UseDiscoveryQueryResult;
-    range: DateRange | undefined;
     token: string;
     demo: boolean;
 };
 
 const DiscoveryChart = ({
     discoveryQuery,
-    range,
     token,
     demo,
 }: DiscoveryChartProps) => {
@@ -52,7 +49,6 @@ const DiscoveryChart = ({
                 </h2>
                 <div className="flex w-20 justify-end">
                     <ArtistSearchPopover
-                        range={range}
                         token={token}
                         demo={demo}
                     />

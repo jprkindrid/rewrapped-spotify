@@ -23,13 +23,13 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		limit = DefaultLimit
 	}
 
-	type artistStats struct {
-		firstListen time.Time
-		totalMs     int
-		count       int
+	// Pass 1: rank artists by plays/time within the filtered date range
+	type rankStats struct {
+		totalMs int
+		count   int
 	}
 
-	statsMap := make(map[string]*artistStats)
+	rankMap := make(map[string]*rankStats)
 
 	for _, entry := range data {
 		if entry.Ts.Before(start) || entry.Ts.After(end) {
@@ -37,12 +37,74 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		}
 
 		name := entry.ArtistName
-		stats, exists := statsMap[name]
+		stats, exists := rankMap[name]
 		if !exists {
-			stats = &artistStats{
+			stats = &rankStats{}
+			rankMap[name] = stats
+		}
+
+		stats.totalMs += entry.MsPlayed
+		stats.count++
+	}
+
+	// Sort to find top N artist names
+	type rankedArtist struct {
+		name    string
+		totalMs int
+		count   int
+	}
+
+	ranked := make([]rankedArtist, 0, len(rankMap))
+	for name, stats := range rankMap {
+		ranked = append(ranked, rankedArtist{name: name, totalMs: stats.totalMs, count: stats.count})
+	}
+
+	if sortBy == constants.SortByTime {
+		sort.Slice(ranked, func(i, j int) bool {
+			if ranked[i].totalMs != ranked[j].totalMs {
+				return ranked[i].totalMs > ranked[j].totalMs
+			}
+			return ranked[i].name < ranked[j].name
+		})
+	} else {
+		sort.Slice(ranked, func(i, j int) bool {
+			if ranked[i].count != ranked[j].count {
+				return ranked[i].count > ranked[j].count
+			}
+			return ranked[i].name < ranked[j].name
+		})
+	}
+
+	if len(ranked) > limit {
+		ranked = ranked[:limit]
+	}
+
+	topNames := make(map[string]struct{}, len(ranked))
+	for _, r := range ranked {
+		topNames[r.name] = struct{}{}
+	}
+
+	// Pass 2: compute all-time stats for the selected artists (no date filter)
+	type allTimeStats struct {
+		firstListen time.Time
+		totalMs     int
+		count       int
+	}
+
+	allTimeMap := make(map[string]*allTimeStats, len(topNames))
+
+	for _, entry := range data {
+		if _, ok := topNames[entry.ArtistName]; !ok {
+			continue
+		}
+
+		name := entry.ArtistName
+		stats, exists := allTimeMap[name]
+		if !exists {
+			stats = &allTimeStats{
 				firstListen: entry.Ts,
 			}
-			statsMap[name] = stats
+			allTimeMap[name] = stats
 		}
 
 		if entry.Ts.Before(stats.firstListen) {
@@ -52,8 +114,9 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		stats.count++
 	}
 
-	entries := make([]DiscoveryEntry, 0, len(statsMap))
-	for name, stats := range statsMap {
+	// Build entries from all-time stats
+	entries := make([]DiscoveryEntry, 0, len(allTimeMap))
+	for name, stats := range allTimeMap {
 		entries = append(entries, DiscoveryEntry{
 			Name:        name,
 			FirstListen: stats.firstListen.Format("2006-01-02"),
@@ -62,29 +125,7 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		})
 	}
 
-	// Sort by the chosen metric to find top N
-	if sortBy == constants.SortByTime {
-		sort.Slice(entries, func(i, j int) bool {
-			if entries[i].TotalMs != entries[j].TotalMs {
-				return entries[i].TotalMs > entries[j].TotalMs
-			}
-			return entries[i].Name < entries[j].Name
-		})
-	} else {
-		sort.Slice(entries, func(i, j int) bool {
-			if entries[i].Count != entries[j].Count {
-				return entries[i].Count > entries[j].Count
-			}
-			return entries[i].Name < entries[j].Name
-		})
-	}
-
-	// Take top N
-	if len(entries) > limit {
-		entries = entries[:limit]
-	}
-
-	// Re-sort by first listen date for timeline ordering
+	// Sort by first listen date for timeline ordering
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].FirstListen < entries[j].FirstListen
 	})
@@ -102,7 +143,7 @@ type DiscoverySearchEntry struct {
 
 const DefaultSearchLimit = 10
 
-func SearchArtistDiscovery(data []parser.MinifiedSongData, start, end time.Time, query string, limit int) []DiscoverySearchEntry {
+func SearchArtistDiscovery(data []parser.MinifiedSongData, query string, limit int) []DiscoverySearchEntry {
 	if limit <= 0 {
 		limit = DefaultSearchLimit
 	}
@@ -122,10 +163,6 @@ func SearchArtistDiscovery(data []parser.MinifiedSongData, start, end time.Time,
 	statsMap := make(map[string]*artistStats)
 
 	for _, entry := range data {
-		if entry.Ts.Before(start) || entry.Ts.After(end) {
-			continue
-		}
-
 		name := entry.ArtistName
 		stats, exists := statsMap[name]
 		if !exists {

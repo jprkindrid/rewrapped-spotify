@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { DateRange } from "react-day-picker";
 import {
     Popover,
     PopoverContent,
@@ -13,7 +12,6 @@ import type { DiscoverySearchEntry } from "@/types/Charts";
 import { Search, ArrowLeft, Loader2, Music } from "lucide-react";
 
 type ArtistSearchPopoverProps = {
-    range: DateRange | undefined;
     token: string;
     demo: boolean;
 };
@@ -22,7 +20,6 @@ const PLACEHOLDER_IMG =
     "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
 
 const ArtistSearchPopover = ({
-    range,
     token,
     demo,
 }: ArtistSearchPopoverProps) => {
@@ -37,7 +34,6 @@ const ArtistSearchPopover = ({
     const inputRef = useRef<HTMLInputElement>(null);
 
     const searchQuery = useDiscoverySearchQuery(
-        range,
         debouncedQuery,
         token,
         demo

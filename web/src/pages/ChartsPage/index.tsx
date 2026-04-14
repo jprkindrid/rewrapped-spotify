@@ -139,7 +139,6 @@ export const ChartsPage = () => {
                     <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
                         <DiscoveryChart
                             discoveryQuery={discoveryQuery}
-                            range={filters.range}
                             token={token!}
                             demo={demo}
                         />
