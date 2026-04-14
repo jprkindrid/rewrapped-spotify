@@ -33,6 +33,9 @@ func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 	mux.Handle("POST /api/discovery", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiscovery)))
 	mux.Handle("POST /api/demo/discovery", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiscovery)))
 
+	mux.Handle("POST /api/discovery/search", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiscoverySearch)))
+	mux.Handle("POST /api/demo/discovery/search", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiscoverySearch)))
+
 	mux.Handle("POST /api/diversity", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiversity)))
 	mux.Handle("POST /api/demo/diversity", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiversity)))
 

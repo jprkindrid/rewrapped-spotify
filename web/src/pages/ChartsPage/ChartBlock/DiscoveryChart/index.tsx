@@ -3,14 +3,24 @@ import { useDarkMode } from "@/hooks/useDarkMode";
 import useBreakpoint from "@/hooks/useBreakpoint";
 import { Loader2 } from "lucide-react";
 import { lazy, Suspense, useMemo } from "react";
+import type { DateRange } from "react-day-picker";
+import ArtistSearchPopover from "./ArtistSearchPopover";
 
 const ChartContent = lazy(() => import("./ChartContent"));
 
 type DiscoveryChartProps = {
     discoveryQuery: UseDiscoveryQueryResult;
+    range: DateRange | undefined;
+    token: string;
+    demo: boolean;
 };
 
-const DiscoveryChart = ({ discoveryQuery }: DiscoveryChartProps) => {
+const DiscoveryChart = ({
+    discoveryQuery,
+    range,
+    token,
+    demo,
+}: DiscoveryChartProps) => {
     const {
         data: discoveryData,
         error: discoveryError,
@@ -34,11 +44,21 @@ const DiscoveryChart = ({ discoveryQuery }: DiscoveryChartProps) => {
     );
 
     return (
-        <div className="mt-6">
-            <h2 className="mb-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
-                Discovery Timeline
-            </h2>
-            <p className="mb-4 text-center text-sm text-neutral-500">
+        <div className="mt-6 mx-4">
+            <div className="flex items-center justify-between px-2">
+                <div className="w-20" />
+                <h2 className="flex-1 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
+                    Discovery Timeline
+                </h2>
+                <div className="flex w-20 justify-end">
+                    <ArtistSearchPopover
+                        range={range}
+                        token={token}
+                        demo={demo}
+                    />
+                </div>
+            </div>
+            <p className="mb-4 mt-1 text-center text-sm text-neutral-500">
                 When did you discover your top artists?
             </p>
             <div className="animate-in fade-in zoom-in-95 w-full overflow-visible rounded-b-lg duration-1000"

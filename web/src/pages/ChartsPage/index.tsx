@@ -137,7 +137,12 @@ export const ChartsPage = () => {
                         />
                     </section>
                     <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
-                        <DiscoveryChart discoveryQuery={discoveryQuery} />
+                        <DiscoveryChart
+                            discoveryQuery={discoveryQuery}
+                            range={filters.range}
+                            token={token!}
+                            demo={demo}
+                        />
                     </section>
                     <section className="page-section mx-2 mt-6 mb-6 flex flex-col rounded-lg shadow-md">
                         <StreaksChart streaksQuery={streaksQuery} />

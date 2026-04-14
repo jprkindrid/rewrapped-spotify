@@ -38,6 +38,27 @@ export interface DiscoveryParams {
     demo: boolean;
 }
 
+// Discovery Search
+export interface DiscoverySearchEntry {
+    name: string;
+    firstListen: string;
+    totalMs: number;
+    count: number;
+    uri: string;
+}
+
+export interface DiscoverySearchResponse {
+    artists: DiscoverySearchEntry[];
+}
+
+export interface DiscoverySearchParams {
+    start: Date;
+    end: Date;
+    query: string;
+    token: string;
+    demo: boolean;
+}
+
 // Artist Diversity
 export interface DiversityEntry {
     period: string;
