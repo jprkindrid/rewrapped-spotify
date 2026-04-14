@@ -82,15 +82,6 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                             </h1>
                             <nav className="font-base flex justify-around space-x-4 pt-4 text-lg font-medium transition-all">
                                 <Link
-                                    to="/"
-                                    className="transition"
-                                    activeProps={{
-                                        className: "font-bold underline",
-                                    }}
-                                >
-                                    Home
-                                </Link>
-                                <Link
                                     to="/upload"
                                     className="transition"
                                     activeProps={{
