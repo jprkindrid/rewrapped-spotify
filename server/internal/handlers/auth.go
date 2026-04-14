@@ -9,6 +9,7 @@ import (
 	"net/mail"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/jprkindrid/rewrapped-spotify/internal/auth"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
@@ -55,6 +56,7 @@ func (cfg *ApiConfig) HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createdUser, err := cfg.DB.CreateUser(r.Context(), database.CreateUserParams{
+		ID:           uuid.New().String(),
 		Email:        email,
 		PasswordHash: passwordHash,
 		DisplayName:  optionalDisplayName,
