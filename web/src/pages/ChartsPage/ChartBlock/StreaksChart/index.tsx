@@ -103,7 +103,7 @@ const StreaksChart = ({ streaksQuery }: StreaksChartProps) => {
             )}
 
             <div
-                className="animate-in fade-in zoom-in-95 w-full overflow-x-auto rounded-b-lg duration-1000"
+                className="animate-in fade-in zoom-in-95 w-full overflow-visible rounded-b-lg duration-1000"
                 style={{ height: isMobile ? "200px" : "240px" }}
             >
                 {streaksStatus === "success" && hasData && streaksData && (

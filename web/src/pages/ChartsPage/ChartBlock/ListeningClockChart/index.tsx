@@ -1,9 +1,10 @@
 import type { UseListeningClockQueryResult } from "@/hooks/useListeningClockQuery";
+import { useUserTimezone } from "@/hooks/useUserTimezone";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import useBreakpoint from "@/hooks/useBreakpoint";
 import { Loader2 } from "lucide-react";
 import { lazy, Suspense, useMemo } from "react";
-import type { ListeningClockEntry } from "@/types/Charts";
+import { convertToListeningClockData } from "@/utils/convertToListeningClockData";
 
 const ChartContent = lazy(() => import("./ChartContent"));
 
@@ -20,15 +21,21 @@ const ListeningClockChart = ({
         status: clockStatus,
     } = listeningClockQuery;
 
+    const userTimezone = useUserTimezone();
     const isDark = useDarkMode();
     const isMobile = useBreakpoint("md");
 
+    const chartData = useMemo(() => {
+        if (!clockData?.clock) return [];
+        return convertToListeningClockData(clockData.clock, userTimezone, isMobile);
+    }, [clockData, userTimezone, isMobile]);
+
     const hasData = useMemo(() => {
-        if (!clockData?.clock) return false;
-        return clockData.clock.some(
-            (entry: ListeningClockEntry) => entry.totalMs > 0
+        return chartData.some(
+            (series) =>
+                series.data.some((point) => (point.y as number) > 0)
         );
-    }, [clockData]);
+    }, [chartData]);
 
     const loading = (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4">
@@ -41,9 +48,14 @@ const ListeningClockChart = ({
 
     return (
         <div className="mt-6">
-            <h2 className="mb-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
-                Listening Clock
-            </h2>
+            <div className="flex items-center justify-between">
+                <h2 className="text-center text-xl font-bold text-neutral-800 dark:text-neutral-200 flex-1">
+                    Listening Clock
+                </h2>
+            </div>
+            <p className="mb-2 text-center text-xs text-neutral-400">
+                Times shown in your local timezone
+            </p>
             <p className="mb-4 text-center text-sm text-neutral-500">
                 When do you listen to music the most?
             </p>
@@ -52,7 +64,7 @@ const ListeningClockChart = ({
                 {clockStatus === "success" && hasData && (
                     <Suspense fallback={loading}>
                         <ChartContent
-                            clockData={clockData!.clock}
+                            clockData={chartData}
                             isDark={isDark}
                             isMobile={isMobile}
                         />
@@ -88,3 +100,4 @@ const ListeningClockChart = ({
 };
 
 export default ListeningClockChart;
+

@@ -1,36 +1,13 @@
-import type { ListeningClockEntry } from "@/types/Charts";
+import type { NivoHeatmapSeries } from "@/utils/convertToListeningClockData";
 import { CHART_COLORS } from "@/utils/chartColors";
 import { formatTime } from "@/utils/formatTime";
 import { ResponsiveHeatMap } from "@nivo/heatmap";
 import { useMemo } from "react";
 
 type ListeningClockChartContentProps = {
-    clockData: ListeningClockEntry[];
+    clockData: NivoHeatmapSeries[];
     isDark: boolean;
     isMobile: boolean;
-};
-
-const HOUR_LABELS = [
-    "12a", "1a", "2a", "3a", "4a", "5a",
-    "6a", "7a", "8a", "9a", "10a", "11a",
-    "12p", "1p", "2p", "3p", "4p", "5p",
-    "6p", "7p", "8p", "9p", "10p", "11p",
-];
-
-// Reorder days so Monday is first
-const DAY_ORDER = [
-    "Monday", "Tuesday", "Wednesday", "Thursday",
-    "Friday", "Saturday", "Sunday",
-];
-
-const DAY_SHORT: Record<string, string> = {
-    Monday: "Mon",
-    Tuesday: "Tue",
-    Wednesday: "Wed",
-    Thursday: "Thu",
-    Friday: "Fri",
-    Saturday: "Sat",
-    Sunday: "Sun",
 };
 
 const ListeningClockChartContent = ({
@@ -38,42 +15,19 @@ const ListeningClockChartContent = ({
     isDark,
     isMobile,
 }: ListeningClockChartContentProps) => {
-    const heatmapData = useMemo(() => {
-        // Group by day, each day has 24 hour cells
-        const dayMap = new Map<string, Map<number, number>>();
-
-        for (const entry of clockData) {
-            if (!dayMap.has(entry.day)) {
-                dayMap.set(entry.day, new Map());
-            }
-            dayMap.get(entry.day)!.set(entry.hour, entry.totalMs);
-        }
-
-        return DAY_ORDER.map((day) => {
-            const hourMap = dayMap.get(day) ?? new Map<number, number>();
-            const data = Array.from({ length: 24 }, (_, hour) => ({
-                x: HOUR_LABELS[hour],
-                y: hourMap.get(hour) ?? 0,
-            }));
-
-            return {
-                id: isMobile ? DAY_SHORT[day] : day,
-                data,
-            };
-        });
-    }, [clockData, isMobile]);
-
     const maxValue = useMemo(() => {
         let max = 0;
-        for (const entry of clockData) {
-            if (entry.totalMs > max) max = entry.totalMs;
+        for (const series of clockData) {
+            for (const point of series.data) {
+                if ((point.y as number) > max) max = point.y as number;
+            }
         }
         return max;
     }, [clockData]);
 
     return (
         <ResponsiveHeatMap
-            data={heatmapData}
+            data={clockData}
             margin={{
                 top: 40,
                 right: isMobile ? 10 : 30,
@@ -122,7 +76,9 @@ const ListeningClockChartContent = ({
                     <strong>
                         {cell.serieId} at {String(cell.data.x)}
                     </strong>
-                    <div>{formatTime(cell.data.y as number)}</div>
+                    <div>
+                        {formatTime(cell.data.y as number)}
+                    </div>
                 </div>
             )}
         />
@@ -130,3 +86,4 @@ const ListeningClockChartContent = ({
 };
 
 export default ListeningClockChartContent;
+

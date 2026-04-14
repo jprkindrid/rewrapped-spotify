@@ -3,8 +3,7 @@ import type { SortBy } from "./Shared";
 
 // Listening Clock
 export interface ListeningClockEntry {
-    day: string;
-    hour: number;
+    timestamp: string;
     totalMs: number;
 }
 
