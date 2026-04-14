@@ -21,3 +21,20 @@ RETURNING *;
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE email = ?1;
+
+-- name: UpdateUserEmail :one
+UPDATE users
+SET email = ?2, updated_at = datetime('now')
+WHERE email = ?1
+RETURNING *;
+
+-- name: UpdateUserPassword :exec
+UPDATE users
+SET password_hash = ?2, updated_at = datetime('now')
+WHERE email = ?1;
+
+-- name: UpdateDisplayName :one
+UPDATE users
+SET display_name = ?2, updated_at = datetime('now')
+WHERE email = ?1
+RETURNING *;

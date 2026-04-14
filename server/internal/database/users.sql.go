@@ -112,3 +112,73 @@ func (q *Queries) UpdateUserData(ctx context.Context, arg UpdateUserDataParams) 
 	)
 	return i, err
 }
+
+const updateUserEmail = `-- name: UpdateUserEmail :one
+UPDATE users
+SET email = ?2, updated_at = datetime('now')
+WHERE email = ?1
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
+`
+
+type UpdateUserEmailParams struct {
+	OldEmail string
+	NewEmail string
+}
+
+func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserEmail, arg.OldEmail, arg.NewEmail)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.StorageKey,
+		&i.DisplayName,
+	)
+	return i, err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :exec
+UPDATE users
+SET password_hash = ?2, updated_at = datetime('now')
+WHERE email = ?1
+`
+
+type UpdateUserPasswordParams struct {
+	Email        string
+	PasswordHash string
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.Email, arg.PasswordHash)
+	return err
+}
+
+const updateDisplayName = `-- name: UpdateDisplayName :one
+UPDATE users
+SET display_name = ?2, updated_at = datetime('now')
+WHERE email = ?1
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
+`
+
+type UpdateDisplayNameParams struct {
+	Email       string
+	DisplayName sql.NullString
+}
+
+func (q *Queries) UpdateDisplayName(ctx context.Context, arg UpdateDisplayNameParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateDisplayName, arg.Email, arg.DisplayName)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.StorageKey,
+		&i.DisplayName,
+	)
+	return i, err
+}

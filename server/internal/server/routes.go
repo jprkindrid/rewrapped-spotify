@@ -30,4 +30,8 @@ func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
 	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDelete)))
 
+	mux.Handle("PUT /api/account/email", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerUpdateEmail)))
+	mux.Handle("PUT /api/account/password", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerUpdatePassword)))
+	mux.Handle("PUT /api/account/display-name", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerUpdateDisplayName)))
+
 }
