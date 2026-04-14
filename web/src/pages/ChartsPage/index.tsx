@@ -7,8 +7,16 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import BumpChart from "./BumpChart";
 import { useBumpQuery } from "@/hooks/useBumpQuery";
 import { useListeningTimeQuery } from "@/hooks/useListeningTimeQuery";
+import { useListeningClockQuery } from "@/hooks/useListeningClockQuery";
+import { useDiscoveryQuery } from "@/hooks/useDiscoveryQuery";
+import { useDiversityQuery } from "@/hooks/useDiversityQuery";
+import { useStreaksQuery } from "@/hooks/useStreaksQuery";
 import type { ChartFilters } from "@/types/Bump";
 import ListeningTimeChart from "./ChartBlock/ListeningTimeChart";
+import ListeningClockChart from "./ChartBlock/ListeningClockChart";
+import DiscoveryChart from "./ChartBlock/DiscoveryChart";
+import DiversityChart from "./ChartBlock/DiversityChart";
+import StreaksChart from "./ChartBlock/StreaksChart";
 
 const initialRange: DateRange = {
     from: new Date(2011, 0, 1),
@@ -57,6 +65,28 @@ export const ChartsPage = () => {
         demo
     );
 
+    const listeningClockQuery = useListeningClockQuery(
+        filters.range,
+        token!,
+        demo
+    );
+
+    const discoveryQuery = useDiscoveryQuery(
+        filters.range,
+        filters.sortBy,
+        token!,
+        demo
+    );
+
+    const diversityQuery = useDiversityQuery(
+        filters.range,
+        filters.interval,
+        token!,
+        demo
+    );
+
+    const streaksQuery = useStreaksQuery(filters.range, token!, demo);
+
     return (
         <div className="flex w-full flex-col">
             <NavBar includeUser={!demo} />
@@ -94,6 +124,23 @@ export const ChartsPage = () => {
                             listeningTimeQuery={listeningTimeQuery}
                             filters={filters}
                         />
+                    </section>
+                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                        <ListeningClockChart
+                            listeningClockQuery={listeningClockQuery}
+                        />
+                    </section>
+                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                        <DiversityChart
+                            diversityQuery={diversityQuery}
+                            filters={filters}
+                        />
+                    </section>
+                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                        <DiscoveryChart discoveryQuery={discoveryQuery} />
+                    </section>
+                    <section className="page-section mx-2 mt-6 mb-6 flex flex-col rounded-lg shadow-md">
+                        <StreaksChart streaksQuery={streaksQuery} />
                     </section>
                 </div>
             </div>

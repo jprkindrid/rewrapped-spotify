@@ -27,6 +27,18 @@ func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 	mux.Handle("POST /api/listeningtime", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerListeningTime)))
 	mux.Handle("POST /api/demo/listeningtime", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerListeningTime)))
 
+	mux.Handle("POST /api/listeningclock", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerListeningClock)))
+	mux.Handle("POST /api/demo/listeningclock", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerListeningClock)))
+
+	mux.Handle("POST /api/discovery", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiscovery)))
+	mux.Handle("POST /api/demo/discovery", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiscovery)))
+
+	mux.Handle("POST /api/diversity", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiversity)))
+	mux.Handle("POST /api/demo/diversity", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDiversity)))
+
+	mux.Handle("POST /api/streaks", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerStreaks)))
+	mux.Handle("POST /api/demo/streaks", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerStreaks)))
+
 	// mux.Handle("POST /auth/logout", middleware.AuthMiddleware(http.HandlerFunc(cfg.HandlerLogout))) // No longer needed for now
 	mux.Handle("DELETE /api/delete", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerDelete)))
 
