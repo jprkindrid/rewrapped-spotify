@@ -36,125 +36,162 @@ const NavBar = ({ includeUser }: NavBarProps) => {
 
     return (
         <>
-            <div className="dark:bg-spotify-black bg-spotify-green flex w-full items-center justify-center py-2 shadow-lg sm:px-8 sm:py-6">
-                <div className="flex w-full flex-col justify-center sm:flex-row sm:justify-between">
-                    <div className="flex w-full items-start justify-between px-4 pb-4 sm:hidden">
-                        {/* Mobile Buttons */}
-                        <div className="flex flex-col items-center gap-4">
-                            <Popover
-                                open={showMobileUserModal}
-                                onOpenChange={setShowMobileUserModal}
-                            >
-                                <PopoverTrigger asChild>
-                                    <div>
-                                        <UserButton
-                                            setShowUserModal={
-                                                setShowMobileUserModal
-                                            }
-                                            includeUser={includeUser}
-                                        />
-                                    </div>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                    align="start"
-                                    className="w-fit"
-                                >
-                                    <UserModal
-                                        onOpenSettings={openSettings}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <Button
-                                onClick={toggleDemo}
-                                variant={demo ? "default" : "secondary"}
-                                className={demo ? "dark:bg-spotify-green" : ""}
-                            >
-                                {demo ? "Exit Demo" : "Demo Mode"}
-                            </Button>
-                        </div>
-                        <div className="sm:hidden">
-                            <DarkModeButtons />
-                        </div>
+            <div className="bg-card border-b border-border/60 dark:border-white/[0.06]">
+                {/* Mobile layout */}
+                <div className="flex items-center justify-between px-4 py-3 sm:hidden">
+                    <Popover
+                        open={showMobileUserModal}
+                        onOpenChange={setShowMobileUserModal}
+                    >
+                        <PopoverTrigger asChild>
+                            <div>
+                                <UserButton
+                                    setShowUserModal={setShowMobileUserModal}
+                                    includeUser={includeUser}
+                                />
+                            </div>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="w-fit">
+                            <UserModal onOpenSettings={openSettings} />
+                        </PopoverContent>
+                    </Popover>
+
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-spotify-green text-xl font-bold tracking-tight">
+                            ReWrapped
+                        </h1>
                     </div>
 
-                    <div className="grid w-full items-center px-8 sm:grid-cols-3">
-                        <div className="hidden w-30 flex-col items-center gap-4 sm:flex">
-                            <Popover
-                                open={showUserModal}
-                                onOpenChange={setShowUserModal}
-                            >
-                                <PopoverTrigger asChild>
-                                    <div className="hidden justify-self-start sm:flex">
-                                        <UserButton
-                                            setShowUserModal={setShowUserModal}
-                                            includeUser={includeUser}
-                                        />
-                                    </div>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                    align="start"
-                                    className="w-fit"
-                                >
-                                    <UserModal
-                                        onOpenSettings={openSettings}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <Button
-                                onClick={toggleDemo}
-                                variant={demo ? "default" : "secondary"}
-                                className={demo ? "dark:bg-spotify-green" : ""}
-                            >
-                                {demo ? "Exit Demo" : "Demo Mode"}
-                            </Button>
-                        </div>
+                    <DarkModeButtons />
+                </div>
 
-                        <div className="flex flex-col text-center">
-                            <div className="dark:text-spotify-green text-spotify-black flex flex-col text-center text-4xl text-shadow-sm dark:text-shadow-xs">
-                                <h1 className="text-5xl font-bold">
-                                    ReWrapped Spotify
-                                </h1>
-                                <nav className="font-base flex justify-around space-x-4 pt-4 text-lg font-medium transition-all">
-                                    <Link
-                                        to="/upload"
-                                        className="transition"
-                                        activeProps={{
-                                            className:
-                                                "font-bold underline",
-                                        }}
-                                    >
-                                        Upload
-                                    </Link>
-                                    <Link
-                                        to="/summary"
-                                        from="/summary"
-                                        className="transition"
-                                        activeProps={{
-                                            className:
-                                                "font-bold underline",
-                                        }}
-                                        search={{ demo }}
-                                    >
-                                        Analyze
-                                    </Link>
-                                    <Link
-                                        to="/charts"
-                                        from="/charts"
-                                        className="transition"
-                                        activeProps={{
-                                            className:
-                                                "font-bold underline",
-                                        }}
-                                        search={{ demo }}
-                                    >
-                                        Charts
-                                    </Link>
-                                </nav>
-                            </div>
-                        </div>
-                        <div className="hidden justify-end sm:flex">
-                            <DarkModeButtons />
-                        </div>
+                {/* Mobile nav row */}
+                <div className="flex items-center justify-center gap-2 border-t border-border/40 px-4 py-2 dark:border-white/[0.04] sm:hidden">
+                    <Link
+                        to="/upload"
+                        className="rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        activeProps={{
+                            className:
+                                "bg-spotify-green/10 text-spotify-green font-semibold",
+                        }}
+                    >
+                        Upload
+                    </Link>
+                    <Link
+                        to="/summary"
+                        from="/summary"
+                        className="rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        activeProps={{
+                            className:
+                                "bg-spotify-green/10 text-spotify-green font-semibold",
+                        }}
+                        search={{ demo }}
+                    >
+                        Analyze
+                    </Link>
+                    <Link
+                        to="/charts"
+                        from="/charts"
+                        className="rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        activeProps={{
+                            className:
+                                "bg-spotify-green/10 text-spotify-green font-semibold",
+                        }}
+                        search={{ demo }}
+                    >
+                        Charts
+                    </Link>
+                    <Button
+                        onClick={toggleDemo}
+                        variant={demo ? "default" : "ghost"}
+                        size="sm"
+                        className={
+                            demo
+                                ? "bg-spotify-green hover:bg-spotify-green/90 ml-1 text-black"
+                                : "ml-1 text-muted-foreground"
+                        }
+                    >
+                        {demo ? "Exit Demo" : "Demo"}
+                    </Button>
+                </div>
+
+                {/* Desktop layout */}
+                <div className="hidden items-center justify-between px-8 py-4 sm:flex">
+                    <div className="flex w-40 items-center gap-3">
+                        <Popover
+                            open={showUserModal}
+                            onOpenChange={setShowUserModal}
+                        >
+                            <PopoverTrigger asChild>
+                                <div>
+                                    <UserButton
+                                        setShowUserModal={setShowUserModal}
+                                        includeUser={includeUser}
+                                    />
+                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent align="start" className="w-fit">
+                                <UserModal onOpenSettings={openSettings} />
+                            </PopoverContent>
+                        </Popover>
+                        <Button
+                            onClick={toggleDemo}
+                            variant={demo ? "default" : "ghost"}
+                            size="sm"
+                            className={
+                                demo
+                                    ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
+                                    : "text-muted-foreground"
+                            }
+                        >
+                            {demo ? "Exit Demo" : "Demo"}
+                        </Button>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3">
+                        <h1 className="text-spotify-green text-2xl font-bold tracking-tight">
+                            ReWrapped Spotify
+                        </h1>
+                        <nav className="flex items-center gap-1">
+                            <Link
+                                to="/upload"
+                                className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                                activeProps={{
+                                    className:
+                                        "bg-spotify-green/10 text-spotify-green font-semibold",
+                                }}
+                            >
+                                Upload
+                            </Link>
+                            <Link
+                                to="/summary"
+                                from="/summary"
+                                className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                                activeProps={{
+                                    className:
+                                        "bg-spotify-green/10 text-spotify-green font-semibold",
+                                }}
+                                search={{ demo }}
+                            >
+                                Analyze
+                            </Link>
+                            <Link
+                                to="/charts"
+                                from="/charts"
+                                className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                                activeProps={{
+                                    className:
+                                        "bg-spotify-green/10 text-spotify-green font-semibold",
+                                }}
+                                search={{ demo }}
+                            >
+                                Charts
+                            </Link>
+                        </nav>
+                    </div>
+
+                    <div className="flex w-40 justify-end">
+                        <DarkModeButtons />
                     </div>
                 </div>
             </div>

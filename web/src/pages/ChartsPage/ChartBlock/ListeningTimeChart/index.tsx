@@ -47,7 +47,7 @@ const ListeningTimeChart = ({
 
     return (
         <div className="mt-6">
-            <h2 className="mb-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
+            <h2 className="mb-4 text-center text-xl font-bold">
                 Listening Time Over Time
             </h2>
             <div className="animate-in fade-in zoom-in-95 h-80 w-full overflow-visible rounded-b-lg duration-1000">
@@ -67,10 +67,10 @@ const ListeningTimeChart = ({
                 {listeningTimeStatus === "success" &&
                     chartData.length === 0 && (
                         <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                            <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                            <h2 className="text-2xl font-bold text-muted-foreground">
                                 No listening data available
                             </h2>
-                            <p className="text-neutral-500">
+                            <p className="text-sm text-muted-foreground">
                                 Try adjusting your date range or filters.
                             </p>
                         </div>
@@ -79,11 +79,11 @@ const ListeningTimeChart = ({
                 {listeningTimeStatus === "pending" && loading}
 
                 {listeningTimeStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border-4 border-red-500 bg-red-100 text-center">
-                        <h2 className="text-4xl font-bold text-red-950">
-                            Error:
+                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
+                        <h2 className="text-2xl font-bold text-destructive">
+                            Error
                         </h2>
-                        <p className="text-lg text-red-800/70">
+                        <p className="text-sm text-muted-foreground">
                             {listeningTimeError.message ||
                                 "An unknown error occurred"}
                         </p>

@@ -107,14 +107,14 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                 noData={noData}
             />
             <div className="animate-in fade-in zoom-in-95 mb-6 h-150 w-full overflow-visible rounded-b-lg duration-1000 md:mb-0">
-                <h2 className="-mb-6 pt-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
+                <h2 className="-mb-6 pt-4 text-center text-xl font-bold">
                     Artist & Track Rankings
                 </h2>
                 {bumpStatus === "success" &&
                     displayData &&
                     displayData.length > 0 && (
                         <Suspense fallback={loading}>
-                            <p className="mt-8 -mb-6 block w-full text-center font-bold text-neutral-500 md:hidden">
+                            <p className="mt-8 -mb-6 block w-full text-center text-sm font-medium text-muted-foreground md:hidden">
                                 Hover a line to see track/artist name
                             </p>
                             <ResponsiveBump
@@ -172,10 +172,10 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
 
                 {bumpStatus === "success" && noData && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                        <h2 className="text-2xl font-bold text-muted-foreground">
                             No ranking data available
                         </h2>
-                        <p className="text-neutral-500">
+                        <p className="text-sm text-muted-foreground">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -183,24 +183,24 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
 
                 {bumpStatus === "pending" && !isDailyInterval && loading}
                 {bumpStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border-4 border-red-500 bg-red-100 text-center">
-                        <h2 className="text-4xl font-bold text-red-950">
-                            Error:
+                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
+                        <h2 className="text-2xl font-bold text-destructive">
+                            Error
                         </h2>
-                        <p className="text-lg text-red-800/70">
-                            {bumpError.message || "An unknown error occured"}
+                        <p className="text-sm text-muted-foreground">
+                            {bumpError.message || "An unknown error occurred"}
                         </p>
                     </div>
                 )}
             </div>
 
             {isDailyInterval && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70 backdrop-blur-md dark:bg-black/70">
+                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/80 backdrop-blur-md">
                     <div className="px-6 text-center">
-                        <p className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
+                        <p className="text-lg font-semibold">
                             Daily interval not available
                         </p>
-                        <p className="mt-2 text-neutral-600 dark:text-neutral-400">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             Select Monthly or Yearly to view ranking charts
                         </p>
                     </div>

@@ -7,10 +7,10 @@ type Props = {
 };
 
 const UserButton = ({ setShowUserModal, includeUser }: Props) => {
-    const { displayName: displayName } = useAuth();
+    const { displayName } = useAuth();
     return (
         <button
-            className="dark:hover:text-spotify-green flex w-fit items-center gap-1 rounded-lg px-2 py-1 transition duration-200 hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
+            className="flex w-fit items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             onClick={() => {
                 setShowUserModal(true);
             }}
@@ -22,7 +22,7 @@ const UserButton = ({ setShowUserModal, includeUser }: Props) => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-6"
+                    className="size-5"
                 >
                     <path
                         strokeLinecap="round"
@@ -31,7 +31,7 @@ const UserButton = ({ setShowUserModal, includeUser }: Props) => {
                     />
                 </svg>
             )}
-            <span className="text-spotify-black dark:text-white">
+            <span>
                 {includeUser ? (displayName ? displayName : "Loading...") : ""}
             </span>
         </button>

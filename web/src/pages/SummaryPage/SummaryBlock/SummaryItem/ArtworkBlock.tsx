@@ -44,21 +44,21 @@ export const ArtworkBlock = ({
             ref={ref}
             data-loaded={hasLoaded}
             className={clsx(
-                "dark:ring-spotify-green/50 mr-4 h-20 w-20 shrink-0 overflow-hidden shadow-lg transition-opacity duration-200 dark:ring",
+                "h-full w-full transition-opacity duration-200",
                 hasLoaded ? "opacity-100" : "opacity-0"
             )}
         >
             {visible && (
                 <>
                     {metaStatus === "pending" && (
-                        <div className="flex h-full w-full items-center justify-center bg-neutral-100 dark:bg-neutral-900">
+                        <div className="flex h-full w-full items-center justify-center bg-muted">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 strokeWidth={1.5}
                                 stroke="currentColor"
-                                className="size-9 animate-pulse text-neutral-500"
+                                className="size-7 animate-pulse text-muted-foreground"
                                 aria-label="loading"
                             >
                                 <path
@@ -74,8 +74,8 @@ export const ArtworkBlock = ({
                     )}
 
                     {metaStatus === "error" && (
-                        <div className="bg-spotify-green flex h-full w-full items-center justify-center">
-                            <span className="text-base font-semibold text-white">
+                        <div className="bg-muted flex h-full w-full items-center justify-center">
+                            <span className="text-xs font-medium text-muted-foreground">
                                 Error
                             </span>
                         </div>
@@ -94,9 +94,9 @@ export const ArtworkBlock = ({
                                 }
                             />
                         ) : (
-                            <div className="bg-spotify-green flex h-full w-full items-center justify-center text-center">
-                                <span className="text-shadow-xl text-base text-shadow-black">
-                                    No Artwork Found
+                            <div className="bg-muted flex h-full w-full items-center justify-center text-center">
+                                <span className="text-xs font-medium text-muted-foreground">
+                                    No Art
                                 </span>
                             </div>
                         ))}

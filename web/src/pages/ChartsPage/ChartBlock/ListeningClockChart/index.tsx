@@ -49,14 +49,14 @@ const ListeningClockChart = ({
     return (
         <div className="mt-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-center text-xl font-bold text-neutral-800 dark:text-neutral-200 flex-1">
+                <h2 className="text-center text-xl font-bold flex-1">
                     Listening Clock
                 </h2>
             </div>
-            <p className="mb-2 text-center text-xs text-neutral-400">
+            <p className="mb-2 text-center text-xs text-muted-foreground">
                 Times shown in your local timezone
             </p>
-            <p className="mb-4 text-center text-sm text-neutral-500">
+            <p className="mb-4 text-center text-sm text-muted-foreground">
                 When do you listen to music the most?
             </p>
             <div className="animate-in fade-in zoom-in-95 w-full overflow-visible rounded-b-lg duration-1000"
@@ -73,10 +73,10 @@ const ListeningClockChart = ({
 
                 {clockStatus === "success" && !hasData && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                        <h2 className="text-2xl font-bold text-muted-foreground">
                             No listening data available
                         </h2>
-                        <p className="text-neutral-500">
+                        <p className="text-sm text-muted-foreground">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -85,11 +85,11 @@ const ListeningClockChart = ({
                 {clockStatus === "pending" && loading}
 
                 {clockStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border-4 border-red-500 bg-red-100 text-center">
-                        <h2 className="text-4xl font-bold text-red-950">
-                            Error:
+                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
+                        <h2 className="text-2xl font-bold text-destructive">
+                            Error
                         </h2>
-                        <p className="text-lg text-red-800/70">
+                        <p className="text-sm text-muted-foreground">
                             {clockError?.message || "An unknown error occurred"}
                         </p>
                     </div>

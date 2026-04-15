@@ -41,10 +41,10 @@ const DiscoveryChart = ({
     );
 
     return (
-        <div className="mt-6 mx-4">
+        <div className="mt-6">
             <div className="flex items-center justify-between px-2">
                 <div className="w-20" />
-                <h2 className="flex-1 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
+                <h2 className="flex-1 text-center text-xl font-bold">
                     Discovery Timeline
                 </h2>
                 <div className="flex w-20 justify-end">
@@ -54,7 +54,7 @@ const DiscoveryChart = ({
                     />
                 </div>
             </div>
-            <p className="mb-4 mt-1 text-center text-sm text-neutral-500">
+            <p className="mb-4 mt-1 text-center text-sm text-muted-foreground">
                 When did you discover your top artists?
             </p>
             <div className="animate-in fade-in zoom-in-95 w-full overflow-visible rounded-b-lg duration-1000"
@@ -71,10 +71,10 @@ const DiscoveryChart = ({
 
                 {discoveryStatus === "success" && !hasData && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                        <h2 className="text-2xl font-bold text-muted-foreground">
                             No discovery data available
                         </h2>
-                        <p className="text-neutral-500">
+                        <p className="text-sm text-muted-foreground">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -83,11 +83,11 @@ const DiscoveryChart = ({
                 {discoveryStatus === "pending" && loading}
 
                 {discoveryStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border-4 border-red-500 bg-red-100 text-center">
-                        <h2 className="text-4xl font-bold text-red-950">
-                            Error:
+                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
+                        <h2 className="text-2xl font-bold text-destructive">
+                            Error
                         </h2>
-                        <p className="text-lg text-red-800/70">
+                        <p className="text-sm text-muted-foreground">
                             {discoveryError?.message ||
                                 "An unknown error occurred"}
                         </p>

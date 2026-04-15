@@ -96,32 +96,38 @@ const HomePage = () => {
         setFormError(null);
     }
 
+    const inputClass =
+        "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none transition-colors focus:border-spotify-green focus:ring-1 focus:ring-spotify-green/30";
+
     return (
-        <div className="text-spotify-black flex min-h-screen w-full flex-col items-center bg-linear-to-b from-neutral-50 to-neutral-100 transition dark:from-neutral-900 dark:to-black dark:text-white">
-            <div className="mx-2 w-full max-w-md pt-16">
-                <h1 className="text-spotify-green mb-2 text-center text-4xl font-bold">
+        <div className="relative flex min-h-screen w-full flex-col items-center bg-background transition">
+            {/* Ambient glow */}
+            <div className="pointer-events-none absolute top-0 left-1/2 h-[500px] w-[600px] -translate-x-1/2 rounded-full bg-spotify-green/[0.06] blur-3xl" />
+
+            <div className="relative z-10 mx-3 w-full max-w-md pt-20">
+                <h1 className="text-spotify-green mb-1 text-center text-3xl font-bold tracking-tight">
                     ReWrapped
                 </h1>
-                <p className="mb-8 text-center text-neutral-500 dark:text-neutral-400">
+                <p className="mb-8 text-center text-sm text-muted-foreground">
                     Your Spotify listening history, visualized.
                 </p>
 
                 <form
                     onSubmit={handleSubmit}
-                    className="page-section flex flex-col gap-4 rounded-lg p-6 shadow-md"
+                    className="page-section flex flex-col gap-4 rounded-xl border-t-2 border-t-spotify-green/40 p-6"
                 >
-                    <h2 className="text-center text-2xl font-semibold">
+                    <h2 className="text-center text-lg font-semibold">
                         {mode === "login" ? "Log In" : "Create Account"}
                     </h2>
 
                     {mode === "register" && (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-1.5">
                             <label
                                 htmlFor="displayName"
-                                className="text-sm font-medium text-neutral-600 dark:text-neutral-300"
+                                className="text-xs font-medium text-muted-foreground"
                             >
                                 Display Name{" "}
-                                <span className="text-neutral-400">
+                                <span className="text-muted-foreground/60">
                                     (optional)
                                 </span>
                             </label>
@@ -131,16 +137,16 @@ const HomePage = () => {
                                 value={displayName}
                                 onChange={(e) => setDisplayName(e.target.value)}
                                 placeholder="Your name"
-                                className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-spotify-green dark:border-neutral-600 dark:bg-neutral-800"
+                                className={inputClass}
                                 disabled={isPending}
                             />
                         </div>
                     )}
 
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                         <label
                             htmlFor="email"
-                            className="text-sm font-medium text-neutral-600 dark:text-neutral-300"
+                            className="text-xs font-medium text-muted-foreground"
                         >
                             Email
                         </label>
@@ -151,16 +157,16 @@ const HomePage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="you@example.com"
-                            className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-spotify-green dark:border-neutral-600 dark:bg-neutral-800"
+                            className={inputClass}
                             disabled={isPending}
                             autoComplete="email"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                         <label
                             htmlFor="password"
-                            className="text-sm font-medium text-neutral-600 dark:text-neutral-300"
+                            className="text-xs font-medium text-muted-foreground"
                         >
                             Password
                         </label>
@@ -172,7 +178,7 @@ const HomePage = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••"
-                            className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-spotify-green dark:border-neutral-600 dark:bg-neutral-800"
+                            className={inputClass}
                             disabled={isPending}
                             autoComplete={
                                 mode === "login"
@@ -183,10 +189,10 @@ const HomePage = () => {
                     </div>
 
                     {mode === "register" && (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-1.5">
                             <label
                                 htmlFor="confirmPassword"
-                                className="text-sm font-medium text-neutral-600 dark:text-neutral-300"
+                                className="text-xs font-medium text-muted-foreground"
                             >
                                 Confirm Password
                             </label>
@@ -200,7 +206,7 @@ const HomePage = () => {
                                     setConfirmPassword(e.target.value)
                                 }
                                 placeholder="••••••••"
-                                className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-spotify-green dark:border-neutral-600 dark:bg-neutral-800"
+                                className={inputClass}
                                 disabled={isPending}
                                 autoComplete="new-password"
                             />
@@ -208,13 +214,13 @@ const HomePage = () => {
                     )}
 
                     {formError && (
-                        <p className="text-sm text-red-500">{formError}</p>
+                        <p className="text-sm text-destructive">{formError}</p>
                     )}
 
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="bg-spotify-green text-spotify-black mt-2 rounded-full px-6 py-3 text-lg font-semibold transition hover:scale-[1.02] hover:cursor-pointer disabled:opacity-60 dark:text-white"
+                        className="bg-spotify-green mt-1 rounded-lg px-6 py-2.5 text-sm font-semibold text-black transition-all hover:brightness-110 hover:cursor-pointer disabled:opacity-60"
                     >
                         {isPending
                             ? "Please wait..."
@@ -223,14 +229,14 @@ const HomePage = () => {
                               : "Create Account"}
                     </button>
 
-                    <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">
+                    <p className="text-center text-sm text-muted-foreground">
                         {mode === "login" ? (
                             <>
                                 Don&apos;t have an account?{" "}
                                 <button
                                     type="button"
                                     onClick={switchMode}
-                                    className="text-spotify-green hover:underline"
+                                    className="text-spotify-green font-medium hover:underline"
                                 >
                                     Register
                                 </button>
@@ -241,7 +247,7 @@ const HomePage = () => {
                                 <button
                                     type="button"
                                     onClick={switchMode}
-                                    className="text-spotify-green hover:underline"
+                                    className="text-spotify-green font-medium hover:underline"
                                 >
                                     Log In
                                 </button>
@@ -257,14 +263,14 @@ const HomePage = () => {
                                 search: { demo: true },
                             })
                         }
-                        className="text-sm text-neutral-400 transition hover:text-neutral-600 dark:hover:text-neutral-200"
+                        className="text-spotify-green/70 rounded-md py-1 text-sm font-medium transition-colors hover:text-spotify-green"
                     >
                         Try Demo Mode
                     </button>
                 </form>
             </div>
 
-            <div className="mx-2 w-full max-w-5xl pb-16">
+            <div className="relative z-10 mx-3 w-full max-w-5xl pb-16">
                 <Explanation />
             </div>
 

@@ -90,9 +90,9 @@ export const ChartsPage = () => {
     return (
         <div className="flex w-full flex-col">
             <NavBar includeUser={!demo} />
-            <div className="text-spotify-black flex min-h-screen flex-col items-center bg-linear-to-b from-white via-neutral-50 to-white py-8 font-sans transition dark:from-neutral-900 dark:via-neutral-950 dark:to-black dark:text-white">
+            <div className="flex min-h-screen flex-col items-center bg-background py-8 font-sans transition">
                 <div className="relative h-full w-full max-w-5xl">
-                    <section className="page-section mx-2 mb-6 flex justify-center rounded-lg pb-2 shadow-sm">
+                    <section className="page-section mx-3 mb-6 rounded-xl">
                         <FilterControls
                             bufferFilters={bufferFilters}
                             setBufferFilters={setBufferFilters}
@@ -102,48 +102,46 @@ export const ChartsPage = () => {
                     </section>
                     {demo && (
                         <div className="flex w-full justify-center text-center">
-                            <div className="dark:text-spotify-green page-section bg-spotify-black text-spotify-black mb-6 w-fit rounded-lg px-6 py-3 text-lg font-bold shadow-md">
-                                <div>
-                                    Demo Data Courtesy of{" "}
-                                    <a
-                                        className="hover:text-spotify-green underline dark:hover:text-white"
-                                        href="https://www.kindridmusic.com/"
-                                        target="_blank"
-                                    >
-                                        Kindrid
-                                    </a>
-                                </div>
+                            <div className="text-spotify-green mb-6 w-fit rounded-lg border border-spotify-green/20 bg-spotify-green/5 px-6 py-3 text-sm font-semibold">
+                                Demo Data Courtesy of{" "}
+                                <a
+                                    className="underline transition-colors hover:text-foreground"
+                                    href="https://www.kindridmusic.com/"
+                                    target="_blank"
+                                >
+                                    Kindrid
+                                </a>
                             </div>
                         </div>
                     )}
-                    <section className="page-section mx-2 flex flex-col rounded-lg shadow-md">
+                    <section className="page-section mx-3 flex flex-col overflow-hidden rounded-xl">
                         <BumpChart bumpQuery={bumpQuery} filters={filters} />
                     </section>
-                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                    <section className="page-section mx-3 mt-6 flex flex-col overflow-hidden rounded-xl">
                         <ListeningTimeChart
                             listeningTimeQuery={listeningTimeQuery}
                             filters={filters}
                         />
                     </section>
-                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                    <section className="page-section mx-3 mt-6 flex flex-col overflow-hidden rounded-xl">
                         <ListeningClockChart
                             listeningClockQuery={listeningClockQuery}
                         />
                     </section>
-                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                    <section className="page-section mx-3 mt-6 flex flex-col overflow-hidden rounded-xl">
                         <DiversityChart
                             diversityQuery={diversityQuery}
                             filters={filters}
                         />
                     </section>
-                    <section className="page-section mx-2 mt-6 flex flex-col rounded-lg shadow-md">
+                    <section className="page-section mx-3 mt-6 flex flex-col overflow-hidden rounded-xl">
                         <DiscoveryChart
                             discoveryQuery={discoveryQuery}
                             token={token!}
                             demo={demo}
                         />
                     </section>
-                    <section className="page-section mx-2 mt-6 mb-6 flex flex-col rounded-lg shadow-md">
+                    <section className="page-section mx-3 mt-6 mb-6 flex flex-col overflow-hidden rounded-xl">
                         <StreaksChart streaksQuery={streaksQuery} />
                     </section>
                 </div>

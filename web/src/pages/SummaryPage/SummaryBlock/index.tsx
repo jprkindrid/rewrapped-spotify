@@ -30,8 +30,6 @@ const SummaryBlock = ({
     const { data: summaryData, status, error: summaryError } = summaryQuery;
     const {
         data: metaData,
-        isLoading: metaIsLoading,
-        error: metaError,
     } = metaQuery;
 
     const displayData =
@@ -60,16 +58,16 @@ const SummaryBlock = ({
     }, [status, displayData]);
 
     return (
-        <div className="page-section relative flex flex-1 flex-col items-center overflow-clip rounded-lg">
+        <div className="relative flex flex-1 flex-col items-center overflow-clip rounded-xl">
             {summaryError && (
-                <div className="r-0 absolute top-0 flex h-full w-full flex-col items-center justify-center gap-4 bg-neutral-400/50 text-center text-3xl font-bold text-red-500 backdrop-blur-xs text-shadow-md dark:bg-neutral-800/50">
+                <div className="r-0 absolute top-0 z-10 flex h-full w-full flex-col items-center justify-center gap-4 bg-background/80 text-center text-3xl font-bold text-destructive backdrop-blur-sm dark:bg-background/80">
                     <div>
                         {summaryError.message?.includes("404") ||
                         summaryError.message?.includes("Not Found")
                             ? "No Data Found"
                             : "Error Getting Summary Data:"}
                     </div>
-                    <div className="text-lg">
+                    <div className="text-lg font-normal text-muted-foreground">
                         {summaryError.message?.includes("404") ||
                         summaryError.message?.includes("Not Found")
                             ? "Upload your streaming history to get started"
@@ -84,20 +82,20 @@ const SummaryBlock = ({
                 noData={noData}
             />
 
-            <div className="from-spotify-green/20 dark:to-spotify-black flex h-full w-full flex-col justify-between bg-linear-to-br via-white/50 to-white transition dark:from-neutral-800 dark:via-neutral-800">
+            <div className="flex h-full w-full flex-col justify-between">
                 {status === "pending" && (
                     <div className="py-4">
                         {Array.from({ length: limit }).map((_, i) => (
                             <div
                                 key={`skeleton-${i}`}
                                 className={clsx(
-                                    "mx-6 my-1 flex flex-1 items-center justify-between border-neutral-200 px-4 py-3 dark:border-neutral-500/30",
+                                    "mx-4 flex flex-1 items-center justify-between border-border/60 px-4 py-3 dark:border-white/[0.06] sm:mx-6",
                                     i !== 0 && "border-t"
                                 )}
                             >
                                 <SkeletonSummaryItem />
                                 {/* Button placeholder */}
-                                <div className="h-10 w-10 shrink-0 rounded-full bg-neutral-200/60 dark:bg-neutral-700/40" />
+                                <div className="h-10 w-10 shrink-0 rounded-full bg-muted" />
                             </div>
                         ))}
                     </div>
@@ -114,7 +112,7 @@ const SummaryBlock = ({
                                 <div
                                     key={item.URI}
                                     className={clsx(
-                                        "dark:border-spotify-green/30 mx-6 my-1 flex flex-1 items-center justify-between border-neutral-200 px-4 py-2 transition duration-300",
+                                        "mx-4 flex flex-1 items-center justify-between border-border/60 px-4 py-2.5 transition duration-300 hover:bg-accent/50 dark:border-white/[0.06] sm:mx-6",
                                         i !== 0 && "border-t",
                                         showTransitions
                                             ? "translate-y-0 opacity-100"
@@ -138,8 +136,6 @@ const SummaryBlock = ({
                                         <ItemLinkButton
                                             key={i}
                                             link={meta?.ItemURL ?? ""}
-                                            metaIsLoading={metaIsLoading}
-                                            metaError={metaError}
                                         />
                                     </div>
                                 </div>
@@ -147,17 +143,17 @@ const SummaryBlock = ({
                         })
                     ) : (
                         <div className="flex h-64 flex-col items-center justify-center gap-2 text-center">
-                            <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                            <h2 className="text-2xl font-bold text-muted-foreground">
                                 No summary data available
                             </h2>
-                            <p className="text-neutral-500">
+                            <p className="text-sm text-muted-foreground">
                                 Try adjusting your date range or filters.
                             </p>
                         </div>
                     ))}
             </div>
 
-            <div className="w-full border-t border-neutral-200 py-4 dark:border-neutral-700">
+            <div className="w-full border-t border-border/60 py-4 dark:border-white/[0.06]">
                 <SummaryPageButtons
                     summaryData={summaryData}
                     displayType={displayType}

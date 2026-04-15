@@ -43,10 +43,10 @@ const StreaksChart = ({ streaksQuery }: StreaksChartProps) => {
 
     return (
         <div className="mt-6">
-            <h2 className="mb-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
+            <h2 className="mb-4 text-center text-xl font-bold">
                 Listening Streaks
             </h2>
-            <p className="mb-4 text-center text-sm text-neutral-500">
+            <p className="mb-4 text-center text-sm text-muted-foreground">
                 Your daily listening activity at a glance
             </p>
 
@@ -55,47 +55,39 @@ const StreaksChart = ({ streaksQuery }: StreaksChartProps) => {
                 <div
                     className={`mx-auto mb-6 grid max-w-lg gap-3 ${isMobile ? "grid-cols-2" : "grid-cols-4"}`}
                 >
-                    <div
-                        className={`flex flex-col items-center rounded-lg px-3 py-3 ${isDark ? "bg-neutral-800/50" : "bg-neutral-100"}`}
-                    >
+                    <div className="flex flex-col items-center rounded-lg bg-muted px-3 py-3">
                         <Flame className="text-spotify-green mb-1 size-5" />
                         <span className="text-lg font-bold">
                             {streaksData.longestStreak}
                         </span>
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-xs text-muted-foreground">
                             Longest Streak
                         </span>
                     </div>
-                    <div
-                        className={`flex flex-col items-center rounded-lg px-3 py-3 ${isDark ? "bg-neutral-800/50" : "bg-neutral-100"}`}
-                    >
+                    <div className="flex flex-col items-center rounded-lg bg-muted px-3 py-3">
                         <Activity className="text-spotify-green mb-1 size-5" />
                         <span className="text-lg font-bold">
                             {streaksData.currentStreak}
                         </span>
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-xs text-muted-foreground">
                             Current Streak
                         </span>
                     </div>
-                    <div
-                        className={`flex flex-col items-center rounded-lg px-3 py-3 ${isDark ? "bg-neutral-800/50" : "bg-neutral-100"}`}
-                    >
+                    <div className="flex flex-col items-center rounded-lg bg-muted px-3 py-3">
                         <Calendar className="text-spotify-green mb-1 size-5" />
                         <span className="text-lg font-bold">
                             {streaksData.totalActiveDays}
                         </span>
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-xs text-muted-foreground">
                             Active Days
                         </span>
                     </div>
-                    <div
-                        className={`flex flex-col items-center rounded-lg px-3 py-3 ${isDark ? "bg-neutral-800/50" : "bg-neutral-100"}`}
-                    >
+                    <div className="flex flex-col items-center rounded-lg bg-muted px-3 py-3">
                         <Flame className="text-spotify-green mb-1 size-5" />
                         <span className="text-lg font-bold">
                             {formatTime(totalListeningMs)}
                         </span>
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-xs text-muted-foreground">
                             Total Time
                         </span>
                     </div>
@@ -118,10 +110,10 @@ const StreaksChart = ({ streaksQuery }: StreaksChartProps) => {
 
                 {streaksStatus === "success" && !hasData && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                        <h2 className="text-2xl font-bold text-muted-foreground">
                             No streak data available
                         </h2>
-                        <p className="text-neutral-500">
+                        <p className="text-sm text-muted-foreground">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -130,11 +122,11 @@ const StreaksChart = ({ streaksQuery }: StreaksChartProps) => {
                 {streaksStatus === "pending" && loading}
 
                 {streaksStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border-4 border-red-500 bg-red-100 text-center">
-                        <h2 className="text-4xl font-bold text-red-950">
-                            Error:
+                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
+                        <h2 className="text-2xl font-bold text-destructive">
+                            Error
                         </h2>
-                        <p className="text-lg text-red-800/70">
+                        <p className="text-sm text-muted-foreground">
                             {streaksError?.message ||
                                 "An unknown error occurred"}
                         </p>

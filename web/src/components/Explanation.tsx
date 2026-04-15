@@ -1,23 +1,23 @@
 const Explanation = () => {
     return (
-        <section className="page-section mt-8 flex flex-col items-center rounded-lg py-6 shadow-sm">
-            <h2 className="text-4xl font-bold">How It Works</h2>
-            <div className="from-spotify-green/0 via-spotify-green to-spotify-green/0 my-6 h-1 w-[calc(100%-4rem)] rounded-full bg-linear-to-r"></div>
+        <section className="page-section mt-8 flex flex-col items-center rounded-xl py-6">
+            <h2 className="text-xl font-bold">How It Works</h2>
+            <div className="my-4 h-px w-[calc(100%-4rem)] max-w-md bg-border/60" />
 
-            <ol className="max-w-[80%] list-decimal space-y-2 text-neutral-600 dark:text-neutral-300">
+            <ol className="max-w-[80%] list-decimal space-y-2 text-sm text-muted-foreground">
                 <li>
                     Go to{" "}
                     <a
                         href="https://www.spotify.com/account/privacy/"
                         target="_blank"
-                        className="hover:text-spotify-green underline"
+                        className="text-spotify-green font-medium hover:underline"
                     >
                         Spotify Privacy Settings
                     </a>
                 </li>
                 <li>
-                    Under "Account privacy" request your "Extended Streaming
-                    History"
+                    Under &quot;Account privacy&quot; request your
+                    &quot;Extended Streaming History&quot;
                 </li>
                 <li>Create an account or log in</li>
                 <li>

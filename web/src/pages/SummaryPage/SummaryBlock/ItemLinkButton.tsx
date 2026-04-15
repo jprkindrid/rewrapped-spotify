@@ -1,19 +1,17 @@
-const ItemLinkButton = ({
-    link,
-}: {
-    link: string;
-    metaIsLoading: boolean;
-    metaError: Error | null;
-}) => {
+const ItemLinkButton = ({ link }: { link: string }) => {
     return (
-        <a href={link} target="_blank" className="text-spotify-green">
+        <a
+            href={link}
+            target="_blank"
+            className="text-spotify-green opacity-60 transition-all hover:scale-110 hover:opacity-100"
+        >
             <svg
                 role="img"
                 fill="currentColor"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
                 stroke="currentColor"
-                className="size-8 transition-transform duration-200 hover:scale-110"
+                className="size-7"
                 strokeWidth={0}
             >
                 <title>Spotify</title>

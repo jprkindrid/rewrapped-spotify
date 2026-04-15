@@ -44,10 +44,10 @@ const DiversityChart = ({ diversityQuery, filters }: DiversityChartProps) => {
 
     return (
         <div className="mt-6">
-            <h2 className="mb-4 text-center text-xl font-bold text-neutral-800 dark:text-neutral-200">
+            <h2 className="mb-4 text-center text-xl font-bold">
                 Artist Diversity Over Time
             </h2>
-            <p className="mb-4 text-center text-sm text-neutral-500">
+            <p className="mb-4 text-center text-sm text-muted-foreground">
                 How many unique artists and tracks do you listen to each
                 period?
             </p>
@@ -67,10 +67,10 @@ const DiversityChart = ({ diversityQuery, filters }: DiversityChartProps) => {
 
                 {diversityStatus === "success" && chartData.length === 0 && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
+                        <h2 className="text-2xl font-bold text-muted-foreground">
                             No diversity data available
                         </h2>
-                        <p className="text-neutral-500">
+                        <p className="text-sm text-muted-foreground">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -79,11 +79,11 @@ const DiversityChart = ({ diversityQuery, filters }: DiversityChartProps) => {
                 {diversityStatus === "pending" && loading}
 
                 {diversityStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border-4 border-red-500 bg-red-100 text-center">
-                        <h2 className="text-4xl font-bold text-red-950">
-                            Error:
+                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
+                        <h2 className="text-2xl font-bold text-destructive">
+                            Error
                         </h2>
-                        <p className="text-lg text-red-800/70">
+                        <p className="text-sm text-muted-foreground">
                             {diversityError?.message ||
                                 "An unknown error occurred"}
                         </p>

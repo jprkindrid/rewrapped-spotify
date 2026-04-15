@@ -15,33 +15,35 @@ const DisplayToggle = ({
     noData = true,
 }: DisplayToggleProps) => {
     return (
-        <div className="bg-spotify-black border-spotify-green/30 flex w-full justify-around overflow-clip rounded-t-lg border-b px-5 py-3">
-            <div className="flex">
+        <div className="flex w-full justify-center border-b border-border/60 bg-muted/50 px-5 py-3 dark:border-white/[0.06]">
+            <div className="inline-flex rounded-lg bg-muted p-0.5">
                 <Button
-                    variant={displayType === "artists" ? "default" : "outline"}
+                    variant="ghost"
+                    size="sm"
                     onClick={() => onDisplayTypeChange("artists")}
                     className={clsx(
-                        "rounded-r-none",
+                        "rounded-md px-4 text-xs font-semibold tracking-wide uppercase transition-all",
                         displayType === "artists"
-                            ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
-                            : "border-spotify-green text-spotify-green"
+                            ? "bg-spotify-green text-black shadow-sm hover:bg-spotify-green/90"
+                            : "text-muted-foreground hover:text-foreground"
                     )}
                     disabled={noData}
                 >
-                    ARTISTS
+                    Artists
                 </Button>
                 <Button
-                    variant={displayType === "tracks" ? "default" : "outline"}
+                    variant="ghost"
+                    size="sm"
                     onClick={() => onDisplayTypeChange("tracks")}
                     className={clsx(
-                        "rounded-l-none border-l-0",
+                        "rounded-md px-4 text-xs font-semibold tracking-wide uppercase transition-all",
                         displayType === "tracks"
-                            ? "bg-spotify-green hover:bg-spotify-green/90 text-black"
-                            : "border-spotify-green text-spotify-green"
+                            ? "bg-spotify-green text-black shadow-sm hover:bg-spotify-green/90"
+                            : "text-muted-foreground hover:text-foreground"
                     )}
                     disabled={noData}
                 >
-                    TRACKS
+                    Tracks
                 </Button>
             </div>
         </div>

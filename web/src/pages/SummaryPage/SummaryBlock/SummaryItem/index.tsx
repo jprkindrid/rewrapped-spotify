@@ -31,9 +31,13 @@ const SummaryItem = ({
             ? `Artwork for the artist '${item.Name}'`
             : `Album artwork for the track '${item.Name}'`;
 
+    const rank = i + offset + 1;
+
     return (
-        <div className="mt-2 flex w-full items-center text-xl text-shadow-sm sm:text-2xl">
-            <div className="dark:ring-spotify-green/50 mr-4 h-20 w-20 shrink-0 overflow-hidden shadow-lg dark:ring">
+        <div className="flex w-full items-center gap-3">
+            <div className="shrink-0 overflow-hidden rounded-md shadow-sm ring-1 ring-border/60 dark:ring-white/[0.08]"
+                style={{ width: 56, height: 56 }}
+            >
                 <ArtworkBlock
                     metaStatus={metaStatus}
                     imageUrl={imageUrl}
@@ -41,20 +45,20 @@ const SummaryItem = ({
                     placeHolderImgUrl={placeHolderImgUrl}
                 />
             </div>
-            <div className="block flex-1 flex-col items-center sm:flex sm:flex-row">
-                <div className="flex sm:w-1/2">
-                    <div className="text-spotify-green mr-2 flex font-bold">
-                        {i + offset + 1}
-                        {"."}
-                        {/* <div className="text-xl text-red-500">{item.URI}</div> */}
-                        <div> </div>
-                    </div>
-                    <div>{isLoading ? "Loading..." : item.Name}</div>
+            <div className="flex flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-0">
+                <div className="flex items-baseline sm:w-1/2">
+                    <span className="text-spotify-green mr-2 w-8 shrink-0 text-right text-base font-bold tabular-nums">
+                        {rank}
+                    </span>
+                    <span className="text-base font-medium sm:text-lg">
+                        {isLoading ? "Loading..." : item.Name}
+                    </span>
                 </div>
 
-                <div className="flex flex-1 flex-col text-sm text-neutral-400 tabular-nums sm:flex-row sm:text-base">
-                    <div className="mr-1">{item.Count} Plays -</div>
-                    <div>{formatMsDuration(item.TotalMs)}</div>
+                <div className="flex flex-1 gap-1.5 pl-10 text-sm text-muted-foreground tabular-nums sm:pl-0">
+                    <span>{item.Count} plays</span>
+                    <span className="text-border">|</span>
+                    <span>{formatMsDuration(item.TotalMs)}</span>
                 </div>
             </div>
         </div>

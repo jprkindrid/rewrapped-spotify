@@ -41,8 +41,8 @@ const DateRangePicker = <T extends SummaryFilters | ChartFilters>({
 
     return (
         <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <div className="flex items-center gap-2 sm:flex-col">
-                <label className="text-muted-foreground w-24 shrink-0 text-sm sm:w-auto">
+            <div className="flex flex-col items-center gap-1">
+                <label className="text-muted-foreground text-xs">
                     Start Date
                 </label>
 
@@ -80,8 +80,8 @@ const DateRangePicker = <T extends SummaryFilters | ChartFilters>({
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className="flex items-center gap-2 sm:flex-col">
-                <label className="text-muted-foreground w-24 shrink-0 text-sm sm:w-auto">
+            <div className="flex flex-col items-center gap-1 -ml-1">
+                <label className="text-muted-foreground text-xs">
                     End Date
                 </label>
 

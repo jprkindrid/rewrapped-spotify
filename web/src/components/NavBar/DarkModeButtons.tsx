@@ -1,11 +1,36 @@
 import * as themeUtil from "@/utils/theme";
+import { useState, useEffect } from "react";
+import clsx from "clsx";
+
+type ThemeMode = "light" | "dark" | "system";
 
 const DarkModeButtons = () => {
+    const [active, setActive] = useState<ThemeMode>(themeUtil.getTheme());
+
+    useEffect(() => {
+        const handle = () => setActive(themeUtil.getTheme());
+        window.addEventListener("storage", handle);
+        return () => window.removeEventListener("storage", handle);
+    }, []);
+
+    const select = (mode: ThemeMode) => {
+        themeUtil.setTheme(mode);
+        setActive(mode);
+    };
+
+    const btnBase =
+        "rounded-md p-1.5 transition-colors";
+    const btnActive =
+        "bg-spotify-green/15 text-spotify-green";
+    const btnInactive =
+        "text-muted-foreground hover:text-foreground hover:bg-accent";
+
     return (
-        <div className="text-spotify-black flex h-full items-center space-x-2 dark:text-white">
+        <div className="flex items-center gap-0.5">
             <button
-                className="rounded-lg p-2 transition hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
-                onClick={() => themeUtil.setTheme("light")}
+                className={clsx(btnBase, active === "light" ? btnActive : btnInactive)}
+                onClick={() => select("light")}
+                aria-label="Light theme"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +38,7 @@ const DarkModeButtons = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-5"
+                    className="size-4"
                 >
                     <path
                         strokeLinecap="round"
@@ -23,8 +48,9 @@ const DarkModeButtons = () => {
                 </svg>
             </button>
             <button
-                className="rounded-lg p-2 transition hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
-                onClick={() => themeUtil.setTheme("dark")}
+                className={clsx(btnBase, active === "dark" ? btnActive : btnInactive)}
+                onClick={() => select("dark")}
+                aria-label="Dark theme"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +58,7 @@ const DarkModeButtons = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-5"
+                    className="size-4"
                 >
                     <path
                         strokeLinecap="round"
@@ -42,8 +68,9 @@ const DarkModeButtons = () => {
                 </svg>
             </button>
             <button
-                className="rounded-lg p-2 transition hover:bg-neutral-400/35 dark:hover:bg-neutral-500/50"
-                onClick={() => themeUtil.setTheme("system")}
+                className={clsx(btnBase, active === "system" ? btnActive : btnInactive)}
+                onClick={() => select("system")}
+                aria-label="System theme"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +78,7 @@ const DarkModeButtons = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-5"
+                    className="size-4"
                 >
                     <path
                         strokeLinecap="round"

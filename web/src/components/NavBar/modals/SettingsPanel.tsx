@@ -122,9 +122,9 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
     }
 
     const inputClass =
-        "w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-spotify-green dark:border-neutral-600 dark:bg-neutral-800";
+        "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-spotify-green";
     const labelClass =
-        "text-sm font-medium text-neutral-600 dark:text-neutral-300";
+        "text-sm font-medium text-muted-foreground";
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -140,7 +140,7 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                     {/* Display Name */}
                     <form
                         onSubmit={handleDisplayNameSubmit}
-                        className="flex flex-col gap-3 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700"
+                        className="flex flex-col gap-3 rounded-lg border border-border p-4"
                     >
                         <h3 className="text-sm font-semibold">Display Name</h3>
                         <div className="flex flex-col gap-1">
@@ -160,12 +160,12 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                             />
                         </div>
                         {displayNameError && (
-                            <p className="text-sm text-red-500">
+                            <p className="text-sm text-destructive">
                                 {displayNameError}
                             </p>
                         )}
                         {displayNameSuccess && (
-                            <p className="text-sm text-green-600">
+                            <p className="text-sm text-spotify-green">
                                 {displayNameSuccess}
                             </p>
                         )}
@@ -181,7 +181,7 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                     {/* Change Email */}
                     <form
                         onSubmit={handleEmailSubmit}
-                        className="flex flex-col gap-3 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700"
+                        className="flex flex-col gap-3 rounded-lg border border-border p-4"
                     >
                         <h3 className="text-sm font-semibold">Change Email</h3>
                         <div className="flex flex-col gap-1">
@@ -218,10 +218,10 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                             />
                         </div>
                         {emailError && (
-                            <p className="text-sm text-red-500">{emailError}</p>
+                            <p className="text-sm text-destructive">{emailError}</p>
                         )}
                         {emailSuccess && (
-                            <p className="text-sm text-green-600">
+                            <p className="text-sm text-spotify-green">
                                 {emailSuccess}
                             </p>
                         )}
@@ -237,7 +237,7 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                     {/* Change Password */}
                     <form
                         onSubmit={handlePasswordSubmit}
-                        className="flex flex-col gap-3 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700"
+                        className="flex flex-col gap-3 rounded-lg border border-border p-4"
                     >
                         <h3 className="text-sm font-semibold">
                             Change Password
@@ -297,12 +297,12 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                             />
                         </div>
                         {passwordError && (
-                            <p className="text-sm text-red-500">
+                            <p className="text-sm text-destructive">
                                 {passwordError}
                             </p>
                         )}
                         {passwordSuccess && (
-                            <p className="text-sm text-green-600">
+                            <p className="text-sm text-spotify-green">
                                 {passwordSuccess}
                             </p>
                         )}
