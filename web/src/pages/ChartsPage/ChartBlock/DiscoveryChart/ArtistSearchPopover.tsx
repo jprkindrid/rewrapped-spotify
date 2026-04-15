@@ -130,7 +130,7 @@ const ArtistSearchPopover = ({
                 </button>
             </PopoverTrigger>
             <PopoverContent
-                className={`w-80 p-0 ${
+                className={`w-80 mt-[4.5px] p-0 ${
                     isDark
                         ? "border-neutral-700 bg-neutral-900"
                         : "border-neutral-200 bg-white"

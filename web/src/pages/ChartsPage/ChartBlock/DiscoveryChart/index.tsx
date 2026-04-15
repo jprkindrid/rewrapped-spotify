@@ -42,12 +42,11 @@ const DiscoveryChart = ({
 
     return (
         <div className="mt-6">
-            <div className="flex items-center justify-between px-2">
-                <div className="w-20" />
-                <h2 className="flex-1 text-center text-xl font-bold">
+            <div className="relative">
+                <h2 className="text-center text-xl font-bold">
                     Discovery Timeline
                 </h2>
-                <div className="flex w-20 justify-end">
+                <div className="absolute top-1/2 right-2 -translate-y-1/2 pr-4">
                     <ArtistSearchPopover
                         token={token}
                         demo={demo}
