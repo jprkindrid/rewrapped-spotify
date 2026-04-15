@@ -15,7 +15,16 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - Explore personalized listening insights with interactive visualizations
 - Filter data by date ranges, time intervals (monthly/yearly), and sort preferences
 - View ranking trends over time with bump charts
+- Explore discovery, diversity, streak, and listening clock insights
 - Authenticate securely via email/password login
+
+### App Routes
+
+- `/` - Landing page and auth entry point
+- `/upload` - Upload Spotify streaming history
+- `/summary` - Top tracks and artists with filters and pagination
+- `/charts` - Full analytics dashboard with bump, time, clock, discovery,
+  diversity, and streak views
 
 ## Features
 
@@ -25,6 +34,10 @@ ReWrapped Spotify is a full-stack web application that lets you:
   trends
 - **Bump Charts** – Visualize ranking changes over time (monthly/yearly)
 - **Listening Time Charts** – Track listening hours over time (daily/monthly/yearly)
+- **Listening Clock** – See when you listen across the day
+- **Discovery** – Find when top artists were first discovered
+- **Diversity** – Measure unique artists and tracks over time
+- **Streaks** – Track listening streaks and consistency
 - **Date & Interval Filtering** – Filter by custom date ranges and time periods
 - **Sort Options** – Sort by play count or listening time
 - **Pagination & Search** – Browse listening history easily
@@ -164,6 +177,9 @@ make run
 docker-compose up --build
 ```
 
+When running the backend container locally, `server/scripts/entrypoint.sh` will
+create the SQLite file if needed and run migrations before starting the app.
+
 ### 3. Configure Frontend
 
 Navigate to the frontend directory:
@@ -198,10 +214,29 @@ The backend exposes a REST API for uploading and retrieving listening data.
 |--------|----------|-------------|
 | POST | `/api/upload` | Upload streaming history (JSON or ZIP) |
 | GET | `/api/summary` | Retrieve listening summary with filters |
+| GET | `/api/demo/summary` | Demo summary data without auth |
+| POST | `/api/summary/images` | Fetch artwork metadata for summary items |
+| POST | `/api/demo/summary/images` | Demo artwork metadata |
 | POST | `/api/bumpchart` | Retrieve bump chart ranking trends |
+| POST | `/api/demo/bumpchart` | Demo bump chart data |
 | POST | `/api/listeningtime` | Retrieve listening time over intervals |
+| POST | `/api/demo/listeningtime` | Demo listening time data |
+| POST | `/api/listeningclock` | Retrieve listening clock breakdown |
+| POST | `/api/demo/listeningclock` | Demo listening clock data |
+| POST | `/api/discovery` | Retrieve discovery analytics |
+| POST | `/api/demo/discovery` | Demo discovery analytics |
+| POST | `/api/discovery/search` | Search artists for discovery details |
+| POST | `/api/demo/discovery/search` | Demo discovery search |
+| POST | `/api/diversity` | Retrieve diversity analytics |
+| POST | `/api/demo/diversity` | Demo diversity analytics |
+| POST | `/api/streaks` | Retrieve listening streak analytics |
+| POST | `/api/demo/streaks` | Demo streak analytics |
 | POST | `/auth/register` | Create account and return JWT |
 | POST | `/auth/login` | Login with email/password and return JWT |
+| DELETE | `/api/delete` | Delete the current account and data |
+| PUT | `/api/account/email` | Update account email |
+| PUT | `/api/account/password` | Update account password |
+| PUT | `/api/account/display-name` | Update display name |
 | GET | `/health` | Health check endpoint |
 
 ### Example Requests
@@ -307,7 +342,7 @@ POST /api/listeningtime?start=2023-01-01T00:00:00Z&end=2023-12-31T23:59:59Z&inte
 │   │   ├── constants/               # Shared constants
 │   │   ├── database/                # DB access/models (sqlc outputs live under server/internal/database/)
 │   │   ├── dbConn/                  # DB connection helpers
-│   │   ├── handlers/                # HTTP handlers (summary, upload, bump, auth, etc.)
+│   │   ├── handlers/                # HTTP handlers (summary, upload, charts, auth, etc.)
 │   │   ├── middleware/              # Auth + demo middleware
 │   │   ├── parser/                  # Spotify JSON/ZIP parsing + minification
 │   │   ├── server/                  # Routes + server wiring
