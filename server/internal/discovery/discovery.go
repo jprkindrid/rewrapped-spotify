@@ -23,7 +23,6 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		limit = DefaultLimit
 	}
 
-	// Pass 1: rank artists by plays/time within the filtered date range
 	type rankStats struct {
 		totalMs int
 		count   int
@@ -47,7 +46,6 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		stats.count++
 	}
 
-	// Sort to find top N artist names
 	type rankedArtist struct {
 		name    string
 		totalMs int
@@ -64,14 +62,14 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 			if ranked[i].totalMs != ranked[j].totalMs {
 				return ranked[i].totalMs > ranked[j].totalMs
 			}
-			return ranked[i].name < ranked[j].name
+			return ranked[i].count < ranked[j].count
 		})
 	} else {
 		sort.Slice(ranked, func(i, j int) bool {
 			if ranked[i].count != ranked[j].count {
 				return ranked[i].count > ranked[j].count
 			}
-			return ranked[i].name < ranked[j].name
+			return ranked[i].totalMs < ranked[j].totalMs
 		})
 	}
 
@@ -114,7 +112,6 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		stats.count++
 	}
 
-	// Build entries from all-time stats
 	entries := make([]DiscoveryEntry, 0, len(allTimeMap))
 	for name, stats := range allTimeMap {
 		entries = append(entries, DiscoveryEntry{
@@ -125,7 +122,6 @@ func GenerateDiscoveryData(data []parser.MinifiedSongData, start, end time.Time,
 		})
 	}
 
-	// Sort by first listen date for timeline ordering
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].FirstListen < entries[j].FirstListen
 	})

@@ -4,6 +4,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 )
 
@@ -44,14 +45,14 @@ func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sor
 		sorted = append(sorted, *v)
 	}
 	switch sortBy {
-	case "count":
+	case constants.SortByCount:
 		sort.Slice(sorted, func(i, j int) bool {
 			if sorted[i].Count != sorted[j].Count {
 				return sorted[i].Count > sorted[j].Count
 			}
 			return sorted[i].Name < sorted[j].Name
 		})
-	case "time":
+	case constants.SortByTime:
 		sort.Slice(sorted, func(i, j int) bool {
 			if sorted[i].TotalMs != sorted[j].TotalMs {
 				return sorted[i].TotalMs > sorted[j].TotalMs
@@ -86,14 +87,14 @@ func TopTracksInRange(data []parser.MinifiedSongData, start, end time.Time, sort
 	}
 
 	switch sortBy {
-	case "count":
+	case constants.SortByCount:
 		sort.Slice(sorted, func(i, j int) bool {
 			if sorted[i].Count != sorted[j].Count {
 				return sorted[i].Count > sorted[j].Count
 			}
 			return sorted[i].Name < sorted[j].Name
 		})
-	case "time":
+	case constants.SortByTime:
 		sort.Slice(sorted, func(i, j int) bool {
 			if sorted[i].TotalMs != sorted[j].TotalMs {
 				return sorted[i].TotalMs > sorted[j].TotalMs

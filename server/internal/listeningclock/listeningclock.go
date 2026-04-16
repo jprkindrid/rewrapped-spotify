@@ -11,16 +11,6 @@ type ClockEntry struct {
 	TotalMs   int64  `json:"totalMs"`
 }
 
-var dayNames = [7]string{
-	"Sunday",
-	"Monday",
-	"Tuesday",
-	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday",
-}
-
 type clockBucket struct {
 	totalMs   int64
 	firstTime time.Time
@@ -35,7 +25,7 @@ func GenerateListeningClockData(data []parser.MinifiedSongData, start, end time.
 			continue
 		}
 
-		weekday := int(entry.Ts.Weekday()) // 0 = Sunday
+		weekday := int(entry.Ts.Weekday())
 		hour := entry.Ts.Hour()
 
 		if grid[weekday][hour] == nil {
@@ -52,18 +42,18 @@ func GenerateListeningClockData(data []parser.MinifiedSongData, start, end time.
 	}
 
 	result := make([]ClockEntry, 0, 7*24)
-	for day := 0; day < 7; day++ {
-		for hour := 0; hour < 24; hour++ {
+	for day := range 7 {
+		for hour := range 24 {
 			if grid[day][hour] != nil {
 				result = append(result, ClockEntry{
 					Timestamp: grid[day][hour].firstTime.UTC().Format(time.RFC3339),
 					TotalMs:   grid[day][hour].totalMs,
 				})
 			} else {
-				// For empty buckets, use a representative time (midnight of that day in UTC)
-				representativeTime := time.Date(2000, 1, 2+day, hour, 0, 0, 0, time.UTC)
+				baseBucketTime := time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC) // Sunday at 00:00 UTC
+				bucketTime := baseBucketTime.AddDate(0, 0, day).Add(time.Duration(hour) * time.Hour)
 				result = append(result, ClockEntry{
-					Timestamp: representativeTime.Format(time.RFC3339),
+					Timestamp: bucketTime.Format(time.RFC3339),
 					TotalMs:   0,
 				})
 			}
