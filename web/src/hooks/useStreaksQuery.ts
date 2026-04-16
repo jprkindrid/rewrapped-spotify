@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker";
-import type { StreaksResponse } from "@/types/Charts";
+import type { StreaksResponse } from "@/types/charts/streaks";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as streaksService from "../services/streaks";
 

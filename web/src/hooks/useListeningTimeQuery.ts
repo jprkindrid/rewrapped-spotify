@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker";
-import type { ChartInterval } from "@/types/Bump";
+import type { ChartInterval } from "@/types/Shared";
 import type { ListeningTimeResponse } from "@/types/Shared";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as listeningTimeService from "../services/listeningtime";

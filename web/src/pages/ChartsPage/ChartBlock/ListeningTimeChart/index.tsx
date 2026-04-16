@@ -1,5 +1,5 @@
 import type { UseListeningTimeQueryResult } from "@/hooks/useListeningTimeQuery";
-import type { ChartFilters } from "@/types/Bump";
+import type { ChartFilters } from "@/types/Shared";
 import { convertToListeningTimeData } from "@/utils/convertToListeningTimeData";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import useBreakpoint from "@/hooks/useBreakpoint";
@@ -67,10 +67,10 @@ const ListeningTimeChart = ({
                 {listeningTimeStatus === "success" &&
                     chartData.length === 0 && (
                         <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                            <h2 className="text-2xl font-bold text-muted-foreground">
+                            <h2 className="text-muted-foreground text-2xl font-bold">
                                 No listening data available
                             </h2>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-muted-foreground text-sm">
                                 Try adjusting your date range or filters.
                             </p>
                         </div>
@@ -79,11 +79,11 @@ const ListeningTimeChart = ({
                 {listeningTimeStatus === "pending" && loading}
 
                 {listeningTimeStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
-                        <h2 className="text-2xl font-bold text-destructive">
+                    <div className="border-destructive/30 bg-destructive/5 dark:bg-destructive/10 flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border text-center">
+                        <h2 className="text-destructive text-2xl font-bold">
                             Error
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             {listeningTimeError.message ||
                                 "An unknown error occurred"}
                         </p>

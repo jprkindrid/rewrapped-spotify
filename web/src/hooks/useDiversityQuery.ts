@@ -1,6 +1,6 @@
 import type { DateRange } from "react-day-picker";
-import type { ChartInterval } from "@/types/Bump";
-import type { DiversityResponse } from "@/types/Charts";
+import type { DiversityResponse } from "@/types/charts/discovery";
+import type { ChartInterval } from "@/types/Shared";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as diversityService from "../services/diversity";
 
@@ -12,19 +12,8 @@ export function useDiversityQuery(
 ) {
     type DiversityKey = [string, DateRange, ChartInterval, string, boolean];
 
-    return useQuery<
-        DiversityResponse,
-        Error,
-        DiversityResponse,
-        DiversityKey
-    >({
-        queryKey: [
-            "diversity",
-            range,
-            interval,
-            token,
-            demo,
-        ] as DiversityKey,
+    return useQuery<DiversityResponse, Error, DiversityResponse, DiversityKey>({
+        queryKey: ["diversity", range, interval, token, demo] as DiversityKey,
         queryFn: ({ queryKey }: QueryFunctionContext<DiversityKey>) => {
             const [, range, interval] = queryKey;
 

@@ -1,4 +1,5 @@
-import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
+import type { SummaryFilters } from "@/types/Summary";
+import type { OffsetLimit } from "@/types/Shared";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
 import type { EntityType } from "@/types/Shared";
@@ -28,9 +29,7 @@ const SummaryBlock = ({
     metaQuery,
 }: SummaryBlockProps) => {
     const { data: summaryData, status, error: summaryError } = summaryQuery;
-    const {
-        data: metaData,
-    } = metaQuery;
+    const { data: metaData } = metaQuery;
 
     const displayData =
         displayType === "artists"
@@ -60,14 +59,14 @@ const SummaryBlock = ({
     return (
         <div className="relative flex flex-1 flex-col items-center overflow-clip rounded-xl">
             {summaryError && (
-                <div className="r-0 absolute top-0 z-10 flex h-full w-full flex-col items-center justify-center gap-4 bg-background/80 text-center text-3xl font-bold text-destructive backdrop-blur-sm dark:bg-background/80">
+                <div className="r-0 bg-background/80 text-destructive dark:bg-background/80 absolute top-0 z-10 flex h-full w-full flex-col items-center justify-center gap-4 text-center text-3xl font-bold backdrop-blur-sm">
                     <div>
                         {summaryError.message?.includes("404") ||
                         summaryError.message?.includes("Not Found")
                             ? "No Data Found"
                             : "Error Getting Summary Data:"}
                     </div>
-                    <div className="text-lg font-normal text-muted-foreground">
+                    <div className="text-muted-foreground text-lg font-normal">
                         {summaryError.message?.includes("404") ||
                         summaryError.message?.includes("Not Found")
                             ? "Upload your streaming history to get started"
@@ -88,13 +87,13 @@ const SummaryBlock = ({
                         <div
                             key={`skeleton-${i}`}
                             className={clsx(
-                                "mx-4 flex flex-1 items-center justify-between border-border/60 px-4 py-2.5 dark:border-white/[0.06] sm:mx-6",
+                                "border-border/60 mx-4 flex flex-1 items-center justify-between px-4 py-2.5 sm:mx-6 dark:border-white/[0.06]",
                                 i !== 0 && "border-t"
                             )}
                         >
                             <SkeletonSummaryItem />
                             {/* Button placeholder */}
-                            <div className="h-7 w-7 shrink-0 rounded-full bg-muted" />
+                            <div className="bg-muted h-7 w-7 shrink-0 rounded-full" />
                         </div>
                     ))}
 
@@ -109,7 +108,7 @@ const SummaryBlock = ({
                                 <div
                                     key={item.URI}
                                     className={clsx(
-                                        "mx-4 flex flex-1 items-center justify-between border-border/60 px-4 py-2.5 transition duration-300 hover:bg-accent/50 dark:border-white/[0.06] sm:mx-6",
+                                        "border-border/60 hover:bg-accent/50 mx-4 flex flex-1 items-center justify-between px-4 py-2.5 transition duration-300 sm:mx-6 dark:border-white/[0.06]",
                                         i !== 0 && "border-t",
                                         showTransitions
                                             ? "translate-y-0 opacity-100"
@@ -140,17 +139,17 @@ const SummaryBlock = ({
                         })
                     ) : (
                         <div className="flex h-64 flex-col items-center justify-center gap-2 text-center">
-                            <h2 className="text-2xl font-bold text-muted-foreground">
+                            <h2 className="text-muted-foreground text-2xl font-bold">
                                 No summary data available
                             </h2>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-muted-foreground text-sm">
                                 Try adjusting your date range or filters.
                             </p>
                         </div>
                     ))}
             </div>
 
-            <div className="w-full border-t border-border/60 py-4 dark:border-white/[0.06]">
+            <div className="border-border/60 w-full border-t py-4 dark:border-white/[0.06]">
                 <SummaryPageButtons
                     summaryData={summaryData}
                     displayType={displayType}

@@ -1,4 +1,4 @@
-import type { StreaksParams, StreaksResponse } from "@/types/Charts";
+import type { StreaksParams, StreaksResponse } from "@/types/charts/streaks";
 import { apiFetch } from "./apiFetch";
 
 export async function getUserStreaks({

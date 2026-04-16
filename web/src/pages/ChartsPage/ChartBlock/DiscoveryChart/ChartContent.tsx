@@ -1,4 +1,4 @@
-import type { DiscoveryEntry } from "@/types/Charts";
+import type { DiscoveryEntry } from "@/types/charts/discovery";
 import { formatTime } from "@/utils/formatTime";
 import { useMemo } from "react";
 
@@ -70,9 +70,7 @@ const DiscoveryChartContent = ({
                                         : "bg-neutral-100 hover:bg-neutral-200"
                                 }`}
                             >
-                                <div
-                                    className="bg-spotify-green h-2 w-2 flex-shrink-0 rounded-full"
-                                />
+                                <div className="bg-spotify-green h-2 w-2 flex-shrink-0 rounded-full" />
                                 <div className="min-w-0 flex-1">
                                     <div className="truncate text-sm font-semibold">
                                         {artist.name}
@@ -84,9 +82,7 @@ const DiscoveryChartContent = ({
                                 <div className="flex-shrink-0 text-right text-xs text-neutral-500">
                                     <div>
                                         {artist.count}{" "}
-                                        {artist.count === 1
-                                            ? "play"
-                                            : "plays"}
+                                        {artist.count === 1 ? "play" : "plays"}
                                     </div>
                                     <div>{formatTime(artist.totalMs)}</div>
                                 </div>

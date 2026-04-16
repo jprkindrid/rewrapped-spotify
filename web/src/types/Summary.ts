@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker";
-import type { SortBy } from "./Shared";
+import type { OffsetLimit, SortBy } from "./Shared";
 
 export interface SummaryResponse {
     offset_artists: number;
@@ -17,12 +17,6 @@ export interface SummaryEntry {
     TotalMs: number;
     Count: number;
     URI: string;
-}
-
-export interface OffsetLimit {
-    offsetTracks: number;
-    offsetArtists: number;
-    limit: number;
 }
 
 export interface SummaryParams extends OffsetLimit {

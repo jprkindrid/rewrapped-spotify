@@ -2,7 +2,7 @@ import type {
     NivoLineSeries,
     NivoLineDataPoint,
 } from "@/utils/convertToListeningTimeData";
-import type { ChartInterval } from "@/types/Bump";
+import type { ChartInterval } from "@/types/Shared";
 import { formatTime } from "@/utils/formatTime";
 import { CHART_COLORS } from "@/utils/chartColors";
 import { ResponsiveLine } from "@nivo/line";

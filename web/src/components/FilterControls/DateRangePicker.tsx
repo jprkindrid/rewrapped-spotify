@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { SummaryFilters } from "@/types/Summary";
 import type { Dispatch, SetStateAction } from "react";
-import type { ChartFilters } from "@/types/Bump";
+import type { ChartFilters } from "@/types/Shared";
 
 const Calendar = lazy(() =>
     import("@/components/ui/calendar").then((mod) => ({
@@ -80,7 +80,7 @@ const DateRangePicker = <T extends SummaryFilters | ChartFilters>({
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className="flex flex-col items-center gap-1 -ml-1">
+            <div className="-ml-1 flex flex-col items-center gap-1">
                 <label className="text-muted-foreground text-xs">
                     End Date
                 </label>

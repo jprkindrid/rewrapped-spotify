@@ -1,4 +1,7 @@
-import type { ListeningClockParams, ListeningClockResponse } from "@/types/Charts";
+import type {
+    ListeningClockParams,
+    ListeningClockResponse,
+} from "@/types/charts/listening";
 import { apiFetch } from "./apiFetch";
 
 export async function getUserListeningClock({

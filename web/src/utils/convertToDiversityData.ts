@@ -1,5 +1,5 @@
-import type { ChartInterval } from "@/types/Bump";
-import type { DiversityEntry } from "@/types/Charts";
+import type { DiversityEntry } from "@/types/charts/discovery";
+import type { ChartInterval } from "@/types/Shared";
 
 export interface NivoDiversityDataPoint {
     x: string;

@@ -1,4 +1,7 @@
-import type { DiscoveryParams, DiscoveryResponse } from "@/types/Charts";
+import type {
+    DiscoveryParams,
+    DiscoveryResponse,
+} from "@/types/charts/discovery";
 import { apiFetch } from "./apiFetch";
 
 export async function getUserDiscovery({

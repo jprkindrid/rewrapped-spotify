@@ -1,4 +1,4 @@
-import type { CalendarEntry } from "@/types/Charts";
+import type { CalendarEntry } from "@/types/charts/streaks";
 import { CHART_COLORS } from "@/utils/chartColors";
 import { formatTime } from "@/utils/formatTime";
 import { ResponsiveCalendar } from "@nivo/calendar";
@@ -32,9 +32,7 @@ const StreaksChartContent = ({
             };
         }
 
-        const sorted = [...calendar].sort((a, b) =>
-            a.day.localeCompare(b.day)
-        );
+        const sorted = [...calendar].sort((a, b) => a.day.localeCompare(b.day));
         const lastDate = new Date(sorted[sorted.length - 1].day);
         const fromDate = new Date(lastDate);
         fromDate.setFullYear(fromDate.getFullYear() - 1);

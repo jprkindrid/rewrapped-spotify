@@ -1,4 +1,4 @@
-import type { DiscoverySearchResponse } from "@/types/Charts";
+import type { DiscoverySearchResponse } from "@/types/charts/discovery";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as discoverySearchService from "@/services/discoverySearch";
 
@@ -15,15 +15,8 @@ export function useDiscoverySearchQuery(
         DiscoverySearchResponse,
         SearchKey
     >({
-        queryKey: [
-            "discovery-search",
-            query,
-            token,
-            demo,
-        ] as SearchKey,
-        queryFn: ({
-            queryKey,
-        }: QueryFunctionContext<SearchKey>) => {
+        queryKey: ["discovery-search", query, token, demo] as SearchKey,
+        queryFn: ({ queryKey }: QueryFunctionContext<SearchKey>) => {
             const [, query] = queryKey;
 
             return discoverySearchService.searchDiscoveryArtists({

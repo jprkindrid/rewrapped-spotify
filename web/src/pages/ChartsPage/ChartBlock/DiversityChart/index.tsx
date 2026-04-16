@@ -1,5 +1,5 @@
 import type { UseDiversityQueryResult } from "@/hooks/useDiversityQuery";
-import type { ChartFilters } from "@/types/Bump";
+import type { ChartFilters } from "@/types/Shared";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import useBreakpoint from "@/hooks/useBreakpoint";
 import { Loader2 } from "lucide-react";
@@ -47,9 +47,8 @@ const DiversityChart = ({ diversityQuery, filters }: DiversityChartProps) => {
             <h2 className="mb-4 text-center text-xl font-bold">
                 Artist Diversity Over Time
             </h2>
-            <p className="mb-4 text-center text-sm text-muted-foreground">
-                How many unique artists and tracks do you listen to each
-                period?
+            <p className="text-muted-foreground mb-4 text-center text-sm">
+                How many unique artists and tracks do you listen to each period?
             </p>
             <div className="animate-in fade-in zoom-in-95 h-80 w-full overflow-visible rounded-b-lg duration-1000">
                 {diversityStatus === "success" && chartData.length > 0 && (
@@ -67,10 +66,10 @@ const DiversityChart = ({ diversityQuery, filters }: DiversityChartProps) => {
 
                 {diversityStatus === "success" && chartData.length === 0 && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-muted-foreground">
+                        <h2 className="text-muted-foreground text-2xl font-bold">
                             No diversity data available
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -79,11 +78,11 @@ const DiversityChart = ({ diversityQuery, filters }: DiversityChartProps) => {
                 {diversityStatus === "pending" && loading}
 
                 {diversityStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
-                        <h2 className="text-2xl font-bold text-destructive">
+                    <div className="border-destructive/30 bg-destructive/5 dark:bg-destructive/10 flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border text-center">
+                        <h2 className="text-destructive text-2xl font-bold">
                             Error
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             {diversityError?.message ||
                                 "An unknown error occurred"}
                         </p>

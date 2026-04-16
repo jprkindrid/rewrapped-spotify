@@ -1,5 +1,6 @@
 import NavBar from "@/components/NavBar";
-import type { OffsetLimit, SummaryFilters } from "@/types/Summary";
+import type { SummaryFilters } from "@/types/Summary";
+import type { OffsetLimit } from "@/types/Shared";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
@@ -71,7 +72,7 @@ export const SummaryPage = () => {
     return (
         <div className="flex w-full flex-col">
             <NavBar includeUser={!demo} />
-            <div className="flex min-h-screen flex-col items-center bg-background py-8 font-sans transition">
+            <div className="bg-background flex min-h-screen flex-col items-center py-8 font-sans transition">
                 <div className="relative h-full w-full max-w-5xl">
                     <section className="page-section mx-3 mb-6 rounded-xl">
                         <FilterControls
@@ -83,10 +84,10 @@ export const SummaryPage = () => {
                     </section>
                     {demo && (
                         <div className="flex w-full justify-center text-center">
-                            <div className="text-spotify-green mb-6 w-fit rounded-lg border border-spotify-green/20 bg-spotify-green/5 px-6 py-3 text-sm font-semibold">
+                            <div className="text-spotify-green border-spotify-green/20 bg-spotify-green/5 mb-6 w-fit rounded-lg border px-6 py-3 text-sm font-semibold">
                                 Demo Data Courtesy of{" "}
                                 <a
-                                    className="underline transition-colors hover:text-foreground"
+                                    className="hover:text-foreground underline transition-colors"
                                     href="https://www.kindridmusic.com/"
                                     target="_blank"
                                 >

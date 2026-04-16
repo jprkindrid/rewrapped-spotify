@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 
 import DateRangePicker from "./DateRangePicker";
 import YearRangeDropown from "./YearRangeDropdown";
-import type { ChartFilters } from "@/types/Bump";
 import type { Dispatch, SetStateAction } from "react";
-import type { SortBy } from "@/types/Shared";
+import type { SortBy, ChartFilters } from "@/types/Shared";
 
 type FilterControlParams<T extends SummaryFilters | ChartFilters> = {
     bufferFilters: T;
@@ -42,7 +41,7 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
         <div className="flex w-full flex-col items-center gap-4 px-4 py-5 sm:px-6">
             {/* Sort */}
             <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                     Sort By
                 </span>
                 <div className="flex gap-2">
@@ -76,16 +75,14 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
             {/* Interval (charts only) */}
             {isChart && (
                 <div className="flex flex-col items-center gap-1.5">
-                    <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                         Interval
                     </span>
                     <div className="flex gap-2">
                         <Button
                             size="sm"
                             variant={
-                                interval === "yearly"
-                                    ? "default"
-                                    : "outline"
+                                interval === "yearly" ? "default" : "outline"
                             }
                             onClick={() => updateInterval("yearly")}
                             className={
@@ -99,9 +96,7 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
                         <Button
                             size="sm"
                             variant={
-                                interval === "monthly"
-                                    ? "default"
-                                    : "outline"
+                                interval === "monthly" ? "default" : "outline"
                             }
                             onClick={() => updateInterval("monthly")}
                             className={
@@ -115,9 +110,7 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
                         <Button
                             size="sm"
                             variant={
-                                interval === "daily"
-                                    ? "default"
-                                    : "outline"
+                                interval === "daily" ? "default" : "outline"
                             }
                             onClick={() => updateInterval("daily")}
                             className={
@@ -134,7 +127,7 @@ const FilterControls = <T extends SummaryFilters | ChartFilters>({
 
             {/* Date Range */}
             <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                     Date Range
                 </span>
                 <div className="flex flex-col items-center gap-2 sm:flex-row">

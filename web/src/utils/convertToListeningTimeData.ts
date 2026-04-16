@@ -1,4 +1,4 @@
-import type { ChartInterval } from "@/types/Bump";
+import type { ChartInterval } from "@/types/Shared";
 import type { ListeningTimeEntry } from "@/types/Shared";
 import { msToHours } from "./formatTime";
 

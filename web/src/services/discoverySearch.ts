@@ -1,7 +1,7 @@
 import type {
     DiscoverySearchParams,
     DiscoverySearchResponse,
-} from "@/types/Charts";
+} from "@/types/charts/discovery";
 import { apiFetch } from "./apiFetch";
 
 export async function searchDiscoveryArtists({

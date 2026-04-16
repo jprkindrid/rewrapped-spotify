@@ -1,4 +1,4 @@
-import type { BumpEntry } from "@/types/Bump";
+import type { BumpEntry } from "@/types/charts/bump";
 
 export const convertToBumpData = (entries: BumpEntry[]) => {
     if (!entries || entries.length === 0) return [];

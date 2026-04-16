@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker";
-import type { ListeningClockResponse } from "@/types/Charts";
+import type { ListeningClockResponse } from "@/types/charts/listening";
 import { useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import * as listeningClockService from "../services/listeningclock";
 
@@ -16,12 +16,7 @@ export function useListeningClockQuery(
         ListeningClockResponse,
         ListeningClockKey
     >({
-        queryKey: [
-            "listeningclock",
-            range,
-            token,
-            demo,
-        ] as ListeningClockKey,
+        queryKey: ["listeningclock", range, token, demo] as ListeningClockKey,
         queryFn: ({ queryKey }: QueryFunctionContext<ListeningClockKey>) => {
             const [, range] = queryKey;
 

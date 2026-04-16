@@ -1,7 +1,8 @@
 import DisplayToggle from "@/components/DisplayToggle";
 import type { UseBumpQueryResult } from "@/hooks/useBumpQuery";
 import useBreakpoint from "@/hooks/useBreakpoint";
-import type { BumpEntry, ChartFilters } from "@/types/Bump";
+import type { ChartFilters } from "@/types/Shared";
+import type { BumpEntry } from "@/types/charts/bump";
 import type { EntityType } from "@/types/Shared";
 import { convertToBumpData } from "@/utils/convertToBumpData";
 import { CHART_COLORS } from "@/utils/chartColors";
@@ -114,7 +115,7 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
                     displayData &&
                     displayData.length > 0 && (
                         <Suspense fallback={loading}>
-                            <p className="mt-8 -mb-6 block w-full text-center text-sm font-medium text-muted-foreground md:hidden">
+                            <p className="text-muted-foreground mt-8 -mb-6 block w-full text-center text-sm font-medium md:hidden">
                                 Hover a line to see track/artist name
                             </p>
                             <ResponsiveBump
@@ -172,10 +173,10 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
 
                 {bumpStatus === "success" && noData && (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                        <h2 className="text-2xl font-bold text-muted-foreground">
+                        <h2 className="text-muted-foreground text-2xl font-bold">
                             No ranking data available
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             Try adjusting your date range or filters.
                         </p>
                     </div>
@@ -183,11 +184,11 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
 
                 {bumpStatus === "pending" && !isDailyInterval && loading}
                 {bumpStatus === "error" && (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border border-destructive/30 bg-destructive/5 text-center dark:bg-destructive/10">
-                        <h2 className="text-2xl font-bold text-destructive">
+                    <div className="border-destructive/30 bg-destructive/5 dark:bg-destructive/10 flex h-full flex-col items-center justify-center gap-2 rounded-b-lg border text-center">
+                        <h2 className="text-destructive text-2xl font-bold">
                             Error
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             {bumpError.message || "An unknown error occurred"}
                         </p>
                     </div>
@@ -195,12 +196,12 @@ const BumpChart = ({ bumpQuery, filters }: BumpChartProps) => {
             </div>
 
             {isDailyInterval && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/80 backdrop-blur-md">
+                <div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center rounded-xl backdrop-blur-md">
                     <div className="px-6 text-center">
                         <p className="text-lg font-semibold">
                             Daily interval not available
                         </p>
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="text-muted-foreground mt-1 text-sm">
                             Select Monthly or Yearly to view ranking charts
                         </p>
                     </div>

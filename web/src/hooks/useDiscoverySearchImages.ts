@@ -1,4 +1,4 @@
-import type { DiscoverySearchEntry } from "@/types/Charts";
+import type { DiscoverySearchEntry } from "@/types/charts/discovery";
 import type { SummaryMetaEntry } from "@/types/Summary";
 import { useQuery } from "@tanstack/react-query";
 import * as summaryService from "@/services/summary";

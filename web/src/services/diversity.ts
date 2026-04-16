@@ -1,4 +1,7 @@
-import type { DiversityParams, DiversityResponse } from "@/types/Charts";
+import type {
+    DiversityParams,
+    DiversityResponse,
+} from "@/types/charts/discovery";
 import { apiFetch } from "./apiFetch";
 
 export async function getUserDiversity({

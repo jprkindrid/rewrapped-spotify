@@ -8,7 +8,7 @@ import { useDiscoverySearchQuery } from "@/hooks/useDiscoverySearchQuery";
 import { useDiscoverySearchImages } from "@/hooks/useDiscoverySearchImages";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { formatTime } from "@/utils/formatTime";
-import type { DiscoverySearchEntry } from "@/types/Charts";
+import type { DiscoverySearchEntry } from "@/types/charts/discovery";
 import { Search, ArrowLeft, Loader2, Music } from "lucide-react";
 
 type ArtistSearchPopoverProps = {
@@ -19,10 +19,7 @@ type ArtistSearchPopoverProps = {
 const PLACEHOLDER_IMG =
     "https://i.scdn.co/image/ab67616d0000b273146c5a8b9da16e9072279041";
 
-const ArtistSearchPopover = ({
-    token,
-    demo,
-}: ArtistSearchPopoverProps) => {
+const ArtistSearchPopover = ({ token, demo }: ArtistSearchPopoverProps) => {
     const isDark = useDarkMode();
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState("");
@@ -33,11 +30,7 @@ const ArtistSearchPopover = ({
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const searchQuery = useDiscoverySearchQuery(
-        debouncedQuery,
-        token,
-        demo
-    );
+    const searchQuery = useDiscoverySearchQuery(debouncedQuery, token, demo);
 
     const imageQuery = useDiscoverySearchImages(
         searchQuery.data?.artists,
@@ -106,7 +99,8 @@ const ArtistSearchPopover = ({
 
     const artists = searchQuery.data?.artists ?? [];
     const isSearching =
-        searchQuery.isFetching || (debouncedQuery !== inputValue.trim() && inputValue.trim().length >= 2);
+        searchQuery.isFetching ||
+        (debouncedQuery !== inputValue.trim() && inputValue.trim().length >= 2);
     const hasResults = artists.length > 0;
     const showNoResults =
         debouncedQuery.length >= 2 &&
@@ -130,7 +124,7 @@ const ArtistSearchPopover = ({
                 </button>
             </PopoverTrigger>
             <PopoverContent
-                className={`w-80 mt-[4.5px] p-0 ${
+                className={`mt-[4.5px] w-80 p-0 ${
                     isDark
                         ? "border-neutral-700 bg-neutral-900"
                         : "border-neutral-200 bg-white"
@@ -305,8 +299,7 @@ const ArtistDetail = ({
     onBack,
 }: ArtistDetailProps) => {
     const [imgError, setImgError] = useState(false);
-    const displayImage =
-        imageUrl && !imgError ? imageUrl : PLACEHOLDER_IMG;
+    const displayImage = imageUrl && !imgError ? imageUrl : PLACEHOLDER_IMG;
 
     const date = new Date(artist.firstListen + "T00:00:00");
     const fullDateLabel = date.toLocaleDateString("en-US", {

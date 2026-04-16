@@ -1,4 +1,4 @@
-import type { ChartInterval } from "@/types/Bump";
+import type { ChartInterval } from "@/types/Shared";
 import type { NivoDiversitySeries } from "@/utils/convertToDiversityData";
 import { CHART_COLORS } from "@/utils/chartColors";
 import { ResponsiveLine } from "@nivo/line";

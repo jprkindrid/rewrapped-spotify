@@ -1,8 +1,5 @@
-import type {
-    OffsetLimit,
-    SummaryFilters,
-    SummaryResponse,
-} from "@/types/Summary";
+import type { SummaryFilters, SummaryResponse } from "@/types/Summary";
+import type { OffsetLimit } from "@/types/Shared";
 import { Button } from "@/components/ui/button";
 import {
     useCallback,

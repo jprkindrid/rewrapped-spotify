@@ -6,7 +6,7 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
-import type { ChartFilters } from "@/types/Bump";
+import type { ChartFilters } from "@/types/Shared";
 
 type YearRangeParams<T extends SummaryFilters | ChartFilters> = {
     setBufferFilters: Dispatch<SetStateAction<T>>;
@@ -32,9 +32,7 @@ const YearRangeDropown = <T extends SummaryFilters | ChartFilters>({
     };
     return (
         <div className="flex flex-col items-center gap-1">
-            <label className="text-muted-foreground text-xs">
-                By Year
-            </label>
+            <label className="text-muted-foreground text-xs">By Year</label>
             <Popover open={yearDropOpen} onOpenChange={setYearDropOpen}>
                 <PopoverTrigger asChild>
                     <Button

@@ -1,4 +1,4 @@
-import type { BumpParams, BumpResponse } from "@/types/Bump";
+import type { BumpParams, BumpResponse } from "@/types/charts/bump";
 import { apiFetch } from "./apiFetch";
 
 export async function getUserBump({
