@@ -21,8 +21,8 @@ export function useListeningClockQuery(
             const [, range] = queryKey;
 
             return listeningClockService.getUserListeningClock({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 token: token,
                 demo: demo,
             });

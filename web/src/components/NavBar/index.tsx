@@ -85,9 +85,9 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                             className:
                                 "bg-spotify-green/10 text-spotify-green font-semibold",
                         }}
-                        search={{ demo }}
+                        search={(prev) => ({ ...prev, demo })}
                     >
-                        Analyze
+                        Summary
                     </Link>
                     <Link
                         to="/charts"
@@ -97,7 +97,7 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                             className:
                                 "bg-spotify-green/10 text-spotify-green font-semibold",
                         }}
-                        search={{ demo }}
+                        search={(prev) => ({ ...prev, demo })}
                     >
                         Charts
                     </Link>
@@ -171,9 +171,9 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                                     className:
                                         "bg-spotify-green/10 text-spotify-green font-semibold",
                                 }}
-                                search={{ demo }}
+                                search={(prev) => ({ ...prev, demo })}
                             >
-                                Analyze
+                                Summary
                             </Link>
                             <Link
                                 to="/charts"
@@ -183,7 +183,7 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                                     className:
                                         "bg-spotify-green/10 text-spotify-green font-semibold",
                                 }}
-                                search={{ demo }}
+                                search={(prev) => ({ ...prev, demo })}
                             >
                                 Charts
                             </Link>

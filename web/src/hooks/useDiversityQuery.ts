@@ -18,8 +18,8 @@ export function useDiversityQuery(
             const [, range, interval] = queryKey;
 
             return diversityService.getUserDiversity({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 interval: interval,
                 token: token,
                 demo: demo,

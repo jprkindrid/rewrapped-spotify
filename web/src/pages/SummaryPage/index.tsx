@@ -1,57 +1,39 @@
 import NavBar from "@/components/NavBar";
-import type { SummaryFilters } from "@/types/Summary";
-import type { OffsetLimit } from "@/types/Shared";
 import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
 import SummaryBlock from "./SummaryBlock";
 import FilterControls from "../../components/FilterControls";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useSummaryMetadata } from "@/hooks/useSummaryMetadata";
 import type { EntityType } from "@/types/Shared";
-
-const initialRange: DateRange = {
-    from: new Date(2011, 0, 1),
-    to: new Date(),
-};
-
-const initialOffsetLimit: OffsetLimit = {
-    offsetTracks: 0,
-    offsetArtists: 0,
-    limit: 10,
-};
+import { useSummaryFilterParams } from "@/hooks/useFilterParams";
 
 export const SummaryPage = () => {
     const [displayType, setDisplayType] = useState<EntityType>("artists");
     const navigate = useNavigate();
     const { token } = useAuth();
-    const { demo } = useSearch({ strict: false }) as { demo: boolean };
+
+    const {
+        filters,
+        bufferFilters,
+        setBufferFilters,
+        handleApply,
+        handleReset,
+        demo,
+    } = useSummaryFilterParams();
+
+    const [offsetLimit, setOffsetLimit] = useState(filters.offsetLimit);
 
     if (!token && !demo) {
         navigate({ to: "/" });
     }
 
-    const initialFilters: SummaryFilters = {
-        range: initialRange,
-        sortBy: "count",
-        offsetLimit: initialOffsetLimit,
-    };
-
-    const [filters, setFilters] = useState<SummaryFilters>(initialFilters);
-
-    const [bufferFilters, setBufferFilters] = useState(filters);
-
-    const handleApply = () => setFilters(bufferFilters);
-    const handleReset = () => {
-        setBufferFilters(initialFilters);
-        setFilters(initialFilters);
-    };
     const summaryQuery = useSummaryQuery(
         filters.range,
-        filters.offsetLimit.offsetTracks,
-        filters.offsetLimit.offsetArtists,
-        filters.offsetLimit.limit,
+        offsetLimit.offsetTracks,
+        offsetLimit.offsetArtists,
+        offsetLimit.limit,
         filters.sortBy,
         token!,
         demo
@@ -100,8 +82,8 @@ export const SummaryPage = () => {
                         <SummaryBlock
                             displayType={displayType}
                             setDisplayType={setDisplayType}
-                            offsetLimit={filters.offsetLimit}
-                            setFilters={setFilters}
+                            offsetLimit={offsetLimit}
+                            setOffsetLimit={setOffsetLimit}
                             summaryQuery={summaryQuery}
                             metaQuery={metaQuery}
                         />

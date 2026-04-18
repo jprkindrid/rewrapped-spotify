@@ -1,4 +1,4 @@
-import type { SummaryFilters, SummaryResponse } from "@/types/Summary";
+import type { SummaryResponse } from "@/types/Summary";
 import type { OffsetLimit } from "@/types/Shared";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ type Props = {
     summaryData: SummaryResponse | undefined;
     displayType: EntityType;
     offsetLimit: OffsetLimit;
-    setFilters: Dispatch<SetStateAction<SummaryFilters>>;
+    setOffsetLimit: Dispatch<SetStateAction<OffsetLimit>>;
     isLoading?: boolean;
     noData: boolean;
 };
@@ -24,7 +24,7 @@ const SummaryPageButtons = ({
     summaryData,
     displayType,
     offsetLimit,
-    setFilters,
+    setOffsetLimit,
     isLoading = false,
     noData = true,
 }: Props) => {
@@ -47,7 +47,7 @@ const SummaryPageButtons = ({
 
     const adjustOffset = useCallback(
         (amount: number) => {
-            setFilters((prev) => {
+            setOffsetLimit((prev) => {
                 const isArtists = displayType === "artists";
                 const total = isArtists
                     ? (summaryData?.total_artists_count ?? 0)
@@ -56,8 +56,8 @@ const SummaryPageButtons = ({
                 if (total === 0) return prev;
 
                 const currentOffset = isArtists
-                    ? prev.offsetLimit.offsetArtists
-                    : prev.offsetLimit.offsetTracks;
+                    ? prev.offsetArtists
+                    : prev.offsetTracks;
 
                 const lastValidOffset = Math.max(total - offsetLimit.limit, 0);
 
@@ -72,16 +72,13 @@ const SummaryPageButtons = ({
 
                 return {
                     ...prev,
-                    offsetLimit: {
-                        ...prev.offsetLimit,
-                        ...(isArtists
-                            ? { offsetArtists: nextOffset }
-                            : { offsetTracks: nextOffset }),
-                    },
+                    ...(isArtists
+                        ? { offsetArtists: nextOffset }
+                        : { offsetTracks: nextOffset }),
                 };
             });
         },
-        [displayType, summaryData, offsetLimit.limit, setFilters]
+        [displayType, summaryData, offsetLimit.limit, setOffsetLimit]
     );
 
     const currentOffset =

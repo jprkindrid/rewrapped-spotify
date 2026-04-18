@@ -1,9 +1,7 @@
 import NavBar from "@/components/NavBar";
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 import FilterControls from "../../components/FilterControls";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import BumpChart from "./BumpChart";
 import { useBumpQuery } from "@/hooks/useBumpQuery";
 import { useListeningTimeQuery } from "@/hooks/useListeningTimeQuery";
@@ -11,43 +9,29 @@ import { useListeningClockQuery } from "@/hooks/useListeningClockQuery";
 import { useDiscoveryQuery } from "@/hooks/useDiscoveryQuery";
 import { useDiversityQuery } from "@/hooks/useDiversityQuery";
 import { useStreaksQuery } from "@/hooks/useStreaksQuery";
-import type { ChartFilters } from "@/types/Shared";
 import ListeningTimeChart from "./ChartBlock/ListeningTimeChart";
 import ListeningClockChart from "./ChartBlock/ListeningClockChart";
 import DiscoveryChart from "./ChartBlock/DiscoveryChart";
 import DiversityChart from "./ChartBlock/DiversityChart";
 import StreaksChart from "./ChartBlock/StreaksChart";
-
-const initialRange: DateRange = {
-    from: new Date(2011, 0, 1),
-    to: new Date(),
-};
+import { useChartsFilterParams } from "@/hooks/useFilterParams";
 
 export const ChartsPage = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
 
-    const { demo } = useSearch({ strict: false }) as { demo: boolean };
+    const {
+        filters,
+        bufferFilters,
+        setBufferFilters,
+        handleApply,
+        handleReset,
+        demo,
+    } = useChartsFilterParams();
 
     if (!token && !demo) {
         navigate({ to: "/" });
     }
-
-    const initialFilters: ChartFilters = {
-        range: initialRange,
-        sortBy: "count",
-        interval: "yearly",
-    };
-
-    const [filters, setFilters] = useState<ChartFilters>(initialFilters);
-
-    const [bufferFilters, setBufferFilters] = useState(filters);
-
-    const handleApply = () => setFilters(bufferFilters);
-    const handleReset = () => {
-        setBufferFilters(initialFilters);
-        setFilters(initialFilters);
-    };
 
     const bumpQuery = useBumpQuery(
         filters.range,

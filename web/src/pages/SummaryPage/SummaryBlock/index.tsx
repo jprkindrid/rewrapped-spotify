@@ -1,4 +1,3 @@
-import type { SummaryFilters } from "@/types/Summary";
 import type { OffsetLimit } from "@/types/Shared";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
@@ -14,7 +13,7 @@ import DisplayToggle from "@/components/DisplayToggle";
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
     setDisplayType: Dispatch<SetStateAction<EntityType>>;
-    setFilters: Dispatch<SetStateAction<SummaryFilters>>;
+    setOffsetLimit: Dispatch<SetStateAction<OffsetLimit>>;
     displayType: EntityType;
     summaryQuery: UseSummaryQueryResult;
     metaQuery: UseSummaryMetadataResult;
@@ -23,7 +22,7 @@ type SummaryBlockProps = {
 const SummaryBlock = ({
     offsetLimit,
     setDisplayType,
-    setFilters,
+    setOffsetLimit,
     displayType,
     summaryQuery,
     metaQuery,
@@ -154,7 +153,7 @@ const SummaryBlock = ({
                     summaryData={summaryData}
                     displayType={displayType}
                     offsetLimit={offsetLimit}
-                    setFilters={setFilters}
+                    setOffsetLimit={setOffsetLimit}
                     isLoading={status === "pending"}
                     noData={noData}
                 />

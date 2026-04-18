@@ -40,21 +40,27 @@ const uploadRoute = createRoute({
     component: UploadPage,
 });
 
+function validateFilterSearch(search: Record<string, unknown>) {
+    return {
+        demo: (search.demo as boolean | undefined) ?? false,
+        from: search.from as string | undefined,
+        to: search.to as string | undefined,
+        sortBy: search.sortBy as string | undefined,
+        interval: search.interval as string | undefined,
+    };
+}
+
 const summaryRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/summary",
-    validateSearch: (search: Record<string, unknown>) => ({
-        demo: (search.demo as boolean | undefined) ?? false,
-    }),
+    validateSearch: validateFilterSearch,
     component: SummaryPage,
 });
 
 const chartsRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/charts",
-    validateSearch: (search: Record<string, unknown>) => ({
-        demo: (search.demo as boolean | undefined) ?? false,
-    }),
+    validateSearch: validateFilterSearch,
     component: function Charts() {
         return (
             <Suspense

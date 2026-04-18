@@ -29,8 +29,8 @@ export function useListeningTimeQuery(
             const [, range, interval] = queryKey;
 
             return listeningTimeService.getUserListeningTime({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 interval: interval,
                 token: token,
                 demo: demo,

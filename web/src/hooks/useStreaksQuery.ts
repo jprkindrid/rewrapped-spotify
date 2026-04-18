@@ -16,8 +16,8 @@ export function useStreaksQuery(
             const [, range] = queryKey;
 
             return streaksService.getUserStreaks({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 token: token,
                 demo: demo,
             });

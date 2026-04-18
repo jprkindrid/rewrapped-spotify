@@ -40,8 +40,8 @@ export function useSummaryQuery(
                 queryKey;
 
             return summaryService.getUserSummary({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 offsetArtists: offsetArtists,
                 offsetTracks: offsetTracks,
                 limit: limit,

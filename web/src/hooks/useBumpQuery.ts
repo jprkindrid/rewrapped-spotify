@@ -28,8 +28,8 @@ export function useBumpQuery(
             const [, range, sortBy, interval] = queryKey;
 
             return bumpService.getUserBump({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 sortBy: sortBy,
                 interval: interval,
                 token: token,

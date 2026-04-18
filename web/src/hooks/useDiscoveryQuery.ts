@@ -18,8 +18,8 @@ export function useDiscoveryQuery(
             const [, range, sortBy] = queryKey;
 
             return discoveryService.getUserDiscovery({
-                start: range.from!,
-                end: range.to!,
+                start: new Date(range.from!),
+                end: new Date(range.to!),
                 sortBy: sortBy,
                 token: token,
                 demo: demo,

@@ -260,7 +260,7 @@ const HomePage = () => {
                         onClick={() =>
                             navigate({
                                 to: "/summary",
-                                search: { demo: true },
+                                search: { demo: true, from: undefined, to: undefined, sortBy: undefined, interval: undefined },
                             })
                         }
                         className="text-spotify-green/70 rounded-md py-1 text-sm font-medium transition-colors hover:text-spotify-green"
