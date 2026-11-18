@@ -9,7 +9,7 @@ single test or select the correct lint command.
 - Own each change end-to-end: verify the backend (Go + sqlc) and the frontend (React + Tailwind)
   build cleanly before declaring victory.
 - Keep workflows deterministic:
-  - Always run `gofmt`/`eslint` (or rely on the provided scripts) before shipping Go or TS work.
+  - Always run `gofmt`/`bun lint` (or rely on the provided scripts) before shipping Go or TS work.
   - Prefer reproducible installs (`bun install`, `go mod download`).
 - When in doubt, line up with the existing patterns: exported Go helpers live in `internal/..` with
   PascalCase names, private helpers stay camelCase, React hooks start with `use`, and Tailwind
@@ -20,7 +20,7 @@ single test or select the correct lint command.
    https://golang.org/doc/install.
 2. **SQLite + Goose** – migrations run against `server/data/userdata.sqlite`. Own the `goose`
    binary when you work with `make migrate-up`/`down`.
-3. **Bun + Node 20+** – frontend uses Bun (`bun install`) but the `package.json` scripts work with
+3. **Bun >= 1.4.5 + Node 20+** – frontend uses Bun (`bun install`, `bun lint`) but the `package.json` scripts work with
    npm/pnpm/yarn too; Bun just keeps installs fast.
 
 ## Build & Run Commands
@@ -51,8 +51,11 @@ single test or select the correct lint command.
 - **Go:** Run `gofmt` and `go test ./...` (the tests will fail fast on formatting issues because the
   codebase is already formatted with Go's defaults). When adding new files, run `gofmt ./...` or an
   equivalent IDE action.
-- **TypeScript/JS:** `cd web && npm run lint` (ESLint). The config enforces `@eslint/js` rules,
-  `react-hooks`, and `react-refresh`. `prettier` + `prettier-plugin-tailwindcss` normalize formatting.
+- **TypeScript/JS:** `cd web && bun run lint` (Bun's built-in linter, `bun lint`; needs Bun >= 1.4.5).
+  Config lives in `web/bunfig.toml` under `[lint]`: ESLint + typescript-eslint recommended, React hooks,
+  Fast Refresh (`react/only-export-components`), and React Compiler checks. The `lint` script passes
+  `--no-script` so `bun lint` doesn't recurse into itself. `prettier` + `prettier-plugin-tailwindcss`
+  normalize formatting.
 - **CSS/Tailwind:** Vite/Tailwind 4 manages stylesheets. Keep `src/index.css` lean and favor
   component-scoped class lists over global overrides.
 
@@ -111,7 +114,7 @@ single test or select the correct lint command.
 
 ## Import/Formatting Rules Summary
 - Go: `gofmt`, grouped imports, `context` first argument, error handling via `if err != nil { return }`.
-- React: `eslint`/`prettier`, `@/` alias, Tailwind 4 classes, descriptive hook/prop names.
+- React: `bun lint`/`prettier`, `@/` alias, Tailwind 4 classes, descriptive hook/prop names.
 - Shared: keep docs updated when adding new scripts.
 
 ## Cursor & Copilot Rules
@@ -125,5 +128,5 @@ single test or select the correct lint command.
 
 ## Next Steps for Agents
 1. When you arrive, run `bun install` and `go mod download` before touching code.
-2. Use `npm run lint` (frontend) and `go test ./...` (backend) as basic sanity checks.
+2. Use `bun run lint` (frontend) and `go test ./...` (backend) as basic sanity checks.
 3. Document every new command or lint target you introduce so future agents find it here.

@@ -1,0 +1,16 @@
+# `bun lint` config. Defaults already cover ESLint recommended,
+# typescript-eslint recommended, and react rules-of-hooks / exhaustive-deps.
+[lint]
+ignorePatterns = ["dist/"]
+
+[lint.rules]
+# Vite Fast Refresh (was eslint-plugin-react-refresh "vite" config).
+"react/only-export-components" = ["warn", { allowConstantExport = true }]
+
+# React Compiler checks (production builds run babel-plugin-react-compiler).
+"react/purity" = "warn"
+"react/refs" = "warn"
+"react/immutability" = "warn"
+"react/set-state-in-render" = "warn"
+"react/set-state-in-effect" = "warn"
+"react/incompatible-library" = "warn"
