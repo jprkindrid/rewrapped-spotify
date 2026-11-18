@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmailEnabled } from "@/hooks/useEmailEnabled";
 import * as authService from "@/services/auth";
 
 type SaveDataDialogProps = {
@@ -22,8 +23,11 @@ type Method = "password" | "link";
 /** Turns a guest session into an account, keeping its uploaded data. */
 const SaveDataDialog = ({ open, onOpenChange }: SaveDataDialogProps) => {
     const { token, login } = useAuth();
+    const emailEnabled = useEmailEnabled();
 
-    const [method, setMethod] = useState<Method>("password");
+    const [chosenMethod, setMethod] = useState<Method>("password");
+    // Without email, a password is the only way to sign back in.
+    const method: Method = emailEnabled ? chosenMethod : "password";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [displayName, setDisplayName] = useState("");
@@ -104,30 +108,32 @@ const SaveDataDialog = ({ open, onOpenChange }: SaveDataDialogProps) => {
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-4"
                     >
-                        <div
-                            className="bg-muted flex rounded-lg p-0.5"
-                            role="radiogroup"
-                            aria-label="How to sign in later"
-                        >
-                            <button
-                                type="button"
-                                role="radio"
-                                aria-checked={method === "password"}
-                                onClick={() => setMethod("password")}
-                                className={tabClass(method === "password")}
+                        {emailEnabled && (
+                            <div
+                                className="bg-muted flex rounded-lg p-0.5"
+                                role="radiogroup"
+                                aria-label="How to sign in later"
                             >
-                                Use a password
-                            </button>
-                            <button
-                                type="button"
-                                role="radio"
-                                aria-checked={method === "link"}
-                                onClick={() => setMethod("link")}
-                                className={tabClass(method === "link")}
-                            >
-                                Email links only
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={method === "password"}
+                                    onClick={() => setMethod("password")}
+                                    className={tabClass(method === "password")}
+                                >
+                                    Use a password
+                                </button>
+                                <button
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={method === "link"}
+                                    onClick={() => setMethod("link")}
+                                    className={tabClass(method === "link")}
+                                >
+                                    Email links only
+                                </button>
+                            </div>
+                        )}
 
                         <div className="flex flex-col gap-1.5">
                             <label

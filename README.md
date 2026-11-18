@@ -153,9 +153,10 @@ DEMO_KEY=your_demo_key
 KINDRID_USER_ID=demo_user_id
 
 # Optional: Email sign-in links and password resets (via Resend)
-# Without these, links are printed to the server log in development, and
-# email features are disabled in production (password login and guest mode
-# still work).
+# Without these, links are printed to the server log in development. In
+# production the email options (sign-in links, password resets, confirming a
+# guest's email) are hidden in the UI; password login and guest mode still work.
+# EMAIL_FROM must be on a domain verified in Resend.
 RESEND_API_KEY=re_...
 EMAIL_FROM="ReWrapped <noreply@your-verified-domain.com>"
 # Frontend origin that emailed links point to
@@ -252,6 +253,7 @@ The backend exposes a REST API for uploading and retrieving listening data.
 | POST | `/api/demo/streaks` | Demo streak analytics |
 | POST | `/auth/register` | Create account and return JWT |
 | POST | `/auth/login` | Login with email/password and return JWT |
+| GET | `/auth/config` | Which sign-in options are enabled (email links on/off) |
 | POST | `/auth/guest` | Start a guest session (no account) |
 | POST | `/auth/email-link` | Email a sign-in or password-reset link |
 | POST | `/auth/verify` | Redeem an emailed link for a session |

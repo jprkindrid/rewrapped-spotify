@@ -477,6 +477,13 @@ func TestEmailFeaturesUnavailableWithoutSender(t *testing.T) {
 	defer srv.Close()
 	noEmail := &testApp{srv: srv, db: queries, sender: &fakeSender{}}
 
+	if _, out := app.do(t, "GET", "/auth/config", "", nil); out["email_enabled"] != true {
+		t.Fatalf("config with a sender should enable email: %v", out)
+	}
+	if _, out := noEmail.do(t, "GET", "/auth/config", "", nil); out["email_enabled"] != false {
+		t.Fatalf("config without a sender should disable email: %v", out)
+	}
+
 	if status, _ := noEmail.do(t, "POST", "/auth/email-link", "", map[string]string{"email": "noemail@example.com", "purpose": "login"}); status != http.StatusServiceUnavailable {
 		t.Fatalf("email link without sender: status %d, want 503", status)
 	}

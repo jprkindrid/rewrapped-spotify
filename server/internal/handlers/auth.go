@@ -143,6 +143,17 @@ func (cfg *ApiConfig) HandlerGuest(w http.ResponseWriter, r *http.Request) {
 	cfg.respondWithSession(w, http.StatusCreated, guest, auth.SessionOptions{})
 }
 
+type authConfigResponse struct {
+	EmailEnabled bool `json:"email_enabled"`
+}
+
+// HandlerAuthConfig tells the frontend which sign-in options to offer. Email
+// features (sign-in links, password resets, confirming a guest's email) are
+// hidden unless an email sender is configured.
+func (cfg *ApiConfig) HandlerAuthConfig(w http.ResponseWriter, r *http.Request) {
+	utils.RespondWithJSON(w, http.StatusOK, authConfigResponse{EmailEnabled: cfg.Email != nil})
+}
+
 // HandlerRefresh swaps a valid session token for a fresh one, so active users
 // stay signed in.
 func (cfg *ApiConfig) HandlerRefresh(w http.ResponseWriter, r *http.Request) {

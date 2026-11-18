@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { usePingApi } from "@/hooks/usePingAPi";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmailEnabled } from "@/hooks/useEmailEnabled";
 import Explanation from "@/components/Explanation";
 import {
     Dialog,
@@ -35,6 +36,7 @@ const SUBMIT_LABELS: Record<AuthMode, string> = {
 const HomePage = () => {
     const navigate = useNavigate();
     const { token, login } = useAuth();
+    const emailEnabled = useEmailEnabled();
 
     const [mode, setMode] = useState<AuthMode>("login");
     const [email, setEmail] = useState("");
@@ -232,7 +234,7 @@ const HomePage = () => {
                                     >
                                         Password
                                     </label>
-                                    {mode === "login" && (
+                                    {mode === "login" && emailEnabled && (
                                         <button
                                             type="button"
                                             onClick={() => switchMode("reset")}
@@ -307,7 +309,7 @@ const HomePage = () => {
                             {isPending ? "Please wait..." : SUBMIT_LABELS[mode]}
                         </button>
 
-                        {mode === "login" && (
+                        {mode === "login" && emailEnabled && (
                             <button
                                 type="button"
                                 onClick={() => switchMode("link")}

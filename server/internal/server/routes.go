@@ -19,6 +19,7 @@ func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 
 	mux.HandleFunc("GET /health", cfg.HandlerHealth)
 
+	mux.HandleFunc("GET /auth/config", cfg.HandlerAuthConfig)
 	mux.Handle("POST /auth/register", guestLimit(http.HandlerFunc(cfg.HandlerRegister)))
 	mux.Handle("POST /auth/login", loginLimit(http.HandlerFunc(cfg.HandlerLogin)))
 	mux.Handle("POST /auth/guest", guestLimit(http.HandlerFunc(cfg.HandlerGuest)))

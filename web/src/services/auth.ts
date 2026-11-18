@@ -115,3 +115,18 @@ export function claimGuestData(token: string, params: ClaimParams) {
         token
     );
 }
+
+export interface AuthConfig {
+    email_enabled: boolean;
+}
+
+/** Which sign-in options the server supports. */
+export async function getAuthConfig(): Promise<AuthConfig> {
+    const res = await apiFetch("GET", "/auth/config");
+    if (!res.ok) {
+        throw new Error(
+            await errorMessage(res, "Couldn't load sign-in options")
+        );
+    }
+    return res.json() as Promise<AuthConfig>;
+}
