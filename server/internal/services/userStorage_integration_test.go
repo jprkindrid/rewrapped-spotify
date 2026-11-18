@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -18,7 +17,7 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	"github.com/jprkindrid/rewrapped-spotify/internal/parser"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
-	_ "modernc.org/sqlite"
+	"github.com/jprkindrid/rewrapped-spotify/internal/testutil"
 )
 
 type storedObject struct {
@@ -121,33 +120,7 @@ func parseBucketAndKey(u *url.URL) (string, string, bool) {
 
 func setupDB(t *testing.T) *database.Queries {
 	t.Helper()
-
-	dbFile := filepath.Join(t.TempDir(), "test.sqlite")
-	db, err := sql.Open("sqlite", dbFile)
-	if err != nil {
-		t.Fatalf("failed opening sqlite db: %v", err)
-	}
-
-	t.Cleanup(func() {
-		_ = db.Close()
-	})
-
-	schema := `
-CREATE TABLE users (
-    id            TEXT      UNIQUE NOT NULL PRIMARY KEY,
-    created_at    DATETIME  NOT NULL DEFAULT (datetime('now')),
-    updated_at    DATETIME  NOT NULL DEFAULT (datetime('now')),
-    email         TEXT      UNIQUE NOT NULL,
-    password_hash TEXT      NOT NULL,
-    storage_key   TEXT      NOT NULL,
-    display_name  TEXT
-);`
-
-	if _, err := db.Exec(schema); err != nil {
-		t.Fatalf("failed creating schema: %v", err)
-	}
-
-	return database.New(db)
+	return database.New(testutil.MigratedDB(t))
 }
 
 func setupStorageConfig(endpoint string) *config.Config {
@@ -201,8 +174,8 @@ func TestStoreData_CreateAndReadBackFromStorage(t *testing.T) {
 		t.Fatalf("store data failed: %v", err)
 	}
 
-	if created.Email != email {
-		t.Fatalf("expected email %q, got %q", email, created.Email)
+	if created.Email.String != email {
+		t.Fatalf("expected email %q, got %q", email, created.Email.String)
 	}
 	if created.StorageKey == "" {
 		t.Fatalf("expected storage key to be populated")
@@ -251,9 +224,9 @@ func TestStoreData_UpdateReplacesOldBlob(t *testing.T) {
 		t.Fatalf("expected a new storage key on update")
 	}
 
-	updated, err := queries.GetUserByEmail(context.Background(), email)
+	updated, err := queries.GetUserByID(context.Background(), email)
 	if err != nil {
-		t.Fatalf("get user by email failed: %v", err)
+		t.Fatalf("get user by id failed: %v", err)
 	}
 	if updated.StorageKey != second.StorageKey {
 		t.Fatalf("expected db storage key %q, got %q", second.StorageKey, updated.StorageKey)
@@ -280,16 +253,22 @@ func TestStoreData_UpdateReplacesOldBlob(t *testing.T) {
 	}
 }
 
+// seedUser creates an account whose id is its email, for readable tests.
 func seedUser(t *testing.T, queries *database.Queries, email, storageKey, passwordHash string) {
 	t.Helper()
 
-	_, err := queries.CreateUser(context.Background(), database.CreateUserParams{
+	ctx := context.Background()
+	_, err := queries.CreateUser(ctx, database.CreateUserParams{
 		ID:           email,
-		Email:        email,
-		PasswordHash: passwordHash,
-		StorageKey:   storageKey,
+		Email:        sql.NullString{String: email, Valid: true},
+		PasswordHash: sql.NullString{String: passwordHash, Valid: true},
 	})
 	if err != nil {
 		t.Fatalf("failed to seed user row: %v", err)
+	}
+	if storageKey != "" {
+		if _, err := queries.UpdateUserStorageKey(ctx, database.UpdateUserStorageKeyParams{ID: email, StorageKey: storageKey}); err != nil {
+			t.Fatalf("failed to seed storage key: %v", err)
+		}
 	}
 }

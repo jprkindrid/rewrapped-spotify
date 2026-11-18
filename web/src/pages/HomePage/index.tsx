@@ -16,7 +16,21 @@ import { Button } from "@/components/ui/button";
 import SourceLink from "@/components/SourceLink";
 import * as authService from "@/services/auth";
 
-type AuthMode = "login" | "register";
+type AuthMode = "login" | "register" | "link" | "reset";
+
+const TITLES: Record<AuthMode, string> = {
+    login: "Log In",
+    register: "Create Account",
+    link: "Email Me a Sign-In Link",
+    reset: "Reset Password",
+};
+
+const SUBMIT_LABELS: Record<AuthMode, string> = {
+    login: "Log In",
+    register: "Create Account",
+    link: "Send Sign-In Link",
+    reset: "Send Reset Link",
+};
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -28,247 +42,358 @@ const HomePage = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [formError, setFormError] = useState<string | null>(null);
+    const [linkSentTo, setLinkSentTo] = useState<string | null>(null);
     const [showRegistered, setShowRegistered] = useState(false);
 
     usePingApi();
 
     useEffect(() => {
-        if (token) {
+        if (token && !showRegistered) {
             navigate({ to: "/upload" });
         }
-    }, [token, navigate]);
+    }, [token, showRegistered, navigate]);
+
+    const onError = (fallback: string) => (err: Error) =>
+        setFormError(err.message || fallback);
 
     const loginMutation = useMutation({
         mutationFn: () => authService.loginUser(email, password),
-        onSuccess: (data) => {
-            login(data.token);
-            navigate({ to: "/upload" });
-        },
-        onError: (err: Error) => {
-            setFormError(err.message || "Login failed. Please try again.");
-        },
+        onSuccess: (data) => login(data.token),
+        onError: onError("Login failed. Please try again."),
     });
 
     const registerMutation = useMutation({
         mutationFn: () =>
-            authService.registerUser(
-                email,
-                password,
-                displayName || undefined
-            ),
+            authService.registerUser(email, password, displayName || undefined),
         onSuccess: (data) => {
-            login(data.token);
             setShowRegistered(true);
+            login(data.token);
         },
-        onError: (err: Error) => {
-            setFormError(
-                err.message || "Registration failed. Please try again."
-            );
-        },
+        onError: onError("Registration failed. Please try again."),
     });
 
-    const isPending = loginMutation.isPending || registerMutation.isPending;
+    const linkMutation = useMutation({
+        mutationFn: (purpose: authService.EmailLinkPurpose) =>
+            authService.requestEmailLink(email, purpose),
+        onSuccess: () => setLinkSentTo(email.trim()),
+        onError: onError("Couldn't send the email. Please try again."),
+    });
 
-    function validate(): string | null {
-        if (mode === "register" && password !== confirmPassword)
-            return "Passwords do not match.";
-        return null;
-    }
+    const guestMutation = useMutation({
+        mutationFn: authService.startGuestSession,
+        onSuccess: (data) => login(data.token),
+        onError: onError("Couldn't start a guest session. Please try again."),
+    });
+
+    const isPending =
+        loginMutation.isPending ||
+        registerMutation.isPending ||
+        linkMutation.isPending ||
+        guestMutation.isPending;
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setFormError(null);
 
-        const validationError = validate();
-        if (validationError) {
-            setFormError(validationError);
-            return;
-        }
-
-        if (mode === "login") {
-            loginMutation.mutate();
-        } else {
-            registerMutation.mutate();
+        switch (mode) {
+            case "login":
+                loginMutation.mutate();
+                break;
+            case "register":
+                if (password !== confirmPassword) {
+                    setFormError("Passwords do not match.");
+                    return;
+                }
+                registerMutation.mutate();
+                break;
+            case "link":
+                linkMutation.mutate("login");
+                break;
+            case "reset":
+                linkMutation.mutate("reset");
+                break;
         }
     }
 
-    function switchMode() {
-        setMode((m) => (m === "login" ? "register" : "login"));
+    function switchMode(next: AuthMode) {
+        setMode(next);
         setFormError(null);
+        setLinkSentTo(null);
     }
+
+    const needsPassword = mode === "login" || mode === "register";
 
     const inputClass =
         "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none transition-colors focus:border-spotify-green focus:ring-1 focus:ring-spotify-green/30";
+    const linkButtonClass =
+        "text-spotify-green font-medium hover:underline focus-visible:underline focus-visible:outline-none";
 
     return (
-        <div className="relative flex min-h-screen w-full flex-col items-center bg-background transition">
+        <div className="bg-background relative flex min-h-screen w-full flex-col items-center transition">
             {/* Ambient glow */}
-            <div className="pointer-events-none absolute top-0 left-1/2 h-[500px] w-[600px] -translate-x-1/2 rounded-full bg-spotify-green/[0.06] blur-3xl" />
+            <div className="bg-spotify-green/[0.06] pointer-events-none absolute top-0 left-1/2 h-[500px] w-[600px] -translate-x-1/2 rounded-full blur-3xl" />
 
             <div className="relative z-10 mx-3 w-full max-w-md pt-20">
                 <h1 className="text-spotify-green mb-1 text-center text-3xl font-bold tracking-tight">
                     ReWrapped
                 </h1>
-                <p className="mb-8 text-center text-sm text-muted-foreground">
+                <p className="text-muted-foreground mb-8 text-center text-sm">
                     Your Spotify listening history, visualized.
                 </p>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="page-section flex flex-col gap-4 rounded-xl border-t-2 border-t-spotify-green/40 p-6"
-                >
-                    <h2 className="text-center text-lg font-semibold">
-                        {mode === "login" ? "Log In" : "Create Account"}
-                    </h2>
-
-                    {mode === "register" && (
-                        <div className="flex flex-col gap-1.5">
-                            <label
-                                htmlFor="displayName"
-                                className="text-xs font-medium text-muted-foreground"
-                            >
-                                Display Name{" "}
-                                <span className="text-muted-foreground/60">
-                                    (optional)
-                                </span>
-                            </label>
-                            <input
-                                id="displayName"
-                                type="text"
-                                value={displayName}
-                                onChange={(e) => setDisplayName(e.target.value)}
-                                placeholder="Your name"
-                                className={inputClass}
-                                disabled={isPending}
-                            />
-                        </div>
-                    )}
-
-                    <div className="flex flex-col gap-1.5">
-                        <label
-                            htmlFor="email"
-                            className="text-xs font-medium text-muted-foreground"
+                {linkSentTo ? (
+                    <div className="page-section border-t-spotify-green/40 flex flex-col gap-4 rounded-xl border-t-2 p-6 text-center">
+                        <h2 className="text-lg font-semibold">
+                            Check your email
+                        </h2>
+                        <p className="text-muted-foreground text-sm">
+                            If an account exists for{" "}
+                            <span className="text-foreground font-medium">
+                                {linkSentTo}
+                            </span>
+                            , we&apos;ve sent a link. It expires soon and works
+                            once.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => switchMode("login")}
+                            className={linkButtonClass}
                         >
-                            Email
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="you@example.com"
-                            className={inputClass}
-                            disabled={isPending}
-                            autoComplete="email"
-                        />
+                            Back to log in
+                        </button>
                     </div>
-
-                    <div className="flex flex-col gap-1.5">
-                        <label
-                            htmlFor="password"
-                            className="text-xs font-medium text-muted-foreground"
-                        >
-                            Password
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            required
-                            minLength={8}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className={inputClass}
-                            disabled={isPending}
-                            autoComplete={
-                                mode === "login"
-                                    ? "current-password"
-                                    : "new-password"
-                            }
-                        />
-                    </div>
-
-                    {mode === "register" && (
-                        <div className="flex flex-col gap-1.5">
-                            <label
-                                htmlFor="confirmPassword"
-                                className="text-xs font-medium text-muted-foreground"
-                            >
-                                Confirm Password
-                            </label>
-                            <input
-                                id="confirmPassword"
-                                type="password"
-                                required
-                                minLength={8}
-                                value={confirmPassword}
-                                onChange={(e) =>
-                                    setConfirmPassword(e.target.value)
-                                }
-                                placeholder="••••••••"
-                                className={inputClass}
-                                disabled={isPending}
-                                autoComplete="new-password"
-                            />
-                        </div>
-                    )}
-
-                    {formError && (
-                        <p className="text-sm text-destructive">{formError}</p>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={isPending}
-                        className="bg-spotify-green mt-1 rounded-lg px-6 py-2.5 text-sm font-semibold text-black transition-all hover:brightness-110 hover:cursor-pointer disabled:opacity-60"
+                ) : (
+                    <form
+                        onSubmit={handleSubmit}
+                        className="page-section border-t-spotify-green/40 flex flex-col gap-4 rounded-xl border-t-2 p-6"
                     >
-                        {isPending
-                            ? "Please wait..."
-                            : mode === "login"
-                              ? "Log In"
-                              : "Create Account"}
-                    </button>
+                        <h2 className="text-center text-lg font-semibold">
+                            {TITLES[mode]}
+                        </h2>
 
-                    <p className="text-center text-sm text-muted-foreground">
-                        {mode === "login" ? (
-                            <>
-                                Don&apos;t have an account?{" "}
-                                <button
-                                    type="button"
-                                    onClick={switchMode}
-                                    className="text-spotify-green font-medium hover:underline"
-                                >
-                                    Register
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                Already have an account?{" "}
-                                <button
-                                    type="button"
-                                    onClick={switchMode}
-                                    className="text-spotify-green font-medium hover:underline"
-                                >
-                                    Log In
-                                </button>
-                            </>
+                        {mode === "reset" && (
+                            <p className="text-muted-foreground text-center text-sm">
+                                Enter your account&apos;s email and we&apos;ll
+                                send you a link to choose a new password.
+                            </p>
                         )}
-                    </p>
 
-                    <button
-                        type="button"
-                        onClick={() =>
-                            navigate({
-                                to: "/summary",
-                                search: { demo: true, from: undefined, to: undefined, sortBy: undefined, interval: undefined, query: undefined },
-                            })
-                        }
-                        className="text-spotify-green/70 rounded-md py-1 text-sm font-medium transition-colors hover:text-spotify-green"
-                    >
-                        Try Demo Mode
-                    </button>
-                </form>
+                        {mode === "register" && (
+                            <div className="flex flex-col gap-1.5">
+                                <label
+                                    htmlFor="displayName"
+                                    className="text-muted-foreground text-xs font-medium"
+                                >
+                                    Display Name{" "}
+                                    <span className="text-muted-foreground/60">
+                                        (optional)
+                                    </span>
+                                </label>
+                                <input
+                                    id="displayName"
+                                    type="text"
+                                    value={displayName}
+                                    onChange={(e) =>
+                                        setDisplayName(e.target.value)
+                                    }
+                                    placeholder="Your name"
+                                    className={inputClass}
+                                    disabled={isPending}
+                                />
+                            </div>
+                        )}
+
+                        <div className="flex flex-col gap-1.5">
+                            <label
+                                htmlFor="email"
+                                className="text-muted-foreground text-xs font-medium"
+                            >
+                                Email
+                            </label>
+                            <input
+                                id="email"
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                className={inputClass}
+                                disabled={isPending}
+                                autoComplete="email"
+                            />
+                        </div>
+
+                        {needsPassword && (
+                            <div className="flex flex-col gap-1.5">
+                                <div className="flex items-baseline justify-between">
+                                    <label
+                                        htmlFor="password"
+                                        className="text-muted-foreground text-xs font-medium"
+                                    >
+                                        Password
+                                    </label>
+                                    {mode === "login" && (
+                                        <button
+                                            type="button"
+                                            onClick={() => switchMode("reset")}
+                                            className="text-muted-foreground hover:text-foreground text-xs hover:underline focus-visible:underline focus-visible:outline-none"
+                                        >
+                                            Forgot password?
+                                        </button>
+                                    )}
+                                </div>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    required
+                                    minLength={
+                                        mode === "register" ? 8 : undefined
+                                    }
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    placeholder="••••••••"
+                                    className={inputClass}
+                                    disabled={isPending}
+                                    autoComplete={
+                                        mode === "login"
+                                            ? "current-password"
+                                            : "new-password"
+                                    }
+                                />
+                            </div>
+                        )}
+
+                        {mode === "register" && (
+                            <div className="flex flex-col gap-1.5">
+                                <label
+                                    htmlFor="confirmPassword"
+                                    className="text-muted-foreground text-xs font-medium"
+                                >
+                                    Confirm Password
+                                </label>
+                                <input
+                                    id="confirmPassword"
+                                    type="password"
+                                    required
+                                    minLength={8}
+                                    value={confirmPassword}
+                                    onChange={(e) =>
+                                        setConfirmPassword(e.target.value)
+                                    }
+                                    placeholder="••••••••"
+                                    className={inputClass}
+                                    disabled={isPending}
+                                    autoComplete="new-password"
+                                />
+                            </div>
+                        )}
+
+                        {formError && (
+                            <p
+                                className="text-destructive text-sm"
+                                role="alert"
+                            >
+                                {formError}
+                            </p>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={isPending}
+                            className="bg-spotify-green mt-1 rounded-lg px-6 py-2.5 text-sm font-semibold text-black transition-all hover:cursor-pointer hover:brightness-110 disabled:opacity-60"
+                        >
+                            {isPending ? "Please wait..." : SUBMIT_LABELS[mode]}
+                        </button>
+
+                        {mode === "login" && (
+                            <button
+                                type="button"
+                                onClick={() => switchMode("link")}
+                                className="text-muted-foreground hover:text-foreground text-sm hover:underline focus-visible:underline focus-visible:outline-none"
+                            >
+                                Email me a sign-in link instead
+                            </button>
+                        )}
+
+                        <p className="text-muted-foreground text-center text-sm">
+                            {mode === "register" ? (
+                                <>
+                                    Already have an account?{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => switchMode("login")}
+                                        className={linkButtonClass}
+                                    >
+                                        Log In
+                                    </button>
+                                </>
+                            ) : mode === "login" ? (
+                                <>
+                                    Don&apos;t have an account?{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => switchMode("register")}
+                                        className={linkButtonClass}
+                                    >
+                                        Register
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => switchMode("login")}
+                                    className={linkButtonClass}
+                                >
+                                    Back to log in
+                                </button>
+                            )}
+                        </p>
+
+                        <div className="text-muted-foreground/70 flex items-center gap-3 text-xs">
+                            <div className="bg-border/60 h-px flex-1" />
+                            or
+                            <div className="bg-border/60 h-px flex-1" />
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setFormError(null);
+                                guestMutation.mutate();
+                            }}
+                            disabled={isPending}
+                            className="border-border hover:bg-accent rounded-lg border px-6 py-2.5 text-sm font-semibold transition-colors hover:cursor-pointer disabled:opacity-60"
+                        >
+                            Continue without an account
+                        </button>
+                        <p className="text-muted-foreground -mt-2 text-center text-xs">
+                            Your upload is kept for 7 days. Save it to an
+                            account anytime.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                navigate({
+                                    to: "/summary",
+                                    search: {
+                                        demo: true,
+                                        from: undefined,
+                                        to: undefined,
+                                        sortBy: undefined,
+                                        interval: undefined,
+                                        query: undefined,
+                                    },
+                                })
+                            }
+                            className="text-spotify-green/70 hover:text-spotify-green rounded-md py-1 text-sm font-medium transition-colors"
+                        >
+                            Try Demo Mode
+                        </button>
+                    </form>
+                )}
             </div>
 
             <div className="relative z-10 mx-3 w-full max-w-5xl pb-16">
@@ -288,9 +413,7 @@ const HomePage = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button
-                            onClick={() => navigate({ to: "/upload" })}
-                        >
+                        <Button onClick={() => navigate({ to: "/upload" })}>
                             Continue
                         </Button>
                     </DialogFooter>

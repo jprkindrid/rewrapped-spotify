@@ -82,3 +82,13 @@ func (c *UserDataCache) Set(userID string, data []parser.MinifiedSongData) {
 
 	c.items[userID] = elem
 }
+
+func (c *UserDataCache) Delete(userID string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if elem, ok := c.items[userID]; ok {
+		c.order.Remove(elem)
+		delete(c.items, userID)
+	}
+}

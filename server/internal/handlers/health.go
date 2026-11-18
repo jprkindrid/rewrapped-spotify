@@ -38,7 +38,7 @@ func (cfg *ApiConfig) checkDatabaseHealth(ctx context.Context) error {
 	if cfg.DB == nil {
 		return nil
 	}
-	_, err := cfg.DB.GetUserByEmail(ctx, "health-check-non-existent-user")
+	_, err := cfg.DB.GetUserByID(ctx, "health-check-non-existent-user")
 	if err != nil && err.Error() != "sql: no rows in result set" {
 		return err
 	}

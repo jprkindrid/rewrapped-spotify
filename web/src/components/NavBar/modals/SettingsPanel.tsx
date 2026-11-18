@@ -16,7 +16,7 @@ interface SettingsPanelProps {
 }
 
 const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
-    const { token, userId, displayName, login } = useAuth();
+    const { token, displayName, hasPassword, login } = useAuth();
 
     // Display name form
     const [newDisplayName, setNewDisplayName] = useState(displayName ?? "");
@@ -103,15 +103,21 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
         setPasswordPending(true);
 
         try {
-            await accountService.updatePassword(
+            const data = await accountService.updatePassword(
                 token!,
-                currentPassword,
+                hasPassword ? currentPassword : "",
                 newPassword
             );
+            // Changing the password signs out other sessions; keep this one.
+            login(data.token);
             setCurrentPassword("");
             setNewPassword("");
             setConfirmNewPassword("");
-            setPasswordSuccess("Password updated.");
+            setPasswordSuccess(
+                hasPassword
+                    ? "Password updated. Other devices have been signed out."
+                    : "Password set. You can now log in with it."
+            );
         } catch (err) {
             setPasswordError(
                 err instanceof Error ? err.message : "Failed to update."
@@ -123,8 +129,7 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
 
     const inputClass =
         "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-spotify-green";
-    const labelClass =
-        "text-sm font-medium text-muted-foreground";
+    const labelClass = "text-sm font-medium text-muted-foreground";
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -132,7 +137,7 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                 <SheetHeader>
                     <SheetTitle>Account Settings</SheetTitle>
                     <SheetDescription>
-                        Signed in as {userId}
+                        Signed in as {displayName}
                     </SheetDescription>
                 </SheetHeader>
 
@@ -140,11 +145,14 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                     {/* Display Name */}
                     <form
                         onSubmit={handleDisplayNameSubmit}
-                        className="flex flex-col gap-3 rounded-lg border border-border p-4"
+                        className="border-border flex flex-col gap-3 rounded-lg border p-4"
                     >
                         <h3 className="text-sm font-semibold">Display Name</h3>
                         <div className="flex flex-col gap-1">
-                            <label htmlFor="settings-display-name" className={labelClass}>
+                            <label
+                                htmlFor="settings-display-name"
+                                className={labelClass}
+                            >
                                 Name
                             </label>
                             <input
@@ -160,12 +168,12 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                             />
                         </div>
                         {displayNameError && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-destructive text-sm">
                                 {displayNameError}
                             </p>
                         )}
                         {displayNameSuccess && (
-                            <p className="text-sm text-spotify-green">
+                            <p className="text-spotify-green text-sm">
                                 {displayNameSuccess}
                             </p>
                         )}
@@ -179,89 +187,127 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                     </form>
 
                     {/* Change Email */}
-                    <form
-                        onSubmit={handleEmailSubmit}
-                        className="flex flex-col gap-3 rounded-lg border border-border p-4"
-                    >
-                        <h3 className="text-sm font-semibold">Change Email</h3>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="settings-new-email" className={labelClass}>
-                                New Email
-                            </label>
-                            <input
-                                id="settings-new-email"
-                                type="email"
-                                required
-                                value={newEmail}
-                                onChange={(e) => setNewEmail(e.target.value)}
-                                placeholder="new@example.com"
-                                className={inputClass}
-                                disabled={emailPending}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="settings-email-password" className={labelClass}>
-                                Current Password
-                            </label>
-                            <input
-                                id="settings-email-password"
-                                type="password"
-                                required
-                                value={emailPassword}
-                                onChange={(e) =>
-                                    setEmailPassword(e.target.value)
-                                }
-                                placeholder="Confirm your password"
-                                className={inputClass}
-                                disabled={emailPending}
-                                autoComplete="current-password"
-                            />
-                        </div>
-                        {emailError && (
-                            <p className="text-sm text-destructive">{emailError}</p>
-                        )}
-                        {emailSuccess && (
-                            <p className="text-sm text-spotify-green">
-                                {emailSuccess}
+                    {!hasPassword ? (
+                        <div className="border-border flex flex-col gap-2 rounded-lg border p-4">
+                            <h3 className="text-sm font-semibold">
+                                Change Email
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                                Set a password below first. It&apos;s used to
+                                confirm changes to your email.
                             </p>
-                        )}
-                        <Button
-                            type="submit"
-                            size="sm"
-                            disabled={emailPending}
+                        </div>
+                    ) : (
+                        <form
+                            onSubmit={handleEmailSubmit}
+                            className="border-border flex flex-col gap-3 rounded-lg border p-4"
                         >
-                            {emailPending ? "Saving..." : "Update Email"}
-                        </Button>
-                    </form>
+                            <h3 className="text-sm font-semibold">
+                                Change Email
+                            </h3>
+                            <div className="flex flex-col gap-1">
+                                <label
+                                    htmlFor="settings-new-email"
+                                    className={labelClass}
+                                >
+                                    New Email
+                                </label>
+                                <input
+                                    id="settings-new-email"
+                                    type="email"
+                                    required
+                                    value={newEmail}
+                                    onChange={(e) =>
+                                        setNewEmail(e.target.value)
+                                    }
+                                    placeholder="new@example.com"
+                                    className={inputClass}
+                                    disabled={emailPending}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label
+                                    htmlFor="settings-email-password"
+                                    className={labelClass}
+                                >
+                                    Current Password
+                                </label>
+                                <input
+                                    id="settings-email-password"
+                                    type="password"
+                                    required
+                                    value={emailPassword}
+                                    onChange={(e) =>
+                                        setEmailPassword(e.target.value)
+                                    }
+                                    placeholder="Confirm your password"
+                                    className={inputClass}
+                                    disabled={emailPending}
+                                    autoComplete="current-password"
+                                />
+                            </div>
+                            {emailError && (
+                                <p className="text-destructive text-sm">
+                                    {emailError}
+                                </p>
+                            )}
+                            {emailSuccess && (
+                                <p className="text-spotify-green text-sm">
+                                    {emailSuccess}
+                                </p>
+                            )}
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={emailPending}
+                            >
+                                {emailPending ? "Saving..." : "Update Email"}
+                            </Button>
+                        </form>
+                    )}
 
                     {/* Change Password */}
                     <form
                         onSubmit={handlePasswordSubmit}
-                        className="flex flex-col gap-3 rounded-lg border border-border p-4"
+                        className="border-border flex flex-col gap-3 rounded-lg border p-4"
                     >
                         <h3 className="text-sm font-semibold">
-                            Change Password
+                            {hasPassword ? "Change Password" : "Set a Password"}
                         </h3>
+                        {!hasPassword && (
+                            <p className="text-muted-foreground text-sm">
+                                You sign in with emailed links. Add a password
+                                to log in with it too.
+                            </p>
+                        )}
+                        {hasPassword && (
+                            <div className="flex flex-col gap-1">
+                                <label
+                                    htmlFor="settings-current-pw"
+                                    className={labelClass}
+                                >
+                                    Current Password
+                                </label>
+                                <input
+                                    id="settings-current-pw"
+                                    type="password"
+                                    required
+                                    value={currentPassword}
+                                    onChange={(e) =>
+                                        setCurrentPassword(e.target.value)
+                                    }
+                                    placeholder="Current password"
+                                    className={inputClass}
+                                    disabled={passwordPending}
+                                    autoComplete="current-password"
+                                />
+                            </div>
+                        )}
                         <div className="flex flex-col gap-1">
-                            <label htmlFor="settings-current-pw" className={labelClass}>
-                                Current Password
-                            </label>
-                            <input
-                                id="settings-current-pw"
-                                type="password"
-                                required
-                                value={currentPassword}
-                                onChange={(e) =>
-                                    setCurrentPassword(e.target.value)
-                                }
-                                placeholder="Current password"
-                                className={inputClass}
-                                disabled={passwordPending}
-                                autoComplete="current-password"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="settings-new-pw" className={labelClass}>
+                            <label
+                                htmlFor="settings-new-pw"
+                                className={labelClass}
+                            >
                                 New Password
                             </label>
                             <input
@@ -278,7 +324,10 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label htmlFor="settings-confirm-pw" className={labelClass}>
+                            <label
+                                htmlFor="settings-confirm-pw"
+                                className={labelClass}
+                            >
                                 Confirm New Password
                             </label>
                             <input
@@ -297,12 +346,12 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                             />
                         </div>
                         {passwordError && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-destructive text-sm">
                                 {passwordError}
                             </p>
                         )}
                         {passwordSuccess && (
-                            <p className="text-sm text-spotify-green">
+                            <p className="text-spotify-green text-sm">
                                 {passwordSuccess}
                             </p>
                         )}
@@ -313,7 +362,9 @@ const SettingsPanel = ({ open, onOpenChange }: SettingsPanelProps) => {
                         >
                             {passwordPending
                                 ? "Saving..."
-                                : "Update Password"}
+                                : hasPassword
+                                  ? "Update Password"
+                                  : "Set Password"}
                         </Button>
                     </form>
                 </div>

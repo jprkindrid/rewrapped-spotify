@@ -1,18 +1,24 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"log"
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/jprkindrid/rewrapped-spotify/internal/cache"
 	"github.com/jprkindrid/rewrapped-spotify/internal/config"
 	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 	db "github.com/jprkindrid/rewrapped-spotify/internal/dbConn"
+	"github.com/jprkindrid/rewrapped-spotify/internal/email"
 	"github.com/jprkindrid/rewrapped-spotify/internal/handlers"
+	"github.com/jprkindrid/rewrapped-spotify/internal/middleware"
 	"github.com/jprkindrid/rewrapped-spotify/internal/server"
+	"github.com/jprkindrid/rewrapped-spotify/internal/services"
 	"github.com/jprkindrid/rewrapped-spotify/internal/spotify"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	_ "github.com/mattn/go-sqlite3"
@@ -40,10 +46,14 @@ func main() {
 
 	dbQueries := database.New(conn)
 
+	resolveDemoUser(dbQueries, envConfig)
+
 	cfg := &handlers.ApiConfig{
 		DB:        dbQueries,
 		Env:       envConfig,
 		DataCache: cache.NewUserDataCache(envConfig.DataCache.ExpiryTime, envConfig.DataCache.MaxItems),
+		Email:     email.NewSender(envConfig),
+		Sessions:  middleware.NewSessionChecker(dbQueries),
 	}
 
 	sClient := spotify.GetClient(cfg.Env)
@@ -61,6 +71,8 @@ func main() {
 	}
 	storage.Init(cfg.Env)
 
+	services.StartGuestCleanup(context.Background(), dbQueries, storage.GetClient(cfg.Env), cfg.DataCache, time.Hour)
+
 	mux := http.NewServeMux()
 
 	server.RegisterRoutes(mux, cfg)
@@ -76,4 +88,27 @@ func main() {
 	log.Printf("Server running at http://%s\n", addr)
 
 	log.Fatal(srv.ListenAndServe())
+}
+
+// resolveDemoUser turns KINDRID_USER_ID into the demo account's user id.
+// Sessions are keyed by id, but the variable has historically held the
+// account's email (or a legacy identifier stored in that column), so accept
+// either and keep the deployed secret unchanged.
+func resolveDemoUser(queries *database.Queries, cfg *config.Config) {
+	configured := cfg.Demo.UserID
+	if configured == "" {
+		return
+	}
+
+	ctx := context.Background()
+	if _, err := queries.GetUserByID(ctx, configured); err == nil {
+		return
+	}
+
+	user, err := queries.GetUserByEmail(ctx, sql.NullString{String: configured, Valid: true})
+	if err != nil {
+		slog.Warn("[DEMO] demo user not found; demo mode will fail", "error", err)
+		return
+	}
+	cfg.Demo.UserID = user.ID
 }

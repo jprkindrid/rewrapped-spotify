@@ -12,6 +12,7 @@ import { validateFilterSearch } from "./utils/validateFilterSearch";
 const LazyHomePage = lazy(() => import("./pages/HomePage"));
 const LazySummaryPage = lazy(() => import("./pages/SummaryPage"));
 const LazyUploadPage = lazy(() => import("./pages/UploadPage"));
+const LazyVerifyPage = lazy(() => import("./pages/VerifyPage"));
 const LazyChartsPage = lazy(() => import("./pages/ChartsPage"));
 
 const rootRoute = createRootRoute({
@@ -77,11 +78,29 @@ const chartsRoute = createRoute({
     },
 });
 
+const verifyRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/auth/verify",
+    validateSearch: (search: Record<string, unknown>) => ({
+        token: typeof search.token === "string" ? search.token : undefined,
+    }),
+    component: function Verify() {
+        return (
+            <Suspense
+                fallback={<RouteFallback message="Checking your link..." />}
+            >
+                <LazyVerifyPage />
+            </Suspense>
+        );
+    },
+});
+
 const routeTree = rootRoute.addChildren([
     indexRoute,
     summaryRoute,
     uploadRoute,
     chartsRoute,
+    verifyRoute,
 ]);
 
 export const router = createRouter({ routeTree });

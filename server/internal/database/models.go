@@ -9,12 +9,25 @@ import (
 	"time"
 )
 
+type EmailToken struct {
+	TokenHash string
+	UserID    string
+	Purpose   string
+	Email     string
+	CreatedAt time.Time
+	ExpiresAt time.Time
+	UsedAt    sql.NullTime
+}
+
 type User struct {
-	ID           string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	Email        string
-	PasswordHash string
-	StorageKey   string
-	DisplayName  sql.NullString
+	ID             string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Email          sql.NullString
+	PasswordHash   sql.NullString
+	StorageKey     string
+	DisplayName    sql.NullString
+	IsGuest        bool
+	GuestExpiresAt sql.NullTime
+	TokenVersion   int64
 }

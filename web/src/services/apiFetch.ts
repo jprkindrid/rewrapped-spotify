@@ -1,8 +1,14 @@
-import { API_URL, DEMO_KEY } from "@/config/constants";
+import { API_URL, DEMO_KEY, TOKEN_KEY } from "@/config/constants";
 
 type RestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-const AUTH_PATHS = ["/auth/login", "/auth/register"];
+// Endpoints where a 401 means "wrong credentials", not "session expired".
+const AUTH_PATHS = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/verify",
+    "/auth/email-link",
+];
 
 export async function apiFetch(
     method: RestMethod,
@@ -30,7 +36,7 @@ export async function apiFetch(
         res.status === 401 &&
         !AUTH_PATHS.some((authPath) => path.startsWith(authPath))
     ) {
-        localStorage.removeItem("spotify_rewrapped_token");
+        localStorage.removeItem(TOKEN_KEY);
         window.location.href = "/";
         return res;
     }

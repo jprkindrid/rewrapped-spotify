@@ -1,7 +1,6 @@
 package services
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -14,10 +13,10 @@ import (
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 )
 
+// StoreData uploads data for the session's user (guest or account) and points
+// their row at it, deleting the blob it replaces.
 func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Queries, cfg *config.Config) (database.User, error) {
 	ctx := r.Context()
-
-	cfClient := storage.GetClient(cfg)
 
 	userID, ok := ctx.Value(constants.UserIDKey).(string)
 	if !ok || userID == "" {
@@ -25,34 +24,29 @@ func StoreData(r *http.Request, data []parser.MinifiedSongData, db *database.Que
 		return database.User{}, errors.New("no user ID in session")
 	}
 
+	existing, err := db.GetUserByID(ctx, userID)
+	if err != nil {
+		return database.User{}, fmt.Errorf("error loading user: %w", err)
+	}
+
+	cfClient := storage.GetClient(cfg)
+
 	objKey, err := cfClient.UploadJSON(ctx, data, userID)
 	if err != nil {
 		return database.User{}, err
 	}
 
-	existing, err := db.GetUserByEmail(ctx, userID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			newUser, err := db.CreateUser(ctx, database.CreateUserParams{
-				Email:      userID,
-				StorageKey: objKey,
-			})
-			if err != nil {
-				return database.User{}, fmt.Errorf("error creating new user: %w", err)
-			}
-			return newUser, nil
-		}
-		return database.User{}, fmt.Errorf("error checking for existing user: %w", err)
-	}
-
-	_ = cfClient.DeleteExistingBlob(ctx, existing.StorageKey)
-
-	updatedUser, err := db.UpdateUserData(ctx, database.UpdateUserDataParams{
-		Email:      existing.Email,
+	updatedUser, err := db.UpdateUserStorageKey(ctx, database.UpdateUserStorageKeyParams{
+		ID:         existing.ID,
 		StorageKey: objKey,
 	})
 	if err != nil {
+		_ = cfClient.DeleteExistingBlob(ctx, objKey)
 		return database.User{}, fmt.Errorf("error updating user: %w", err)
+	}
+
+	if existing.StorageKey != "" {
+		_ = cfClient.DeleteExistingBlob(ctx, existing.StorageKey)
 	}
 
 	return updatedUser, nil

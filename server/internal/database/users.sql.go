@@ -8,21 +8,169 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 )
+
+const claimGuestUser = `-- name: ClaimGuestUser :one
+UPDATE users
+SET email = ?1,
+    password_hash = COALESCE(?2, password_hash),
+    display_name = COALESCE(?3, display_name),
+    is_guest = 0,
+    guest_expires_at = NULL,
+    updated_at = datetime('now')
+WHERE id = ?4 AND is_guest = 1
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
+`
+
+type ClaimGuestUserParams struct {
+	Email        sql.NullString
+	PasswordHash sql.NullString
+	DisplayName  sql.NullString
+	ID           string
+}
+
+// Turns a guest into a permanent account, keeping its uploaded data.
+func (q *Queries) ClaimGuestUser(ctx context.Context, arg ClaimGuestUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, claimGuestUser,
+		arg.Email,
+		arg.PasswordHash,
+		arg.DisplayName,
+		arg.ID,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.StorageKey,
+		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
+	)
+	return i, err
+}
+
+const consumeEmailToken = `-- name: ConsumeEmailToken :one
+UPDATE email_tokens
+SET used_at = ?1
+WHERE token_hash = ?2
+  AND used_at IS NULL
+  AND expires_at > ?3
+RETURNING token_hash, user_id, purpose, email, created_at, expires_at, used_at
+`
+
+type ConsumeEmailTokenParams struct {
+	UsedAt    sql.NullTime
+	TokenHash string
+	Now       time.Time
+}
+
+// Marks a token used and returns it in one statement, so a link works only once.
+func (q *Queries) ConsumeEmailToken(ctx context.Context, arg ConsumeEmailTokenParams) (EmailToken, error) {
+	row := q.db.QueryRowContext(ctx, consumeEmailToken, arg.UsedAt, arg.TokenHash, arg.Now)
+	var i EmailToken
+	err := row.Scan(
+		&i.TokenHash,
+		&i.UserID,
+		&i.Purpose,
+		&i.Email,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.UsedAt,
+	)
+	return i, err
+}
+
+const countRecentEmailTokens = `-- name: CountRecentEmailTokens :one
+SELECT COUNT(*) FROM email_tokens
+WHERE email = ?1 AND created_at > ?2
+`
+
+type CountRecentEmailTokensParams struct {
+	Email string
+	Since time.Time
+}
+
+func (q *Queries) CountRecentEmailTokens(ctx context.Context, arg CountRecentEmailTokensParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countRecentEmailTokens, arg.Email, arg.Since)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const createEmailToken = `-- name: CreateEmailToken :exec
+INSERT INTO email_tokens (token_hash, user_id, purpose, email, created_at, expires_at)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+`
+
+type CreateEmailTokenParams struct {
+	TokenHash string
+	UserID    string
+	Purpose   string
+	Email     string
+	CreatedAt time.Time
+	ExpiresAt time.Time
+}
+
+func (q *Queries) CreateEmailToken(ctx context.Context, arg CreateEmailTokenParams) error {
+	_, err := q.db.ExecContext(ctx, createEmailToken,
+		arg.TokenHash,
+		arg.UserID,
+		arg.Purpose,
+		arg.Email,
+		arg.CreatedAt,
+		arg.ExpiresAt,
+	)
+	return err
+}
+
+const createGuestUser = `-- name: CreateGuestUser :one
+INSERT INTO users (id, created_at, updated_at, storage_key, is_guest, guest_expires_at)
+VALUES (
+    ?1, datetime('now'), datetime('now'), '', 1, ?2
+)
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
+`
+
+type CreateGuestUserParams struct {
+	ID             string
+	GuestExpiresAt sql.NullTime
+}
+
+func (q *Queries) CreateGuestUser(ctx context.Context, arg CreateGuestUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createGuestUser, arg.ID, arg.GuestExpiresAt)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.StorageKey,
+		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
+	)
+	return i, err
+}
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, created_at, updated_at, email, password_hash, storage_key, display_name)
 VALUES (
-   ?1 ,datetime('now'), datetime('now'), ?2, ?3, ?4, ?5
+    ?1, datetime('now'), datetime('now'), ?2, ?3, '', ?4
 )
-RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
 `
 
 type CreateUserParams struct {
 	ID           string
-	Email        string
-	PasswordHash string
-	StorageKey   string
+	Email        sql.NullString
+	PasswordHash sql.NullString
 	DisplayName  sql.NullString
 }
 
@@ -31,7 +179,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.ID,
 		arg.Email,
 		arg.PasswordHash,
-		arg.StorageKey,
 		arg.DisplayName,
 	)
 	var i User
@@ -43,26 +190,39 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.PasswordHash,
 		&i.StorageKey,
 		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
 	)
 	return i, err
 }
 
-const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM users
-WHERE email = ?1
+const deleteExpiredEmailTokens = `-- name: DeleteExpiredEmailTokens :exec
+DELETE FROM email_tokens
+WHERE expires_at < ?1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, email string) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, email)
+func (q *Queries) DeleteExpiredEmailTokens(ctx context.Context, before time.Time) error {
+	_, err := q.db.ExecContext(ctx, deleteExpiredEmailTokens, before)
+	return err
+}
+
+const deleteUserByID = `-- name: DeleteUserByID :exec
+DELETE FROM users
+WHERE id = ?1
+`
+
+func (q *Queries) DeleteUserByID(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteUserByID, id)
 	return err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, created_at, updated_at, email, password_hash, storage_key, display_name FROM users
+SELECT id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version FROM users
 WHERE email = ?1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+func (q *Queries) GetUserByEmail(ctx context.Context, email sql.NullString) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
@@ -73,33 +233,20 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.PasswordHash,
 		&i.StorageKey,
 		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
 	)
 	return i, err
 }
 
-const resetUsers = `-- name: ResetUsers :exec
-DELETE FROM users
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version FROM users
+WHERE id = ?1
 `
 
-func (q *Queries) ResetUsers(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, resetUsers)
-	return err
-}
-
-const updateUserData = `-- name: UpdateUserData :one
-UPDATE users 
-SET storage_key = ?2, updated_at = datetime('now')
-WHERE email = ?1
-RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
-`
-
-type UpdateUserDataParams struct {
-	Email      string
-	StorageKey string
-}
-
-func (q *Queries) UpdateUserData(ctx context.Context, arg UpdateUserDataParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserData, arg.Email, arg.StorageKey)
+func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -109,24 +256,97 @@ func (q *Queries) UpdateUserData(ctx context.Context, arg UpdateUserDataParams) 
 		&i.PasswordHash,
 		&i.StorageKey,
 		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
+	)
+	return i, err
+}
+
+const listExpiredGuests = `-- name: ListExpiredGuests :many
+SELECT id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version FROM users
+WHERE is_guest = 1 AND guest_expires_at < ?1
+LIMIT 100
+`
+
+func (q *Queries) ListExpiredGuests(ctx context.Context, now sql.NullTime) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listExpiredGuests, now)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Email,
+			&i.PasswordHash,
+			&i.StorageKey,
+			&i.DisplayName,
+			&i.IsGuest,
+			&i.GuestExpiresAt,
+			&i.TokenVersion,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateDisplayName = `-- name: UpdateDisplayName :one
+UPDATE users
+SET display_name = ?1, updated_at = datetime('now')
+WHERE id = ?2
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
+`
+
+type UpdateDisplayNameParams struct {
+	DisplayName sql.NullString
+	ID          string
+}
+
+func (q *Queries) UpdateDisplayName(ctx context.Context, arg UpdateDisplayNameParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateDisplayName, arg.DisplayName, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.StorageKey,
+		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
 	)
 	return i, err
 }
 
 const updateUserEmail = `-- name: UpdateUserEmail :one
 UPDATE users
-SET email = ?2, updated_at = datetime('now')
-WHERE email = ?1
-RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
+SET email = ?1, updated_at = datetime('now')
+WHERE id = ?2
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
 `
 
 type UpdateUserEmailParams struct {
-	OldEmail string
-	NewEmail string
+	Email sql.NullString
+	ID    string
 }
 
 func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserEmail, arg.OldEmail, arg.NewEmail)
+	row := q.db.QueryRowContext(ctx, updateUserEmail, arg.Email, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -136,40 +356,30 @@ func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams
 		&i.PasswordHash,
 		&i.StorageKey,
 		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
 	)
 	return i, err
 }
 
-const updateUserPassword = `-- name: UpdateUserPassword :exec
+const updateUserPassword = `-- name: UpdateUserPassword :one
 UPDATE users
-SET password_hash = ?2, updated_at = datetime('now')
-WHERE email = ?1
+SET password_hash = ?1,
+    token_version = token_version + 1,
+    updated_at = datetime('now')
+WHERE id = ?2
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
 `
 
 type UpdateUserPasswordParams struct {
-	Email        string
-	PasswordHash string
+	PasswordHash sql.NullString
+	ID           string
 }
 
-func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.Email, arg.PasswordHash)
-	return err
-}
-
-const updateDisplayName = `-- name: UpdateDisplayName :one
-UPDATE users
-SET display_name = ?2, updated_at = datetime('now')
-WHERE email = ?1
-RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name
-`
-
-type UpdateDisplayNameParams struct {
-	Email       string
-	DisplayName sql.NullString
-}
-
-func (q *Queries) UpdateDisplayName(ctx context.Context, arg UpdateDisplayNameParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateDisplayName, arg.Email, arg.DisplayName)
+// Setting a password signs out every other session by bumping token_version.
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.PasswordHash, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -179,6 +389,39 @@ func (q *Queries) UpdateDisplayName(ctx context.Context, arg UpdateDisplayNamePa
 		&i.PasswordHash,
 		&i.StorageKey,
 		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
+	)
+	return i, err
+}
+
+const updateUserStorageKey = `-- name: UpdateUserStorageKey :one
+UPDATE users
+SET storage_key = ?1, updated_at = datetime('now')
+WHERE id = ?2
+RETURNING id, created_at, updated_at, email, password_hash, storage_key, display_name, is_guest, guest_expires_at, token_version
+`
+
+type UpdateUserStorageKeyParams struct {
+	StorageKey string
+	ID         string
+}
+
+func (q *Queries) UpdateUserStorageKey(ctx context.Context, arg UpdateUserStorageKeyParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserStorageKey, arg.StorageKey, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.StorageKey,
+		&i.DisplayName,
+		&i.IsGuest,
+		&i.GuestExpiresAt,
+		&i.TokenVersion,
 	)
 	return i, err
 }

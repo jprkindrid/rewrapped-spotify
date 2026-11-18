@@ -16,11 +16,12 @@ ReWrapped Spotify is a full-stack web application that lets you:
 - Filter data by date ranges, time intervals (monthly/yearly), and sort preferences
 - View ranking trends over time with bump charts
 - Explore discovery, diversity, streak, and listening clock insights
-- Authenticate securely via email/password login
+- Sign in with a password or an emailed link, or skip accounts entirely as a guest
 
 ### App Routes
 
 - `/` - Landing page and auth entry point
+- `/auth/verify` - Landing page for emailed sign-in, reset, and confirmation links
 - `/upload` - Upload Spotify streaming history
 - `/summary` - Top tracks and artists with filters and pagination
 - `/charts` - Full analytics dashboard with bump, time, clock, discovery,
@@ -28,7 +29,9 @@ ReWrapped Spotify is a full-stack web application that lets you:
 
 ## Features
 
-- **Email/Password Login** – App-managed authentication with JWT sessions
+- **Optional Accounts** – Use the app as a guest (data kept 7 days), or save it
+  to an account with a password or passwordless email links
+- **Password Resets** – One-time emailed reset links that sign out other sessions
 - **File Upload** – Support for Spotify's JSON or ZIP streaming history exports
 - **Interactive Stats** – Top tracks, top artists, total listening time, activity
   trends
@@ -146,7 +149,17 @@ PRODUCTION_BUILD=FALSE
 
 # Optional: Demo Mode
 DEMO_KEY=your_demo_key
+# The demo account's user id or email
 KINDRID_USER_ID=demo_user_id
+
+# Optional: Email sign-in links and password resets (via Resend)
+# Without these, links are printed to the server log in development, and
+# email features are disabled in production (password login and guest mode
+# still work).
+RESEND_API_KEY=re_...
+EMAIL_FROM="ReWrapped <noreply@your-verified-domain.com>"
+# Frontend origin that emailed links point to
+APP_URL=http://localhost:5173
 ```
 
 Download dependencies and build:
@@ -162,8 +175,14 @@ Run database migrations:
 make migrate-up
 ```
 
-Migration `002_auth_users_and_user_id.sql` adds the new `auth_users` table and renames
-`users.spotify_id` to `users.user_id`.
+Migration `003_optional_accounts.sql` makes accounts optional: users are
+identified by id (not email), guests have no email or password, and an
+`email_tokens` table backs sign-in and reset links. In production, apply it to
+Turso before deploying code that needs it:
+
+```bash
+goose -dir sql/schema turso "$TURSO_DATABASE_URL?authToken=$TURSO_AUTH_TOKEN" up
+```
 
 Start the server:
 
@@ -233,9 +252,14 @@ The backend exposes a REST API for uploading and retrieving listening data.
 | POST | `/api/demo/streaks` | Demo streak analytics |
 | POST | `/auth/register` | Create account and return JWT |
 | POST | `/auth/login` | Login with email/password and return JWT |
-| DELETE | `/api/delete` | Delete the current account and data |
+| POST | `/auth/guest` | Start a guest session (no account) |
+| POST | `/auth/email-link` | Email a sign-in or password-reset link |
+| POST | `/auth/verify` | Redeem an emailed link for a session |
+| POST | `/auth/refresh` | Exchange a valid session for a fresh one |
+| POST | `/api/account/claim` | Save a guest's data to a new account |
+| DELETE | `/api/delete` | Delete the current account (or guest) and data |
 | PUT | `/api/account/email` | Update account email |
-| PUT | `/api/account/password` | Update account password |
+| PUT | `/api/account/password` | Set or change password (signs out other sessions) |
 | PUT | `/api/account/display-name` | Update display name |
 | GET | `/health` | Health check endpoint |
 

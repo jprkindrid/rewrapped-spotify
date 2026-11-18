@@ -1,71 +1,93 @@
 // src/context/AuthProvider.tsx
-import { useState, type ReactNode, useEffect } from "react";
+import { useState, type ReactNode, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext, type AuthContextType } from "./AuthContext";
-
-type JWTClaimValue = string | number | boolean | null | undefined;
+import { refreshSession } from "@/services/auth";
+import { TOKEN_KEY } from "@/config/constants";
 
 interface JWTPayload {
     sub?: string;
     exp?: number;
     display_name?: string;
-    [key: string]: JWTClaimValue | JWTClaimValue[];
+    guest?: boolean;
+    has_password?: boolean;
+    pwreset?: boolean;
 }
 
-const TOKEN_KEY = "spotify_rewrapped_token";
+interface Session {
+    token: string;
+    claims: JWTPayload;
+}
+
+// Renew account sessions once they have less than this long left, so people
+// who keep using the app stay signed in.
+const REFRESH_WITHIN_MS = 7 * 24 * 60 * 60 * 1000;
+
+function decodeSession(token: string): Session | null {
+    try {
+        const claims = jwtDecode<JWTPayload>(token);
+        if (!claims.exp || claims.exp * 1000 <= Date.now()) return null;
+        // Tokens from before accounts became optional used the email as the
+        // subject and have no version claim; the server rejects them anyway.
+        if (!claims.sub || claims.sub.includes("@")) return null;
+        return { token, claims };
+    } catch {
+        return null;
+    }
+}
+
+function loadSavedSession(): Session | null {
+    const saved = localStorage.getItem(TOKEN_KEY);
+    if (!saved) return null;
+    const session = decodeSession(saved);
+    if (!session) localStorage.removeItem(TOKEN_KEY);
+    return session;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [token, setToken] = useState<string | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
-    const [displayName, setDisplayName] = useState<string | null>(null);
+    const [session, setSession] = useState<Session | null>(loadSavedSession);
 
-    useEffect(() => {
-        const savedToken = localStorage.getItem(TOKEN_KEY);
-        if (savedToken) {
-            try {
-                const decoded = jwtDecode<JWTPayload>(savedToken);
-                const now = Math.floor(Date.now() / 1000);
-
-                if (decoded.exp && decoded.exp > now) {
-                    setToken(savedToken);
-                    setUserId(decoded.sub ?? null);
-                    setDisplayName(decoded.display_name ?? null);
-                } else {
-                    localStorage.removeItem(TOKEN_KEY);
-                }
-            } catch (err) {
-                console.error("Invalid saved JWT:", err);
-                localStorage.removeItem(TOKEN_KEY);
-            }
+    const login = useCallback((jwt: string) => {
+        const next = decodeSession(jwt);
+        if (!next) {
+            console.error("Received an invalid or expired session token");
+            return;
         }
+        localStorage.setItem(TOKEN_KEY, jwt);
+        setSession(next);
     }, []);
 
-    const login = (jwt: string) => {
-        setToken(jwt);
-        localStorage.setItem(TOKEN_KEY, jwt);
-
-        try {
-            const decoded = jwtDecode<JWTPayload>(jwt);
-            setUserId(decoded.sub ?? null);
-            setDisplayName(decoded.display_name ?? null);
-        } catch (err) {
-            console.error("Invalid JWT:", err);
-            setUserId(null);
-            setDisplayName(null);
-        }
-    };
-
-    const logout = () => {
-        setToken(null);
-        setUserId(null);
-        setDisplayName(null);
+    const logout = useCallback(() => {
         localStorage.removeItem(TOKEN_KEY);
-    };
+        setSession(null);
+    }, []);
+
+    const token = session?.token ?? null;
+    const claims = session?.claims;
+
+    useEffect(() => {
+        if (!token || !claims?.exp || claims.guest || claims.pwreset) return;
+        if (claims.exp * 1000 - Date.now() > REFRESH_WITHIN_MS) return;
+
+        let cancelled = false;
+        refreshSession(token)
+            .then((data) => {
+                if (!cancelled) login(data.token);
+            })
+            .catch((err) => console.warn("Session refresh failed:", err));
+        return () => {
+            cancelled = true;
+        };
+    }, [token, claims, login]);
 
     const value: AuthContextType = {
         token,
-        userId,
-        displayName,
+        userId: claims?.sub ?? null,
+        displayName: claims?.display_name ?? null,
+        isGuest: claims?.guest ?? false,
+        hasPassword: claims?.has_password ?? false,
+        isPasswordReset: claims?.pwreset ?? false,
+        expiresAt: claims?.exp ? new Date(claims.exp * 1000) : null,
         login,
         logout,
     };

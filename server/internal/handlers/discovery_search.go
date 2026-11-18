@@ -6,7 +6,6 @@ import (
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/search"
-	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
@@ -29,21 +28,10 @@ func (cfg *ApiConfig) HandlerDiscoverySearch(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	data, ok := cfg.DataCache.Get(userID)
-	if !ok {
-		dbUser, err := cfg.DB.GetUserByEmail(ctx, userID)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)
-			return
-		}
-
-		cfClient := storage.GetClient(cfg.Env)
-
-		if data, err = cfClient.GetJSON(ctx, dbUser.StorageKey); err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "failed to parse user data from database", err)
-			return
-		}
-		cfg.DataCache.Set(userID, data)
+	data, status, err := cfg.loadUserData(ctx, userID)
+	if err != nil {
+		utils.RespondWithError(w, status, err.Error(), err)
+		return
 	}
 
 	sortBy := r.URL.Query().Get("sort_by")

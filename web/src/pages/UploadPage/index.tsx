@@ -1,5 +1,6 @@
 import Explanation from "@/components/Explanation";
 import NavBar from "@/components/NavBar";
+import GuestBanner from "@/components/GuestBanner";
 import FileUploadSection from "./FileUploadSection";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +21,9 @@ const UploadPage = () => {
             <NavBar includeUser={true} />
             <div className="flex w-full justify-center bg-background pt-8 transition">
                 <div className="mx-3 w-full max-w-5xl pb-16">
+                    <div className="-mx-3">
+                        <GuestBanner />
+                    </div>
                     <section className="page-section flex flex-col items-center rounded-xl text-center">
                         <h2 className="pt-6 text-2xl font-bold">
                             Upload Your Streaming History

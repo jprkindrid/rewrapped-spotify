@@ -46,8 +46,18 @@ type DemoConfig struct {
 	UserID string
 }
 
+type EmailConfig struct {
+	ResendAPIKey string
+	From         string
+	// AppURL is the frontend origin that email links point to.
+	AppURL string
+}
+
 type TimeConfig struct {
-	JWTExpiry         time.Duration
+	SessionExpiry     time.Duration
+	GuestRetention    time.Duration
+	LoginLinkExpiry   time.Duration
+	ResetLinkExpiry   time.Duration
 	TokenExpiryBuffer time.Duration
 	HTTPClientTimeout time.Duration
 	MinPlayTimeMs     int
@@ -65,6 +75,7 @@ type Config struct {
 	Storage   *StorageConfig
 	Server    *ServerConfig
 	Demo      *DemoConfig
+	Email     *EmailConfig
 	Time      *TimeConfig
 	DataCache *UserDataCacheConfig
 }
@@ -109,8 +120,16 @@ func Init() *Config {
 			Key:    os.Getenv("DEMO_KEY"),
 			UserID: os.Getenv("KINDRID_USER_ID"),
 		},
+		Email: &EmailConfig{
+			ResendAPIKey: os.Getenv("RESEND_API_KEY"),
+			From:         os.Getenv("EMAIL_FROM"),
+			AppURL:       getEnvOrDefault("APP_URL", "http://localhost:5173"),
+		},
 		Time: &TimeConfig{
-			JWTExpiry:         time.Hour,
+			SessionExpiry:     30 * 24 * time.Hour,
+			GuestRetention:    7 * 24 * time.Hour,
+			LoginLinkExpiry:   15 * time.Minute,
+			ResetLinkExpiry:   30 * time.Minute,
 			TokenExpiryBuffer: 60 * time.Second,
 			HTTPClientTimeout: 30 * time.Second,
 			MinPlayTimeMs:     30000,

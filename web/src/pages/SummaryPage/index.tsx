@@ -1,4 +1,5 @@
 import NavBar from "@/components/NavBar";
+import GuestBanner from "@/components/GuestBanner";
 import { useCallback, useState } from "react";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
 import SummaryBlock from "./SummaryBlock";
@@ -70,6 +71,7 @@ export const SummaryPage = () => {
             <NavBar includeUser={!demo} />
             <div className="bg-background flex min-h-screen flex-col items-center py-8 font-sans transition">
                 <div className="relative h-full w-full max-w-5xl">
+                    {!demo && <GuestBanner />}
                     <section className="page-section mx-3 mb-6 rounded-xl">
                         <FilterControls
                             bufferFilters={bufferFilters}

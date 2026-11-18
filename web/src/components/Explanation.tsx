@@ -19,7 +19,10 @@ const Explanation = () => {
                     Under &quot;Account privacy&quot; request your
                     &quot;Extended Streaming History&quot;
                 </li>
-                <li>Create an account or log in</li>
+                <li>
+                    Log in, create an account, or continue without one (guest
+                    uploads are kept for 7 days)
+                </li>
                 <li>
                     Once you have your data, upload your streaming history files
                 </li>

@@ -1,10 +1,7 @@
 package handlers
 
 import (
-	"database/sql"
 	"testing"
-
-	"github.com/jprkindrid/rewrapped-spotify/internal/database"
 )
 
 func TestValidateLoginInput(t *testing.T) {
@@ -50,17 +47,5 @@ func TestValidateLoginInput(t *testing.T) {
 				t.Fatalf("expected nil error, got %v", err)
 			}
 		})
-	}
-}
-
-func TestDisplayNameOrEmail(t *testing.T) {
-	withDisplay := displayNameOrEmail(database.User{Email: "kindrid@example.com", DisplayName: sql.NullString{String: "Kindrid", Valid: true}})
-	if withDisplay != "Kindrid" {
-		t.Fatalf("expected display name, got %q", withDisplay)
-	}
-
-	withoutDisplay := displayNameOrEmail(database.User{Email: "kindrid@example.com"})
-	if withoutDisplay != "kindrid@example.com" {
-		t.Fatalf("expected email fallback, got %q", withoutDisplay)
 	}
 }

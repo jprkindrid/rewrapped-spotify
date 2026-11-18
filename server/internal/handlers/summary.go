@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
-	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/summary"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 	"github.com/jprkindrid/rewrapped-spotify/internal/validation"
@@ -30,23 +29,10 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, ok := cfg.DataCache.Get(userID)
-	if !ok {
-
-		dbUser, err := cfg.DB.GetUserByEmail(ctx, userID)
-		if err != nil {
-			utils.RespondWithError(w, http.StatusNotFound, "User data not found", err)
-			return
-		}
-
-		cfClient := storage.GetClient(cfg.Env)
-
-		if data, err = cfClient.GetJSON(ctx, dbUser.StorageKey); err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "failed to parse user data from database", err)
-			return
-		}
-		cfg.DataCache.Set(userID, data)
-
+	data, status, err := cfg.loadUserData(ctx, userID)
+	if err != nil {
+		utils.RespondWithError(w, status, err.Error(), err)
+		return
 	}
 
 	timeParams, err := validation.ValidateTimeRange(r)

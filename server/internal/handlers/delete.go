@@ -3,39 +3,34 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
+// HandlerDelete removes the session's user and their data. Works for guests
+// and accounts alike.
 func (cfg *ApiConfig) HandlerDelete(w http.ResponseWriter, r *http.Request) {
+	user, ok := cfg.sessionUser(w, r)
+	if !ok {
+		return
+	}
 
 	ctx := r.Context()
-	userID, ok := ctx.Value(constants.UserIDKey).(string)
-	if !ok || userID == "" {
-		utils.RespondWithError(w, http.StatusUnauthorized, "No user ID in session", nil)
-		return
+
+	if user.StorageKey != "" {
+		if err := storage.GetClient(cfg.Env).DeleteExistingBlob(ctx, user.StorageKey); err != nil {
+			utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data from bucket", err)
+			return
+		}
 	}
 
-	dbUser, err := cfg.DB.GetUserByEmail(ctx, userID)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "error getting user data for deletion", err)
-		return
-	}
-
-	cfClient := storage.GetClient(cfg.Env)
-
-	err = cfClient.DeleteExistingBlob(ctx, dbUser.StorageKey)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user data from bucket", err)
-		return
-	}
-
-	err = cfg.DB.DeleteUser(ctx, userID)
-	if err != nil {
+	if err := cfg.DB.DeleteUserByID(ctx, user.ID); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "error deleting user entry from db", err)
 		return
 	}
+
+	cfg.DataCache.Delete(user.ID)
+	cfg.Sessions.Invalidate(user.ID)
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "successfully deleted user data",

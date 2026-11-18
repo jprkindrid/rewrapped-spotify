@@ -28,4 +28,7 @@ const FileFormHeader = "files"
 
 type contextKey string
 
-const UserIDKey contextKey = "user_id"
+const (
+	UserIDKey  contextKey = "user_id"
+	SessionKey contextKey = "session"
+)
