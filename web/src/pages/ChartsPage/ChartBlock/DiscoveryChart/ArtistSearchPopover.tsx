@@ -5,7 +5,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDiscoverySearchQuery } from "@/hooks/useDiscoverySearchQuery";
-import { useDiscoverySearchImages } from "@/hooks/useDiscoverySearchImages";
+import { useSearchImages } from "@/hooks/useSearchImages";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { formatTime } from "@/utils/formatTime";
 import type { DiscoverySearchEntry } from "@/types/charts/discovery";
@@ -32,8 +32,14 @@ const ArtistSearchPopover = ({ token, demo }: ArtistSearchPopoverProps) => {
 
     const searchQuery = useDiscoverySearchQuery(debouncedQuery, token, demo);
 
-    const imageQuery = useDiscoverySearchImages(
-        searchQuery.data?.artists,
+    const imageQuery = useSearchImages(
+        searchQuery.data?.artists?.map((artist) => ({
+            name: artist.name,
+            totalMs: artist.totalMs,
+            count: artist.count,
+            uri: artist.uri,
+        })),
+        "artists",
         token,
         demo
     );
@@ -58,10 +64,13 @@ const ArtistSearchPopover = ({ token, demo }: ArtistSearchPopoverProps) => {
     const handleSelectArtist = useCallback(
         (artist: DiscoverySearchEntry, index: number) => {
             setSelectedArtist(artist);
-            const imageUrl = imageQuery.data?.[index]?.ImageURL ?? "";
+            const resultAtIndex = searchQuery.data?.artists?.[index];
+            const imageUrl = resultAtIndex?.uri
+                ? imageQuery.data?.[resultAtIndex.uri]?.imageUrl ?? ""
+                : "";
             setSelectedImageUrl(imageUrl);
         },
-        [imageQuery.data]
+        [imageQuery.data, searchQuery.data?.artists]
     );
 
     const handleBack = useCallback(() => {
@@ -180,9 +189,7 @@ const ArtistSearchPopover = ({ token, demo }: ArtistSearchPopoverProps) => {
                                     <ArtistRow
                                         key={artist.name}
                                         artist={artist}
-                                        imageUrl={
-                                            imageQuery.data?.[i]?.ImageURL ?? ""
-                                        }
+                                        imageUrl={imageQuery.data?.[artist.uri]?.imageUrl ?? ""}
                                         imageLoading={imageQuery.isFetching}
                                         isDark={isDark}
                                         onSelect={() =>

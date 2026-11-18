@@ -23,6 +23,7 @@ export interface SummaryParams extends OffsetLimit {
     start: Date;
     end: Date;
     sortBy: SortBy;
+    query?: string;
     token: string;
     demo: boolean;
 }
@@ -39,8 +40,41 @@ export interface SummaryMetaEntry {
     ImageURL: string;
 }
 
+export type SummarySearchEntity = "artist" | "track";
+
+export interface SummarySearchParams {
+    query: string;
+    entity: SummarySearchEntity;
+    start: Date;
+    end: Date;
+    sortBy: SortBy;
+    token: string;
+    demo: boolean;
+    limit?: number;
+    offset?: number;
+}
+
+export interface SummarySearchEntry {
+    name: string;
+    trackName?: string;
+    artistName?: string;
+    firstListen: string;
+    totalMs: number;
+    count: number;
+    uri: string;
+    rangeCount: number;
+    rangeTotalMs: number;
+    rangeRank: number;
+    entity: SummarySearchEntity;
+}
+
+export interface SummarySearchResponse {
+    results: SummarySearchEntry[];
+}
+
 export type SummaryFilters = {
     range: DateRange | undefined;
     sortBy: SortBy;
+    query: string;
     offsetLimit: OffsetLimit;
 };

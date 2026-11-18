@@ -9,6 +9,7 @@ export interface FilterSearchParams {
     to?: string;
     sortBy?: string;
     interval?: string;
+    query?: string;
 }
 
 const DEFAULT_FROM = new Date(2011, 0, 1);
@@ -37,6 +38,7 @@ export function useSummaryFilterParams() {
             to: parseDate(search.to, DEFAULT_TO),
         } as DateRange,
         sortBy: (search.sortBy as SortBy) ?? DEFAULT_SORT_BY,
+        query: search.query ?? "",
         offsetLimit: { offsetTracks: 0, offsetArtists: 0, limit: 10 },
     };
 
@@ -49,6 +51,7 @@ export function useSummaryFilterParams() {
                 from: f.range?.from ? toDateParam(f.range.from) : undefined,
                 to: f.range?.to ? toDateParam(f.range.to) : undefined,
                 sortBy: f.sortBy,
+                query: f.query || undefined,
             };
             navigate({ search: params as never, replace: true });
         },
@@ -63,11 +66,30 @@ export function useSummaryFilterParams() {
         const defaults = {
             range: { from: DEFAULT_FROM, to: DEFAULT_TO } as DateRange,
             sortBy: DEFAULT_SORT_BY as SortBy,
+            query: "",
             offsetLimit: { offsetTracks: 0, offsetArtists: 0, limit: 10 },
         };
         setBufferFilters(defaults);
         writeToUrl(defaults);
     }, [writeToUrl]);
+
+    const applyQuery = useCallback(
+        (query: string) => {
+            const limit = bufferFilters.offsetLimit.limit;
+            const nextFilters = {
+                ...bufferFilters,
+                query: query,
+                offsetLimit: {
+                    offsetTracks: 0,
+                    offsetArtists: 0,
+                    limit,
+                },
+            };
+            setBufferFilters(nextFilters);
+            writeToUrl(nextFilters);
+        },
+        [bufferFilters, writeToUrl]
+    );
 
     return {
         filters: filtersFromUrl,
@@ -75,6 +97,7 @@ export function useSummaryFilterParams() {
         setBufferFilters,
         handleApply,
         handleReset,
+        applyQuery,
         demo: search.demo ?? false,
     };
 }

@@ -171,3 +171,42 @@ func TestTopArtistsInRangeSortByTime(t *testing.T) {
 			resultsByTime[0].TotalMs, resultsByTime[1].TotalMs, resultsByTime[2].TotalMs)
 	}
 }
+
+func TestFilterArtistsByQuery(t *testing.T) {
+	entries := []ScoredEntry{
+		{Name: "Artist One", ArtistName: "Artist One"},
+		{Name: "Another", ArtistName: "Another"},
+	}
+
+	results := FilterArtistsByQuery(entries, "art")
+
+	if len(results) != 1 {
+		t.Fatalf("expected 1 artist result, got %d", len(results))
+	}
+
+	if results[0].ArtistName != "Artist One" {
+		t.Fatalf("unexpected artist result: %s", results[0].ArtistName)
+	}
+}
+
+func TestFilterTracksByQueryUsesTrackName(t *testing.T) {
+	entries := []ScoredEntry{
+		{Name: "Track A - Artist", TrackName: "Track A", ArtistName: "Artist X"},
+		{Name: "Track B - Searcher", TrackName: "Track B", ArtistName: "Searcher"},
+	}
+
+	results := FilterTracksByQuery(entries, "search")
+
+	if len(results) != 0 {
+		t.Fatalf("expected 0 results because query should only match track name, got %d", len(results))
+	}
+
+	results = FilterTracksByQuery(entries, "track b")
+	if len(results) != 1 {
+		t.Fatalf("expected 1 track result, got %d", len(results))
+	}
+
+	if results[0].TrackName != "Track B" {
+		t.Fatalf("unexpected track result: %s", results[0].TrackName)
+	}
+}

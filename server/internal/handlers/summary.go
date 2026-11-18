@@ -62,9 +62,12 @@ func (cfg *ApiConfig) HandlerSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sortParams := validation.ValidateSortParam(r)
+	query := r.URL.Query().Get("query")
 
 	topArtists := summary.TopArtistsInRange(data, timeParams.Start, timeParams.End, sortParams.SortBy)
 	topTracks := summary.TopTracksInRange(data, timeParams.Start, timeParams.End, sortParams.SortBy)
+	topArtists = summary.FilterArtistsByQuery(topArtists, query)
+	topTracks = summary.FilterTracksByQuery(topTracks, query)
 	artistLen := len(topArtists)
 	trackLen := len(topTracks)
 	startArtists := paginationParams.OffsetArtists

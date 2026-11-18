@@ -35,6 +35,7 @@ export const SummaryPage = () => {
         offsetLimit.offsetArtists,
         offsetLimit.limit,
         filters.sortBy,
+        filters.query,
         token!,
         demo
     );
@@ -86,6 +87,10 @@ export const SummaryPage = () => {
                             setOffsetLimit={setOffsetLimit}
                             summaryQuery={summaryQuery}
                             metaQuery={metaQuery}
+                            range={filters.range}
+                            sortBy={filters.sortBy}
+                            token={token!}
+                            demo={demo}
                         />
                     </section>
                 </div>

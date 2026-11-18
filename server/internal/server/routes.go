@@ -20,6 +20,8 @@ func RegisterRoutes(mux *http.ServeMux, cfg *handlers.ApiConfig) {
 
 	mux.Handle("POST /api/summary/images", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummaryImages)))
 	mux.Handle("POST /api/demo/summary/images", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummaryImages)))
+	mux.Handle("POST /api/summary/search", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummarySearch)))
+	mux.Handle("POST /api/demo/summary/search", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerSummarySearch)))
 
 	mux.Handle("POST /api/demo/bumpchart", middleware.DemoMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerBumpChart)))
 	mux.Handle("POST /api/bumpchart", middleware.AuthMiddleware(cfg.Env, http.HandlerFunc(cfg.HandlerBumpChart)))

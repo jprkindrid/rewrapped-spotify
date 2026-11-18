@@ -13,6 +13,7 @@ export async function getUserSummary({
     offsetTracks,
     limit,
     sortBy,
+    query,
     token,
     demo,
 }: SummaryParams): Promise<SummaryResponse> {
@@ -24,6 +25,10 @@ export async function getUserSummary({
         limit: limit.toString(),
         sort_by: sortBy.toString(),
     });
+
+    if (query && query.trim().length >= 2) {
+        params.set("query", query.trim());
+    }
 
     const reqURL = demo ? "/api/demo/summary" : "/api/summary";
     const reqString = `${reqURL}?${params.toString()}`;

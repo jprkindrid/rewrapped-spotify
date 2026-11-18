@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
+import type { ReactNode } from "react";
 
 type DisplayType = "artists" | "tracks";
 
@@ -7,16 +8,19 @@ type DisplayToggleProps = {
     displayType: DisplayType;
     onDisplayTypeChange: (type: DisplayType) => void;
     noData: boolean;
+    searchSlot?: ReactNode;
 };
 
 const DisplayToggle = ({
     displayType,
     onDisplayTypeChange,
     noData = true,
+    searchSlot,
 }: DisplayToggleProps) => {
     return (
-        <div className="flex w-full justify-center border-b border-border/60 bg-muted/50 px-5 py-3 dark:border-white/[0.06]">
-            <div className="inline-flex rounded-lg bg-muted p-0.5">
+        <div className="border-border/60 bg-muted/50 flex w-full items-center justify-between border-b px-5 py-3 dark:border-white/[0.06]">
+            <div className="w-20 shrink-0" />
+            <div className="bg-muted inline-flex rounded-lg p-0.5">
                 <Button
                     variant="ghost"
                     size="sm"
@@ -24,7 +28,7 @@ const DisplayToggle = ({
                     className={clsx(
                         "rounded-md px-4 text-xs font-semibold tracking-wide uppercase transition-all",
                         displayType === "artists"
-                            ? "bg-spotify-green text-black shadow-sm hover:bg-spotify-green/90"
+                            ? "bg-spotify-green hover:bg-spotify-green/90 text-black shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
                     )}
                     disabled={noData}
@@ -38,7 +42,7 @@ const DisplayToggle = ({
                     className={clsx(
                         "rounded-md px-4 text-xs font-semibold tracking-wide uppercase transition-all",
                         displayType === "tracks"
-                            ? "bg-spotify-green text-black shadow-sm hover:bg-spotify-green/90"
+                            ? "bg-spotify-green hover:bg-spotify-green/90 text-black shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
                     )}
                     disabled={noData}
@@ -46,6 +50,7 @@ const DisplayToggle = ({
                     Tracks
                 </Button>
             </div>
+            <div className="flex w-20 shrink-0 justify-end">{searchSlot}</div>
         </div>
     );
 };

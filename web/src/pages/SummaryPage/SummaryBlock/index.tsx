@@ -1,14 +1,24 @@
 import type { OffsetLimit } from "@/types/Shared";
 import type { UseSummaryQueryResult } from "@/hooks/useSummaryQuery";
 import type { UseSummaryMetadataResult } from "@/hooks/useSummaryMetadata";
-import type { EntityType } from "@/types/Shared";
+import type { EntityType, SortBy } from "@/types/Shared";
 import clsx from "clsx";
 import ItemLinkButton from "./ItemLinkButton";
 import SummaryItem from "./SummaryItem";
 import SkeletonSummaryItem from "./SkeletonSummaryItem";
 import SummaryPageButtons from "./SummaryPageButtons";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import {
+    lazy,
+    Suspense,
+    useEffect,
+    useState,
+    type Dispatch,
+    type SetStateAction,
+} from "react";
 import DisplayToggle from "@/components/DisplayToggle";
+import type { DateRange } from "react-day-picker";
+
+const SummarySearchPopover = lazy(() => import("./SummarySearchPopover"));
 
 type SummaryBlockProps = {
     offsetLimit: OffsetLimit;
@@ -17,6 +27,10 @@ type SummaryBlockProps = {
     displayType: EntityType;
     summaryQuery: UseSummaryQueryResult;
     metaQuery: UseSummaryMetadataResult;
+    range: DateRange | undefined;
+    sortBy: SortBy;
+    token: string;
+    demo: boolean;
 };
 
 const SummaryBlock = ({
@@ -26,6 +40,10 @@ const SummaryBlock = ({
     displayType,
     summaryQuery,
     metaQuery,
+    range,
+    sortBy,
+    token,
+    demo,
 }: SummaryBlockProps) => {
     const { data: summaryData, status, error: summaryError } = summaryQuery;
     const { data: metaData } = metaQuery;
@@ -78,6 +96,26 @@ const SummaryBlock = ({
                 displayType={displayType}
                 onDisplayTypeChange={setDisplayType}
                 noData={noData}
+                searchSlot={
+                    <Suspense
+                        fallback={
+                            <button
+                                className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-600"
+                                aria-hidden
+                            >
+                                Search
+                            </button>
+                        }
+                    >
+                        <SummarySearchPopover
+                            token={token}
+                            demo={demo}
+                            displayType={displayType}
+                            range={range}
+                            sortBy={sortBy}
+                        />
+                    </Suspense>
+                }
             />
 
             <div className="flex h-full w-full flex-col justify-between">

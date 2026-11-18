@@ -2,15 +2,16 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
-	"github.com/jprkindrid/rewrapped-spotify/internal/discovery"
+	"github.com/jprkindrid/rewrapped-spotify/internal/search"
 	"github.com/jprkindrid/rewrapped-spotify/internal/storage"
 	"github.com/jprkindrid/rewrapped-spotify/internal/utils"
 )
 
 type DiscoverySearchResponse struct {
-	Artists []discovery.DiscoverySearchEntry `json:"artists"`
+	Artists []search.RankedSearchEntry `json:"artists"`
 }
 
 func (cfg *ApiConfig) HandlerDiscoverySearch(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +46,20 @@ func (cfg *ApiConfig) HandlerDiscoverySearch(w http.ResponseWriter, r *http.Requ
 		cfg.DataCache.Set(userID, data)
 	}
 
-	results := discovery.SearchArtistDiscovery(data, query, discovery.DefaultSearchLimit)
+	sortBy := r.URL.Query().Get("sort_by")
+	if sortBy != constants.SortByTime {
+		sortBy = constants.SortByCount
+	}
+
+	results := search.SearchRanked(data, search.RankedSearchOptions{
+		Query:  query,
+		Entity: search.EntityArtist,
+		SortBy: sortBy,
+		Start:  time.Time{},
+		End:    time.Time{},
+		Limit:  search.DefaultSearchLimit,
+		Offset: 0,
+	})
 
 	utils.RespondWithJSON(w, http.StatusOK, DiscoverySearchResponse{
 		Artists: results,

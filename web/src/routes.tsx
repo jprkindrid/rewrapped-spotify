@@ -5,12 +5,13 @@ import {
     createRouter,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import SummaryPage from "./pages/SummaryPage";
 import { lazy, Suspense, useEffect } from "react";
 import { initTheme } from "./utils/theme";
-import UploadPage from "./pages/UploadPage";
-import HomePage from "./pages/HomePage";
-
+import RouteFallback from "@/components/RouteFallback";
+import { validateFilterSearch } from "./utils/validateFilterSearch";
+const LazyHomePage = lazy(() => import("./pages/HomePage"));
+const LazySummaryPage = lazy(() => import("./pages/SummaryPage"));
+const LazyUploadPage = lazy(() => import("./pages/UploadPage"));
 const LazyChartsPage = lazy(() => import("./pages/ChartsPage"));
 
 const rootRoute = createRootRoute({
@@ -30,31 +31,37 @@ const indexRoute = createRoute({
             initTheme();
         }, []);
 
-        return <HomePage />;
+        return (
+            <Suspense fallback={<RouteFallback message="Loading Home..." />}>
+                <LazyHomePage />
+            </Suspense>
+        );
     },
 });
 
 const uploadRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/upload",
-    component: UploadPage,
+    component: function Upload() {
+        return (
+            <Suspense fallback={<RouteFallback message="Loading Upload..." />}>
+                <LazyUploadPage />
+            </Suspense>
+        );
+    },
 });
-
-function validateFilterSearch(search: Record<string, unknown>) {
-    return {
-        demo: (search.demo as boolean | undefined) ?? false,
-        from: search.from as string | undefined,
-        to: search.to as string | undefined,
-        sortBy: search.sortBy as string | undefined,
-        interval: search.interval as string | undefined,
-    };
-}
 
 const summaryRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/summary",
     validateSearch: validateFilterSearch,
-    component: SummaryPage,
+    component: function Summary() {
+        return (
+            <Suspense fallback={<RouteFallback message="Loading Summary..." />}>
+                <LazySummaryPage />
+            </Suspense>
+        );
+    },
 });
 
 const chartsRoute = createRoute({
@@ -63,15 +70,7 @@ const chartsRoute = createRoute({
     validateSearch: validateFilterSearch,
     component: function Charts() {
         return (
-            <Suspense
-                fallback={
-                    <div className="flex min-h-screen items-center justify-center bg-white dark:bg-neutral-950">
-                        <div className="text-xl font-semibold text-neutral-600 dark:text-neutral-400">
-                            Loading Charts...
-                        </div>
-                    </div>
-                }
-            >
+            <Suspense fallback={<RouteFallback message="Loading Charts..." />}>
                 <LazyChartsPage />
             </Suspense>
         );

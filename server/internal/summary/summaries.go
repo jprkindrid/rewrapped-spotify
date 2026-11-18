@@ -2,6 +2,7 @@ package summary
 
 import (
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/jprkindrid/rewrapped-spotify/internal/constants"
@@ -9,10 +10,12 @@ import (
 )
 
 type ScoredEntry struct {
-	Name    string
-	TotalMs int
-	Count   int
-	URI     string
+	Name       string
+	TrackName  string
+	ArtistName string
+	TotalMs    int
+	Count      int
+	URI        string
 }
 
 func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sortBy string) []ScoredEntry {
@@ -27,8 +30,9 @@ func TopArtistsInRange(data []parser.MinifiedSongData, start, end time.Time, sor
 
 		if counts[name] == nil {
 			counts[name] = &ScoredEntry{
-				Name: name,
-				URI:  entry.SpotifyTrackURI,
+				Name:       name,
+				ArtistName: name,
+				URI:        entry.SpotifyTrackURI,
 			}
 
 			if reps[name] == "" {
@@ -73,8 +77,10 @@ func TopTracksInRange(data []parser.MinifiedSongData, start, end time.Time, sort
 		key := entry.TrackName + " - " + entry.ArtistName
 		if counts[key] == nil {
 			counts[key] = &ScoredEntry{
-				Name: key,
-				URI:  entry.SpotifyTrackURI,
+				Name:       key,
+				TrackName:  entry.TrackName,
+				ArtistName: entry.ArtistName,
+				URI:        entry.SpotifyTrackURI,
 			}
 		}
 		counts[key].TotalMs += entry.MsPlayed
@@ -104,6 +110,48 @@ func TopTracksInRange(data []parser.MinifiedSongData, start, end time.Time, sort
 	}
 
 	return sorted
+}
+
+func FilterArtistsByQuery(entries []ScoredEntry, query string) []ScoredEntry {
+	queryLower := strings.ToLower(strings.TrimSpace(query))
+	if queryLower == "" {
+		return entries
+	}
+
+	filtered := make([]ScoredEntry, 0, len(entries))
+	for _, entry := range entries {
+		artistName := entry.ArtistName
+		if artistName == "" {
+			artistName = entry.Name
+		}
+
+		if strings.Contains(strings.ToLower(artistName), queryLower) {
+			filtered = append(filtered, entry)
+		}
+	}
+
+	return filtered
+}
+
+func FilterTracksByQuery(entries []ScoredEntry, query string) []ScoredEntry {
+	queryLower := strings.ToLower(strings.TrimSpace(query))
+	if queryLower == "" {
+		return entries
+	}
+
+	filtered := make([]ScoredEntry, 0, len(entries))
+	for _, entry := range entries {
+		trackName := entry.TrackName
+		if trackName == "" {
+			trackName = entry.Name
+		}
+
+		if strings.Contains(strings.ToLower(trackName), queryLower) {
+			filtered = append(filtered, entry)
+		}
+	}
+
+	return filtered
 }
 
 func GroupByYear(data []parser.UserSongData) map[int][]parser.UserSongData {
