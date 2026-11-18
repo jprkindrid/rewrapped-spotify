@@ -17,7 +17,6 @@ const DEFAULT_TO = new Date();
 const DEFAULT_SORT_BY: SortBy = "count";
 const DEFAULT_INTERVAL: ChartInterval = "yearly";
 
-
 function parseDate(v: string | undefined, fallback: Date): Date {
     if (!v) return fallback;
     const d = new Date(v);
@@ -55,7 +54,7 @@ export function useSummaryFilterParams() {
             };
             navigate({ search: params as never, replace: true });
         },
-        [navigate, search.demo],
+        [navigate, search.demo]
     );
 
     const handleApply = useCallback(() => {
@@ -73,22 +72,17 @@ export function useSummaryFilterParams() {
         writeToUrl(defaults);
     }, [writeToUrl]);
 
+    // Only touches the query: unapplied edits in the filter panel stay unapplied.
     const applyQuery = useCallback(
         (query: string) => {
-            const limit = bufferFilters.offsetLimit.limit;
-            const nextFilters = {
-                ...bufferFilters,
-                query: query,
-                offsetLimit: {
-                    offsetTracks: 0,
-                    offsetArtists: 0,
-                    limit,
-                },
-            };
-            setBufferFilters(nextFilters);
-            writeToUrl(nextFilters);
+            const trimmed = query.trim();
+            setBufferFilters((prev) => ({ ...prev, query: trimmed }));
+            navigate({
+                search: { ...search, query: trimmed || undefined } as never,
+                replace: true,
+            });
         },
-        [bufferFilters, writeToUrl]
+        [navigate, search]
     );
 
     return {
@@ -128,7 +122,7 @@ export function useChartsFilterParams() {
             };
             navigate({ search: params as never, replace: true });
         },
-        [navigate, search.demo],
+        [navigate, search.demo]
     );
 
     const handleApply = useCallback(() => {

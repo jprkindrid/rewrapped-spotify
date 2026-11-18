@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useId } from "react";
 import {
     Popover,
     PopoverContent,
@@ -19,7 +19,15 @@ type SummarySearchPopoverProps = {
     displayType: EntityType;
     range: DateRange | undefined;
     sortBy: SortBy;
+    onSelectQuery: (query: string) => void;
 };
+
+// The summary filter matches artist names on the artists tab and track names on
+// the tracks tab, so filter by the field the result was matched on.
+const filterTextFor = (result: SummarySearchEntry) =>
+    result.entity === "track" && result.trackName
+        ? result.trackName
+        : result.name;
 
 const SummarySearchPopover = ({
     token,
@@ -27,9 +35,12 @@ const SummarySearchPopover = ({
     displayType,
     range,
     sortBy,
+    onSelectQuery,
 }: SummarySearchPopoverProps) => {
     const isDark = useDarkMode();
+    const listboxId = useId();
     const [open, setOpen] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(-1);
     const [inputValue, setInputValue] = useState("");
     const [debouncedQuery, setDebouncedQuery] = useState("");
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,6 +60,7 @@ const SummarySearchPopover = ({
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.target.value;
             setInputValue(value);
+            setActiveIndex(-1);
 
             if (debounceRef.current) {
                 clearTimeout(debounceRef.current);
@@ -66,6 +78,7 @@ const SummarySearchPopover = ({
         if (!nextOpen) {
             setInputValue("");
             setDebouncedQuery("");
+            setActiveIndex(-1);
         }
     }, []);
 
@@ -103,6 +116,33 @@ const SummarySearchPopover = ({
         searchQuery.isFetching ||
         (debouncedQuery !== inputValue.trim() && inputValue.trim().length >= 2);
     const hasResults = results.length > 0;
+    const activeResult =
+        activeIndex >= 0 && activeIndex < results.length
+            ? results[activeIndex]
+            : undefined;
+
+    const selectQuery = (query: string) => {
+        const trimmed = query.trim();
+        if (trimmed.length < 2) return;
+        onSelectQuery(trimmed);
+        handleOpenChange(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "ArrowDown" && hasResults) {
+            e.preventDefault();
+            setActiveIndex((i) => (i + 1) % results.length);
+        } else if (e.key === "ArrowUp" && hasResults) {
+            e.preventDefault();
+            setActiveIndex((i) => (i <= 0 ? results.length - 1 : i - 1));
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            selectQuery(
+                activeResult ? filterTextFor(activeResult) : inputValue
+            );
+        }
+    };
+
     const showNoResults =
         debouncedQuery.length >= 2 &&
         !searchQuery.isFetching &&
@@ -148,6 +188,17 @@ const SummarySearchPopover = ({
                         type="text"
                         value={inputValue}
                         onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        role="combobox"
+                        aria-label={`Search ${displayType}`}
+                        aria-expanded={hasResults}
+                        aria-controls={listboxId}
+                        aria-autocomplete="list"
+                        aria-activedescendant={
+                            activeResult
+                                ? `${listboxId}-${activeIndex}`
+                                : undefined
+                        }
                         placeholder={
                             displayType === "artists"
                                 ? "Search artists in this range..."
@@ -163,16 +214,30 @@ const SummarySearchPopover = ({
                 </div>
 
                 <div className="max-h-72 overflow-y-auto">
-                    {hasResults &&
-                        results.map((result) => (
-                            <ResultRow
-                                key={`${result.entity}-${result.name}-${result.artistName ?? ""}`}
-                                result={result}
-                                isDark={isDark}
-                                imageUrl={imageQuery.data?.[result.uri]?.imageUrl ?? ""}
-                                imageLoading={imageQuery.isFetching}
-                            />
-                        ))}
+                    <div
+                        id={listboxId}
+                        role="listbox"
+                        aria-label={`Matching ${displayType}`}
+                    >
+                        {hasResults &&
+                            results.map((result, i) => (
+                                <ResultRow
+                                    key={`${result.entity}-${result.name}-${result.artistName ?? ""}`}
+                                    id={`${listboxId}-${i}`}
+                                    result={result}
+                                    isDark={isDark}
+                                    isActive={i === activeIndex}
+                                    imageUrl={
+                                        imageQuery.data?.[result.uri]
+                                            ?.imageUrl ?? ""
+                                    }
+                                    imageLoading={imageQuery.isFetching}
+                                    onSelect={() =>
+                                        selectQuery(filterTextFor(result))
+                                    }
+                                />
+                            ))}
+                    </div>
 
                     {showNoResults && (
                         <div className="px-3 py-6 text-center text-sm text-neutral-500">
@@ -186,9 +251,17 @@ const SummarySearchPopover = ({
                         </div>
                     )}
 
+                    {hasResults && (
+                        <div className="border-t border-neutral-200 px-3 py-2 text-[11px] text-neutral-500 dark:border-neutral-700">
+                            Select a result, or press Enter to filter by &ldquo;
+                            {inputValue.trim()}&rdquo;
+                        </div>
+                    )}
+
                     {inputValue.length === 0 && (
                         <div className="px-3 py-6 text-center text-sm text-neutral-500">
-                            Search ranked {displayType} for the selected timespan
+                            Search ranked {displayType} for the selected
+                            timespan
                         </div>
                     )}
                 </div>
@@ -198,20 +271,37 @@ const SummarySearchPopover = ({
 };
 
 type ResultRowProps = {
+    id: string;
     result: SummarySearchEntry;
     isDark: boolean;
+    isActive: boolean;
     imageUrl: string;
     imageLoading: boolean;
+    onSelect: () => void;
 };
 
-const ResultRow = ({ result, isDark, imageUrl, imageLoading }: ResultRowProps) => {
+const ResultRow = ({
+    id,
+    result,
+    isDark,
+    isActive,
+    imageUrl,
+    imageLoading,
+    onSelect,
+}: ResultRowProps) => {
     const showSubtext = result.entity === "track" && !!result.artistName;
+    const activeBg = isDark ? "bg-neutral-800" : "bg-neutral-50";
 
     return (
-        <div
-            className={`flex w-full items-center gap-3 px-3 py-2 text-left transition-colors ${
-                isDark ? "hover:bg-neutral-800" : "hover:bg-neutral-50"
-            }`}
+        <button
+            type="button"
+            id={id}
+            role="option"
+            aria-selected={isActive}
+            onClick={onSelect}
+            className={`focus-visible:ring-spotify-green flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset ${
+                isActive ? activeBg : ""
+            } ${isDark ? "hover:bg-neutral-800" : "hover:bg-neutral-50"}`}
         >
             <div
                 className={`flex size-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ${
@@ -243,11 +333,11 @@ const ResultRow = ({ result, isDark, imageUrl, imageLoading }: ResultRowProps) =
                     </div>
                 )}
                 <div className="text-xs text-neutral-500">
-                    #{result.rangeRank} in range · {result.rangeCount} plays · {" "}
+                    #{result.rangeRank} in range · {result.rangeCount} plays ·{" "}
                     {formatTime(result.rangeTotalMs)}
                 </div>
             </div>
-        </div>
+        </button>
     );
 };
 

@@ -16,6 +16,7 @@ import {
     type SetStateAction,
 } from "react";
 import DisplayToggle from "@/components/DisplayToggle";
+import { X } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
 const SummarySearchPopover = lazy(() => import("./SummarySearchPopover"));
@@ -29,6 +30,8 @@ type SummaryBlockProps = {
     metaQuery: UseSummaryMetadataResult;
     range: DateRange | undefined;
     sortBy: SortBy;
+    query: string;
+    onQueryChange: (query: string) => void;
     token: string;
     demo: boolean;
 };
@@ -42,6 +45,8 @@ const SummaryBlock = ({
     metaQuery,
     range,
     sortBy,
+    query,
+    onQueryChange,
     token,
     demo,
 }: SummaryBlockProps) => {
@@ -95,7 +100,7 @@ const SummaryBlock = ({
             <DisplayToggle
                 displayType={displayType}
                 onDisplayTypeChange={setDisplayType}
-                noData={noData}
+                noData={noData && !query}
                 searchSlot={
                     <Suspense
                         fallback={
@@ -113,10 +118,31 @@ const SummaryBlock = ({
                             displayType={displayType}
                             range={range}
                             sortBy={sortBy}
+                            onSelectQuery={onQueryChange}
                         />
                     </Suspense>
                 }
             />
+
+            {query && (
+                <div className="border-border/60 bg-spotify-green/5 flex w-full items-center justify-center gap-2 border-b px-5 py-2 text-sm dark:border-white/[0.06]">
+                    <span className="text-muted-foreground">
+                        Filtered by{" "}
+                        <span className="text-foreground font-semibold">
+                            &ldquo;{query}&rdquo;
+                        </span>
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => onQueryChange("")}
+                        className="text-muted-foreground hover:text-foreground focus-visible:ring-spotify-green inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                        aria-label={`Clear filter "${query}"`}
+                    >
+                        <X className="size-3.5" aria-hidden />
+                        Clear
+                    </button>
+                </div>
+            )}
 
             <div className="flex h-full w-full flex-col justify-between">
                 {status === "pending" &&
@@ -177,10 +203,14 @@ const SummaryBlock = ({
                     ) : (
                         <div className="flex h-64 flex-col items-center justify-center gap-2 text-center">
                             <h2 className="text-muted-foreground text-2xl font-bold">
-                                No summary data available
+                                {query
+                                    ? `No ${displayType} match \u201c${query}\u201d`
+                                    : "No summary data available"}
                             </h2>
                             <p className="text-muted-foreground text-sm">
-                                Try adjusting your date range or filters.
+                                {query
+                                    ? "Clear the filter or try another search."
+                                    : "Try adjusting your date range or filters."}
                             </p>
                         </div>
                     ))}

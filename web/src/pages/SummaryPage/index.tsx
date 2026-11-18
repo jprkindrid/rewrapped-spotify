@@ -1,5 +1,5 @@
 import NavBar from "@/components/NavBar";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useSummaryQuery } from "@/hooks/useSummaryQuery";
 import SummaryBlock from "./SummaryBlock";
 import FilterControls from "../../components/FilterControls";
@@ -20,10 +20,23 @@ export const SummaryPage = () => {
         setBufferFilters,
         handleApply,
         handleReset,
+        applyQuery,
         demo,
     } = useSummaryFilterParams();
 
     const [offsetLimit, setOffsetLimit] = useState(filters.offsetLimit);
+
+    const handleQueryChange = useCallback(
+        (query: string) => {
+            setOffsetLimit((prev) => ({
+                ...prev,
+                offsetArtists: 0,
+                offsetTracks: 0,
+            }));
+            applyQuery(query);
+        },
+        [applyQuery]
+    );
 
     if (!token && !demo) {
         navigate({ to: "/" });
@@ -89,6 +102,8 @@ export const SummaryPage = () => {
                             metaQuery={metaQuery}
                             range={filters.range}
                             sortBy={filters.sortBy}
+                            query={filters.query}
+                            onQueryChange={handleQueryChange}
                             token={token!}
                             demo={demo}
                         />
