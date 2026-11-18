@@ -10,6 +10,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
+import SourceLink from "@/components/SourceLink";
 
 type NavBarProps = {
     includeUser: boolean;
@@ -62,7 +63,10 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                         </h1>
                     </div>
 
-                    <DarkModeButtons />
+                    <div className="flex items-center gap-1">
+                        <SourceLink />
+                        <DarkModeButtons />
+                    </div>
                 </div>
 
                 {/* Mobile nav row */}
@@ -190,7 +194,9 @@ const NavBar = ({ includeUser }: NavBarProps) => {
                         </nav>
                     </div>
 
-                    <div className="flex w-40 justify-end">
+                    <div className="flex w-40 items-center justify-end gap-1">
+                        <SourceLink />
+                        <div className="bg-border/60 mx-1 h-4 w-px dark:bg-white/[0.08]" />
                         <DarkModeButtons />
                     </div>
                 </div>

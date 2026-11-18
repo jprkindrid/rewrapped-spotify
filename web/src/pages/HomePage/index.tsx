@@ -13,6 +13,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import SourceLink from "@/components/SourceLink";
 import * as authService from "@/services/auth";
 
 type AuthMode = "login" | "register";
@@ -272,6 +273,9 @@ const HomePage = () => {
 
             <div className="relative z-10 mx-3 w-full max-w-5xl pb-16">
                 <Explanation />
+                <div className="mt-10 flex justify-center">
+                    <SourceLink variant="text" />
+                </div>
             </div>
 
             <Dialog open={showRegistered} onOpenChange={setShowRegistered}>
